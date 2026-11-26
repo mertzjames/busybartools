@@ -32,7 +32,7 @@ tools/new-app.sh <folder> --id <id> --name "<Name>" --description "<one line>"  
 ```
 apps/<folder>/            one self-contained app (see "App convention")
 lib/python/busybar/       shared render kit (Python): canvas, fx, party, font, sprite, showbuild, anim, preview
-lib/ts/busybar/           shared TypeScript: xpmtext, walltime, drawqueue, holidays (date rules), showrunner (playback)
+lib/ts/busybar/           shared TypeScript: xpmtext, walltime, drawqueue, holidays, showrunner, settings, sun
 lib/tests/                kit tests; tools/check.sh runs them first
 tools/                    shared scripts: check, deploy, release, new-app, screens, lib.sh
 docs/                     INSTALLING.md (users), DEVELOPMENT.md (devs), DECISIONS.md (repo-level R1…)
@@ -46,6 +46,7 @@ apps/<folder>/
   app/                    REQUIRED  BUSY JS app (TypeScript). src/main.ts entry; src/appmeta/manifest.json
   app/shared/             modules + generated data, imported as @shared/*  (NOT in app/src/; see below)
   app/src/animations/     .anim files packaged with the app
+  app/src/appmeta/settings.json  optional  user settings shown on the bar (read with lib/ts/busybar/settings.ts)
   prebuild.sh             optional  generates assets before the JS build
   tests/check.sh          optional  app tests, run by tools/check.sh
   README.md               REQUIRED  what it does, controls, how to change it

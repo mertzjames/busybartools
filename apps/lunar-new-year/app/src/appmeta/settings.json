@@ -1,0 +1,18 @@
+{
+  "format_version": 1,
+  "version": 1,
+  "fields": {
+    "greeting": {
+      "type": "enum",
+      "label": "Greeting",
+      "default": "mandarin",
+      "options": [
+        { "value": "mandarin", "label": "Mandarin" },
+        { "value": "cantonese", "label": "Cantonese" },
+        { "value": "vietnamese", "label": "Vietnamese" },
+        { "value": "korean", "label": "Korean" },
+        { "value": "none", "label": "None" }
+      ]
+    }
+  }
+}
