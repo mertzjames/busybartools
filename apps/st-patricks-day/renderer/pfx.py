@@ -200,11 +200,15 @@ def shamrock(img, cx: float, cy: float, size: int = 1, color=SHAMROCK, hi=SHAMRO
             for dx, dy in ((-1, 2), (1, 2), (0, 2)):
                 put(img, cx + dx + s, cy + dy, color, alpha)
         return
-    for (dx, dy), kind in _BIG[four].items():
-        c = hi if kind == "vein" else (stem if kind == "edge" else color)
+    leaves = _BIG[four]
+    for (dx, dy), kind in leaves.items():
+        if kind == "vein":
+            c = stem  # a darker cross between the leaves keeps them apart
+        elif any((dx + ex, dy + ey) not in leaves for ex, ey in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            c = hi  # a lit rim traces each heart
+        else:
+            c = color
         put(img, cx + dx + s, cy + dy, c, alpha)
-    for dx, dy in ((-2, -6), (2, -6), (6, -2), (-6, -2), (6, 2), (-6, 2)) + (((-2, 6), (2, 6)) if four else ()):
-        put(img, cx + dx + s, cy + dy, hi, alpha)  # lit lobe edges
     if not four:  # the stem, curving down to the right
         for dx, dy in ((0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (2, 6)):
             put(img, cx + dx + (s if dy < 2 else 0), cy + dy, stem, alpha)

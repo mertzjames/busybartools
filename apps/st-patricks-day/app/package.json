@@ -1,7 +1,7 @@
 {
   "name": "app",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Festive St. Patrick's Day folklore: a jigging leprechaun, a rainbow to gold, a parade and fireworks",
   "author": "busybartools contributors",
   "type": "module",

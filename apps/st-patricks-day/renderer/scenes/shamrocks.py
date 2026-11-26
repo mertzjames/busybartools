@@ -72,8 +72,12 @@ def render():
     # the four-leaf clover: the front-layer plant nearest to where it should stop
     fx = FIND_SCREEN_X + end * LAYERS[FIND_LAYER][2]
     find = min(range(len(layers[FIND_LAYER])), key=lambda i: abs(layers[FIND_LAYER][i][0] - fx))
-    fx0, fy0, _ = layers[FIND_LAYER][find]
+    _, fy0, _ = layers[FIND_LAYER][find]
     layers[FIND_LAYER][find] = (fx, fy0, 0.5)
+    # keep its neighbours clear of it, so it stands alone when the drift stops
+    keep = [(i, p) for i, p in enumerate(layers[FIND_LAYER]) if i == find or abs(p[0] - fx) >= 10]
+    find = [i for i, _ in keep].index(find)
+    layers[FIND_LAYER] = [p for _, p in keep]
     frames = []
     for f in range(sec(SECONDS)):
         img = bg.copy()
