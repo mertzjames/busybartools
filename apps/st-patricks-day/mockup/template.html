@@ -1,0 +1,507 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>St. Patrick's Day</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* One centered column: the simulated bar first, then the cards and the storyboards. One festive dark look:
+     deep green with gold accents and a thin rainbow rule. */
+  :root {
+    --ink: #04140b;
+    --panel: #0a2214;
+    --panel-2: #0f2c1a;
+    --line: #1d4a2c;
+    --fg: #eef4e8;
+    --muted: #a3c2aa;
+    --gold: #f4c34a;
+    --shamrock: #46c46a;
+    --bezel: #020a05;
+    --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
+    background: radial-gradient(1100px 420px at 50% -140px, #1f5a30 0%, #0b2a16 45%, transparent 75%), var(--ink);
+  }
+  .wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 12px; }
+  .eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(36px, 6.5vw, 60px); line-height: 1.04; letter-spacing: -.01em; }
+  h1 span { color: var(--gold); }
+  h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; }
+  .lede { margin: 0; max-width: 64ch; color: var(--muted); }
+  .horizon { height: 3px; max-width: 360px; border-radius: 2px; background: linear-gradient(90deg, #e43c3c, #ff8a1e, #ffd21e, #3cc83c, #2878f0, #8a50d2); }
+
+  .stage { display: grid; gap: 14px; }
+  .bezel {
+    background: linear-gradient(180deg, #0c2414, var(--bezel) 40%);
+    border: 1px solid #1d4a2c; border-radius: 18px; padding: clamp(10px, 2.2vw, 22px);
+    box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
+  }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 6px; background: #05060c; }
+  .now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+  .now .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .now strong { font-family: var(--display); font-weight: 400; font-size: 26px; margin-left: 10px; }
+  .now .t { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 2px 8px; margin-left: 10px; vertical-align: 3px; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--shamrock), var(--gold)); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--gold); }
+  button:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--gold); color: #1a1408; border-color: var(--gold); min-width: 92px; }
+  button[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+  .toggle { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; margin-left: auto; cursor: pointer; }
+  .toggle input { accent-color: var(--gold); width: 16px; height: 16px; }
+
+  .playlist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer;
+  }
+  .chip .n { font-family: var(--mono); font-size: 11px; }
+  .chip.card { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f4c34a1c; }
+
+  .section { display: grid; gap: 18px; }
+  .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
+  .boards { display: grid; gap: 18px; }
+  .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+  .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--shamrock); letter-spacing: .06em; }
+  .board-head h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 22px; }
+  .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; border-radius: 6px; }
+  .thumb canvas { width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #05060c; display: block; }
+  .thumb span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .thumb b { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--gold); margin-right: 6px; }
+
+  .prose { display: grid; gap: 12px; max-width: 68ch; }
+  .prose p { margin: 0; color: var(--muted); }
+  .prose p strong { color: var(--fg); font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; margin: 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .facts div { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .words { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .words li { font-family: var(--mono); font-size: 13px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; color: var(--fg); background: var(--panel); }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+  .decisions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 24px; }
+  .decisions li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: baseline; }
+  .decisions .id { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+  .decisions li span:last-child { color: var(--muted); font-size: 14px; }
+  .decisions li strong { color: var(--fg); font-weight: 600; }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) {
+    .toggle { margin-left: 0; }
+    .now strong { display: block; margin: 2px 0 0; }
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">A BUSY Bar app · busybartools</p>
+    <h1>St. Patrick's <span>Day</span></h1>
+    <div class="horizon" aria-hidden="true"></div>
+    <p class="lede">A festive St. Patrick's Day show for a 72 × 16 LED display, drawn from Irish folklore: a
+      leprechaun dancing a jig, a rainbow ending at a pot of gold, a meadow of shamrocks with one lucky four-leaf
+      clover, a parade with a piper and a drummer, a river dyed green, a Celtic knot that weaves itself, and green,
+      white and orange fireworks. Between scenes come a clock and a countdown to March 17. The simulator below plays
+      the same frames the bar plays, with your current time on the cards.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now">
+      <div><span class="label" id="stepLabel">Scene 1</span><strong id="title">…</strong><span class="tag" id="modeTag" hidden>HOLIDAY MODE</span></div>
+      <span class="t" id="time">0.0 s</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="controls">
+      <button id="prev" type="button">Previous</button>
+      <button id="play" type="button" class="primary">Pause</button>
+      <button id="next" type="button">Next</button>
+      <button id="holiday" type="button" aria-pressed="false" title="The bar's START button">START · holiday mode</button>
+      <label class="toggle" for="loopOne"><input type="checkbox" id="loopOne"> Repeat this step</label>
+    </div>
+    <ol class="playlist" id="playlist" aria-label="Show order"></ol>
+  </section>
+
+  <section class="section" aria-labelledby="about">
+    <h2 id="about">The show</h2>
+    <div class="prose">
+      <p>Seven scenes, about a minute and three quarters in all. A leprechaun in a buckled hat taps his foot on a
+        hilltop at sunrise, then dances a jig and leaps for a heel click. A spring shower clears and a rainbow arcs to
+        an old iron pot that overflows with gold. The view drifts over a meadow of shamrocks until one with four leaves
+        catches the light. The parade marches past with the tricolor, a piper in a saffron kilt and a drummer, a work
+        boat turns the river green, two cords weave a Celtic knot around ERIN GO BRAGH, and the finale is fireworks.</p>
+      <p>It celebrates the day warmly, through folklore and heritage: no drinking jokes and no caricatures. The
+        leprechaun is an original design, and the knot pattern is an original two-cord plait.</p>
+      <p>Between scenes, a <strong>clock card</strong> shows the time, then the date. A <strong>countdown card</strong>
+        shows the days to St. Patrick's Day (March 17). On the day it becomes <strong>HAPPY ST. PATRICK'S DAY</strong>
+        and <strong>ERIN GO BRAGH</strong> ("Ireland forever"). Press <strong>START</strong> (on the bar, or above)
+        to preview the day on any date.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Scenes</dt><dd id="fScenes">7</dd></div>
+      <div><dt>Display</dt><dd>72 × 16</dd></div>
+      <div><dt>Frame rate</dt><dd>15 fps</dd></div>
+      <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
+      <div><dt>Animation data</dt><dd id="fBytes">–</dd></div>
+      <div><dt>Next March 17</dt><dd id="fNext">–</dd></div>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="wordsH">
+    <h2 id="wordsH">Every word on screen</h2>
+    <p>Every caption and card line, all in the bar's ASCII pixel fonts.</p>
+    <ul class="words" id="words"></ul>
+  </section>
+
+  <section class="section">
+    <h2>Cards</h2>
+    <p>Live text, drawn by the app from the bar's clock. Pixel for pixel the same as the renderer (a test checks it).</p>
+    <div class="boards" id="cards"></div>
+  </section>
+
+  <section class="section">
+    <h2>Scene by scene</h2>
+    <p>Key moments from each scene. Click any frame to jump the simulator to that moment.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="section" aria-labelledby="decisions">
+    <h2 id="decisions">Key decisions</h2>
+    <ul class="decisions">
+      <li><span class="id">D2</span><span><strong>Festive and family-friendly.</strong> Folklore and heritage; no drinking jokes, no caricatures.</span></li>
+      <li><span class="id">D3</span><span><strong>Seven scenes.</strong> The jig opens; fireworks close.</span></li>
+      <li><span class="id">D5</span><span><strong>An original leprechaun.</strong> Green coat, buckled hat, ginger beard, lit blue eyes.</span></li>
+      <li><span class="id">D6</span><span><strong>An original knot.</strong> A two-cord plait, over and under in turn.</span></li>
+      <li><span class="id">D8</span><span><strong>ERIN GO BRAGH.</strong> A heritage motto ("Ireland forever"), chosen over a toast.</span></li>
+      <li><span class="id">D9</span><span><strong>START previews the day.</strong> The cycle restarts on a card, so the change shows at once.</span></li>
+    </ul>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+const SHOW = /*__SHOW_DATA__*/null;
+/*__SPD_LOGIC__*/
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps;
+  const N = SHOW.scenes.length;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const BG = { clock: "clock_bg", count: "count_bg", day: "day_bg" };
+
+  // ---------- frame data ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const frameAt = (data, i) => data.subarray(i * W * H * 4, (i + 1) * W * H * 4);
+
+  // ---------- LED renderer ----------
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#05060c";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    ctx.globalAlpha = 0.22;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#10131f" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // ---------- live text (same drawing order as the app's xpmtext and the renderer's font.draw_text) ----------
+  const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+  function textWidth(text, font) {
+    const ws = [...text].map(c => font.glyphs[c]).filter(Boolean).map(g => g[0].length);
+    return ws.reduce((s, w) => s + w, 0) + font.gap * Math.max(0, ws.length - 1);
+  }
+  function blend(buf, x, y, c, a) {
+    if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) buf[i + k] = Math.round(buf[i + k] + (c[k] - buf[i + k]) * a);
+  }
+  function drawText(buf, text, spec, alpha) {
+    const font = SHOW.fonts[spec.font];
+    let cx = Math.floor((W - textWidth(text, font)) / 2);
+    for (const ch of text) {
+      const g = font.glyphs[ch];
+      if (!g) continue;
+      g.forEach((row, gy) => {
+        const c = mix(spec.top, spec.bottom, gy / Math.max(1, font.height - 1));
+        [...row].forEach((bit, gx) => {
+          if (bit !== "#") return;
+          blend(buf, cx + gx + 1, spec.y + gy + 1, spec.shadow, alpha);
+          blend(buf, cx + gx, spec.y + gy, c, alpha);
+        });
+      });
+      cx += g[0].length + font.gap;
+    }
+  }
+  const fadeStep = ms => Math.min(1, (Math.floor(ms / 150) + 1) / 3); // the runner fades text in 3 steps, 150 ms apart
+
+  // the browser's clock stands in for the bar's
+  const localNow = (d = new Date()) => ({ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
+    hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() });
+  const later = (t, s) => SPD.addSeconds(t, s);
+  const bgFor = name => SHOW.bg[name === "clock" ? BG.clock : name === "count" ? BG.count : BG.day];
+  const cardMs = (name, t) => SPD.cardPages(name, t).reduce((a, p) => a + p.ms, 0);
+  function cardFrame(name, ms, t0) {
+    const bg = bgFor(name);
+    const buf = new Uint8ClampedArray(frameAt(bgData[bg.name], Math.floor(ms * FPS / 1000) % bg.frames));
+    let at = 0;
+    for (const [p, page] of SPD.cardPages(name, t0).entries()) {
+      if (ms < at + page.ms) {
+        const t = later(t0, Math.floor(ms / 1000));
+        const lines = SPD.cardPages(name, t)[p]?.lines ?? page.lines;
+        for (const l of lines) drawText(buf, l.text, SHOW.layout[l.style], fadeStep(ms - at));
+        break;
+      }
+      at += page.ms;
+    }
+    return buf;
+  }
+  const cardTitle = name => name === "clock" ? "Clock and date" : name === "count" ? "Countdown" : "On the day";
+
+  // ---------- show sequence (the app's own playlist logic) ----------
+  let holiday = false;
+  let steps = [];
+  let t0 = localNow();
+  const led = document.getElementById("led").getContext("2d");
+  const els = {
+    title: document.getElementById("title"), label: document.getElementById("stepLabel"),
+    time: document.getElementById("time"), bar: document.getElementById("bar"),
+    play: document.getElementById("play"), loop: document.getElementById("loopOne"),
+    playlist: document.getElementById("playlist"), holiday: document.getElementById("holiday"),
+    tag: document.getElementById("modeTag"),
+  };
+  let data = [], bgData = {};
+  let step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
+  const stepMs = s => s.kind === "scene" ? SHOW.scenes[s.scene].ms : cardMs(s.card, t0);
+
+  function newCycle(fromCard) {
+    steps = SPD.playlist(N, localNow(), holiday, fromCard);
+    chips();
+  }
+  function chips() {
+    els.playlist.textContent = "";
+    steps.forEach((s, k) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      if (s.kind === "scene") {
+        b.className = "chip";
+        b.innerHTML = `<span class="n">${s.scene + 1}</span>`;
+        b.append(SHOW.scenes[s.scene].title);
+      } else {
+        b.className = "chip card";
+        b.textContent = s.card;
+      }
+      b.addEventListener("click", () => go(k, 0));
+      li.appendChild(b);
+      els.playlist.appendChild(li);
+    });
+  }
+  function elapsed() { return paused ? pausedMs : performance.now() - startedAt; }
+  function go(k, ms) {
+    if (k >= steps.length) { newCycle(false); k = 0; }
+    step = (k + steps.length) % steps.length;
+    t0 = localNow();
+    startedAt = performance.now() - ms;
+    pausedMs = ms;
+    lastKey = "";
+    [...els.playlist.querySelectorAll(".chip")].forEach((c, j) => c.setAttribute("aria-current", String(j === step)));
+  }
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) pausedMs = elapsed(); else startedAt = performance.now() - pausedMs;
+    paused = p;
+    els.play.textContent = p ? "Play" : "Pause";
+  }
+  function setHoliday(on) {
+    holiday = on;
+    els.holiday.setAttribute("aria-pressed", String(on));
+    els.tag.hidden = !on;
+    newCycle(true);
+    go(0, 0);
+  }
+
+  function tick() {
+    let ms = elapsed();
+    if (ms >= stepMs(steps[step])) {
+      if (els.loop.checked) go(step, 0); else go(step + 1, 0);
+      ms = 0;
+    }
+    const cur = steps[step];
+    if (cur.kind === "scene") {
+      const sc = SHOW.scenes[cur.scene];
+      const f = Math.min(sc.frames - 1, Math.floor(ms * FPS / 1000));
+      const key = `s${cur.scene}:${f}`;
+      if (key !== lastKey) { drawLED(led, frameAt(data[cur.scene], f), 12); lastKey = key; }
+      els.title.textContent = sc.title;
+      els.label.textContent = `Scene ${cur.scene + 1} of ${N}`;
+    } else {
+      const f = Math.floor(ms * FPS / 1000);
+      const key = `c:${cur.card}:${f}:${Math.floor(ms / 1000)}`;
+      if (key !== lastKey) { drawLED(led, cardFrame(cur.card, ms, t0), 12); lastKey = key; }
+      els.title.textContent = cardTitle(cur.card);
+      els.label.textContent = `Card · ${cur.card}`;
+    }
+    const total = stepMs(cur);
+    els.time.textContent = `${(ms / 1000).toFixed(1)} s / ${(total / 1000).toFixed(1)} s`;
+    els.bar.style.width = `${Math.min(100, (ms / total) * 100)}%`;
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- storyboards ----------
+  function thumb(frame, label, seconds, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "thumb";
+    const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+    drawLED(c.getContext("2d"), frame, 5);
+    const cap = document.createElement("span");
+    if (seconds !== null) cap.innerHTML = `<b>${seconds.toFixed(1)}s</b>`;
+    cap.append(label);
+    b.append(c, cap);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+  function scrollStage() {
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  function jumpTo(pred, ms, pause) {
+    const k = steps.findIndex(pred);
+    if (k >= 0) { go(k, ms); setPaused(pause); scrollStage(); }
+  }
+  function boards() {
+    const host = document.getElementById("boards");
+    SHOW.scenes.forEach((sc, i) => {
+      const card = document.createElement("article");
+      card.className = "board";
+      card.innerHTML = `<div class="board-head"><span class="num">SCENE ${i + 1}</span><h3></h3>
+        <span class="dur">${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames</span>
+        <button type="button">Play scene</button></div><div class="thumbs"></div>`;
+      card.querySelector("h3").textContent = sc.title;
+      const isMe = s => s.kind === "scene" && s.scene === i;
+      card.querySelector("button").addEventListener("click", () => jumpTo(isMe, 0, false));
+      const thumbs = card.querySelector(".thumbs");
+      sc.keyframes.forEach(k => {
+        const f = Math.min(sc.frames - 1, Math.round(k.s * FPS));
+        thumbs.appendChild(thumb(frameAt(data[i], f), k.caption, k.s, () => jumpTo(isMe, k.s * 1000, true)));
+      });
+      host.appendChild(card);
+    });
+  }
+  function cardBoards() {
+    const host = document.getElementById("cards");
+    const now = localNow();
+    const groups = [
+      ["Clock and date", "Every other step, all year", ["clock"]],
+      ["Countdown", "Before and after March 17", ["count"]],
+      ["On the day", "St. Patrick's Day, or any day in holiday mode", SPD.DAY_CARD_NAMES],
+    ];
+    for (const [title, sub, names] of groups) {
+      const card = document.createElement("article");
+      card.className = "board";
+      card.innerHTML = `<div class="board-head"><span class="num">CARD</span><h3></h3><span class="dur"></span></div><div class="thumbs"></div>`;
+      card.querySelector("h3").textContent = title;
+      card.querySelector(".dur").textContent = sub;
+      const thumbs = card.querySelector(".thumbs");
+      for (const name of names) {
+        let at = 0;
+        for (const page of SPD.cardPages(name, now)) {
+          const ms = at + 600;
+          const label = page.lines.map(l => l.text).join(" / ");
+          thumbs.appendChild(thumb(cardFrame(name, ms, now), label, null, () => {
+            if (name.startsWith("day") !== SPD.isStPatricksDay(localNow(), holiday)) setHoliday(!holiday);
+            jumpTo(s => s.kind === "card" && s.card === name, ms, true);
+          }));
+          at += page.ms;
+        }
+      }
+      host.appendChild(card);
+    }
+  }
+  function words() {
+    const list = ["LUCKY!", "ERIN GO BRAGH", "HAPPY", "ST. PATRICK'S", "N DAYS / 1 DAY", "TO ST. PATRICK'S"];
+    for (const card of SPD.DAY_CARDS) for (const page of card) {
+      const w = page.lines.map(l => l.text).join(" / ");
+      if (!list.includes(w)) list.push(w);
+    }
+    const host = document.getElementById("words");
+    for (const w of list) { const li = document.createElement("li"); li.textContent = w; host.appendChild(li); }
+  }
+
+  els.play.addEventListener("click", () => setPaused(!paused));
+  els.holiday.addEventListener("click", () => setHoliday(!holiday));
+  document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
+  document.getElementById("next").addEventListener("click", () => go(step + 1, 0));
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
+    if (e.key === "ArrowRight") go(step + 1, 0);
+    if (e.key === "ArrowLeft") go(step - 1, 0);
+    if (e.key === "s" || e.key === "S") setHoliday(!holiday);
+  });
+
+  Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), ...Object.values(SHOW.bg).map(b => decode(b.sheet))]).then(all => {
+    Object.keys(SHOW.bg).forEach((k, i) => { bgData[k] = all[N + i]; });
+    data = all.slice(0, N);
+    newCycle(false);
+    const now = localNow();
+    const loopMs = steps.reduce((a, s) => a + stepMs(s), 0);
+    const loopS = Math.round(loopMs / 1000);
+    const d = SPD.daysToStPatricks(now);
+    document.getElementById("fScenes").textContent = N;
+    document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
+    document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
+    document.getElementById("fNext").textContent = d === 0 ? "Today" : SPD.daysLabel(d).toLowerCase();
+    document.getElementById("built").textContent = `${N} scenes · full show ≈ ${loopS} s per loop · busybartools · St. Patrick's Day`;
+    words();
+    cardBoards();
+    boards();
+    go(0, 0);
+    els.play.textContent = paused ? "Play" : "Pause";
+    requestAnimationFrame(tick);
+  });
+})();
+</script>
