@@ -490,7 +490,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     if (e.key === "ArrowLeft") go(step - 1, 0);
   });
   document.getElementById("built").textContent =
-    `Frames built ${SHOW.built} · ${SHOW.scenes.length} scenes · full show ≈ ${Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000)} s per loop · built with Claude Code`;
+    `${SHOW.scenes.length} scenes · full show ≈ ${Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000)} s per loop · built with Claude Code`;
 
   Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), decode(SHOW.clock.sheet)]).then(all => {
     clockBg = all.pop();

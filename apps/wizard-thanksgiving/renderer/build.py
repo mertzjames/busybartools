@@ -155,7 +155,6 @@ def write_mockup(scenes_meta, clock_meta) -> None:
         "clock": {"name": clock_meta["name"], "frames": clock_meta["frames"], "sheet": clock_meta["sheet"],
                   **clock_layout()},
         "fonts": font.export_json(),
-        "built": time.strftime("%Y-%m-%d %H:%M"),
     }
     html = template.replace("/*__SHOW_DATA__*/null", json.dumps(data, separators=(",", ":")))
     (MOCKUP / "index.html").write_text(html)
