@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "id": "busybartools.newyear",
+  "name": "New Years Eve",
+  "version": "1.0.0",
+  "api_version": "27.12.0",
+  "description": "Party scenes, a countdown to midnight, and a celebration when the new year rings in",
+  "author": "busybartools contributors"
+}
