@@ -169,3 +169,15 @@ would remain).
   strokes, which hang in the air and fade.
 - **Finale:** the greeting is revealed outward from the center of a big gold ring burst, over a darkened sky, with
   red, white and blue confetti behind it and glints across the words.
+
+## D12 — A shorter flag in Eagle and Flag
+*2026-11-26*
+
+**Decision:** the Eagle and Flag scene's flag is 26 px wide (was 30) with a 10 px canton (was 12), still 13 stripes
+tall.
+
+**Why:** review feedback said the flag looked slightly too long. At 30 × 13 it was about 2.3 : 1; the real flag is
+1.9 : 1. 26 × 13 is 2 : 1, a small change that keeps the waving fly clear of the eagle's path. The canton stays at
+two fifths of the fly, as on the real flag.
+
+**Alternatives:** 25 px would be closer to 1.9 : 1, but the review asked for only a little shorter.

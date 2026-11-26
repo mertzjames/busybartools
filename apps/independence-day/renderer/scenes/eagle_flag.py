@@ -19,8 +19,8 @@ KEYFRAMES = [(0.6, "The flag in a summer breeze"), (2.4, "An eagle glides in"), 
              (8.0, "Banking into a turn"), (11.0, "A few strong wingbeats"), (13.2, "Climbing away")]
 
 POLE_X = 3
-FLAG_W = 30
-CANTON_W = 12
+FLAG_W = 26  # 13 stripes tall: 2 : 1, close to the real 1.9 : 1 (D12)
+CANTON_W = 10  # 2/5 of the fly, as on the real flag
 TOP = 1
 
 # The eagle seen from below, wings spread (the same design as Presidents' Day's). Wings are a lit brown (black is an
