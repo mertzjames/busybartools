@@ -1,6 +1,7 @@
-"""Scene: The Witch's Flight. Under a big full moon, a witch on her broom swoops in from the left, trailing green,
-purple and gold sparkles. She crosses in front of the moon as a silhouette with a lit green face, dips low over the
-rooftops, then circles back from the right, higher and smaller, and flies off past the moon."""
+"""Scene: The Witch's Flight. Under a big full moon, a witch on her broom swoops in from the left over the rooftops,
+trailing green, purple and gold sparkles. She crosses in front of the moon (her violet hat and dress stand out
+against it, her green face lit) and flies off to the right. Then she comes back the other way, far off and small,
+passing the moon again, and flies off into the night."""
 
 import math
 
@@ -11,12 +12,12 @@ from sprites import WITCH, WITCH_FAR
 NAME = "witch"
 TITLE = "The Witch's Flight"
 SECONDS = 14
-KEYFRAMES = [(1.4, "A witch swoops in"), (3.4, "A trail of sparkles"), (4.8, "Across the moon"),
-             (7.0, "Off to the right"), (10.2, "Back the other way, far off"), (12.8, "Off into the night")]
+KEYFRAMES = [(1.8, "A witch swoops in"), (3.4, "A trail of sparkles"), (4.8, "Across the moon"),
+             (6.2, "Off to the right"), (10.2, "Back the other way, far off"), (12.8, "Off into the night")]
 
 MOON = (50.0, 7.0, 6.6)
 PASS1 = (0.4, 7.2)  # left to right
-PASS2 = (8.2, 13.6)  # right to left, higher and smaller (every other column, like distance)
+PASS2 = (8.2, 13.6)  # right to left, far off (a smaller sprite)
 SPARKS = ((150, 255, 70), (190, 110, 255), (255, 220, 90), (255, 255, 255))
 
 

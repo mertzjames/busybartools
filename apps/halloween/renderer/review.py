@@ -40,7 +40,7 @@ def review(module_name: str, out_dir: Path, every: float | None = None, start: f
 
 
 def cards(out_dir: Path) -> Path:
-    """Every card page: the clock, the countdown, and the three on-the-day cards."""
+    """Every card page: the clock, the countdown, and the four on-the-day cards."""
     import build
     from scenes import CLOCK_BG, COUNT_BG
     clock = [build.tone(f.convert("RGB")) for f in CLOCK_BG.render()]

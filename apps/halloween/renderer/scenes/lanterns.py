@@ -9,8 +9,9 @@ from sprites import BAT
 NAME = "lanterns"
 TITLE = "Carving Night"
 SECONDS = 16
-KEYFRAMES = [(0.6, "Four plain pumpkins"), (1.8, "The first is carved"), (2.9, "...and lit"),
-             (5.6, "A surprised one"), (8.8, "A winking one"), (11.8, "A goofy one"), (14.2, "All four glow")]
+KEYFRAMES = [(0.6, "Four plain pumpkins"), (1.8, "The first is carved"), (3.3, "...and lit"),
+             (5.0, "The second is carved"), (6.3, "A surprised face"), (9.3, "A winking one"),
+             (12.3, "A goofy one"), (14.4, "All four glow")]
 
 PW, PH = 15, 11
 PY = 3

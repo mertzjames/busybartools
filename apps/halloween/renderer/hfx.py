@@ -251,7 +251,10 @@ def pumpkin(img, x: int, y: int, w: int, h: int, face: str | None = None, carved
         c = hole
         if lit > 0:
             core = FLAME_CORE if hash01(seed, cx, cy, f // 3) > 0.82 else (255, 226, 70)
-            c = mix(hole, core, lit)
+            # hole -> deep amber -> candle yellow: a straight blend from brown to yellow passes through olive, and
+            # through orange the face would vanish into the skin for a moment
+            amber = (150, 66, 8)
+            c = mix(hole, amber, lit * 2) if lit < 0.5 else mix(amber, core, lit * 2 - 1)
         put(img, ox + cx, oy + cy, c)
 
 
