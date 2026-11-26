@@ -47,6 +47,8 @@ lib/ts/busybar/             shared TypeScript, imported by relative path from an
   drawqueue.ts              one-request-in-flight draw queue with per-slot replacement
   holidays.ts               holiday date rules (nth weekday, Easter, Hanukkah, Lunar New Year), next occurrence
   showrunner.ts             the scene-and-card playback loop (scenes, live-text cards, buttons)
+  settings.ts               read the app's settings (appmeta/settings.json) safely, enum and location readers
+  sun.ts                    sunrise and sunset, UTC offset parsing, location estimated from the time zone
 lib/tests/                  kit tests (run first by tools/check.sh)
 tools/
   check.sh                  build + typecheck + test apps; CI runs this
@@ -190,6 +192,26 @@ import { createShow, type Card, type Step } from "../../../../lib/ts/busybar/sho
   show.start();
   const unbind = listen("input", (e) => { if (show.input(e) === "quit") setTimeout(unbind, 0); });
   ```
+- **App settings:** ship `app/src/appmeta/settings.json` to give an app a Setup page on the bar (Apps → app → Setup)
+  and in the bar's web interface:
+
+  ```json
+  { "format_version": 1, "version": 1, "fields": {
+      "greeting": { "type": "enum", "label": "Greeting", "default": "mandarin",
+                    "options": [{ "value": "mandarin", "label": "Mandarin" }, { "value": "none", "label": "None" }] },
+      "location": { "type": "geolocation", "label": "Location", "default": { "mode": "auto", "name": "Bar location" } } } }
+  ```
+
+  - Field types: `enum`, `boolean`, `integer`, `string`, `color`, `time`, `geolocation`, `group`. Only `enum`,
+    `boolean` and `integer` can be edited on the bar itself; the others need the web interface.
+  - Bump `version` when you change fields incompatibly; the bar then drops stored values.
+  - Read them once at start with `loadSettings(device, manifest.id, VERSION, defaults)`. It never throws, and any
+    missing or mistyped value falls back to its default. Changes apply when the app next starts.
+  - `readGeolocation(value)` returns `{ lat, lon }` only when the bar has coordinates.
+- **Sun times:** `sunTimes(y, m, d, { lat, lon }, offset)` gives sunrise and sunset in minutes after local midnight.
+  - `offsetMinutes(info.timestamp)` reads the bar's UTC offset.
+  - Without a location setting, `locationFromOffset(offset, usDst(y, m, d))` estimates one from the time zone. It is
+    usually within half an hour.
 - **Holiday dates:** `nextOccurrence(t, HOLIDAYS.easter)` returns the occurrence `t` falls in, or the next one,
   with `days` until it (0 on the day). Pass `spanDays` for holidays that last more than one day, like Kwanzaa (7).
   `HOLIDAYS.hanukkah` is the evening of the first candle, computed from the Hebrew calendar. `lunarNewYear` uses a
