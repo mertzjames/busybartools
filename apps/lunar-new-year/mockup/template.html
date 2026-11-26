@@ -1,0 +1,616 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lunar New Year</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one centered column. The simulated bar is the hero; storyboards below.
+     One deliberate festival-night look (dark only): lacquer red-black ink, red and gold accents, a touch of jade. */
+  :root {
+    --ink: #120708;
+    --panel: #1d0d0e;
+    --panel-2: #2a1314;
+    --line: #43201f;
+    --fg: #f6ecdc;
+    --muted: #c3a59a;
+    --red: #e3343b;
+    --gold: #f2c14e;
+    --jade: #3cc58a;
+    --bezel: #0a0405;
+    --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55;
+    background: radial-gradient(1200px 500px at 50% -120px, #3a1012 0%, transparent 70%), var(--ink);
+  }
+  .wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 10px; }
+  .eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(36px, 6.5vw, 60px); line-height: 1.02; letter-spacing: -.01em; text-wrap: balance; }
+  h1 .r { color: var(--red); } h1 .g { color: var(--gold); }
+  h2 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 28px; color: var(--fg); text-wrap: balance; }
+  .lede { margin: 0; max-width: 64ch; color: var(--muted); }
+  .lanterns { height: 22px; display: flex; gap: 18px; align-items: flex-start; }
+  .lanterns i { width: 14px; height: 12px; margin-top: 6px; border-radius: 45%; background: var(--red); position: relative; display: block;
+    box-shadow: 0 0 10px #e3343b66; animation: sway 3s infinite ease-in-out; transform-origin: 50% -6px; }
+  .lanterns i::before { content: ""; position: absolute; left: 6px; top: -6px; width: 2px; height: 6px; background: var(--gold); }
+  .lanterns i::after { content: ""; position: absolute; left: 6px; bottom: -5px; width: 2px; height: 5px; background: var(--gold); }
+  .lanterns i:nth-child(2n) { animation-delay: .7s; } .lanterns i:nth-child(3n) { animation-delay: 1.4s; }
+  @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+  @media (prefers-reduced-motion: reduce) { .lanterns i { animation: none; } }
+
+  /* --- the bar --- */
+  .stage { display: grid; gap: 14px; }
+  .bezel {
+    background: linear-gradient(180deg, #1c1011, var(--bezel) 40%);
+    border: 1px solid #3a1d1d; border-radius: 18px;
+    padding: clamp(10px, 2.2vw, 22px);
+    box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
+  }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; max-width: 100%; border-radius: 6px; background: #080404; }
+  .now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+  .now .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .now strong { font-family: var(--display); font-weight: 500; font-size: 26px; color: var(--fg); margin-left: 10px; }
+  .now .t { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--red), var(--gold)); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, input[type="date"] {
+    font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  }
+  input[type="date"] { padding: 8px 10px; font-family: var(--mono); font-size: 13px; }
+  button:hover { border-color: var(--gold); }
+  button:focus-visible, input:focus-visible, .chip:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--red); color: #fff; border-color: var(--red); min-width: 92px; }
+  button[aria-pressed="true"] { border-color: var(--gold); background: #f2c14e22; }
+  .toggle { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; margin-left: auto; cursor: pointer; }
+  .toggle input { accent-color: var(--red); width: 16px; height: 16px; }
+  .season { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 12px 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .season label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .season .state { color: var(--fg); font-size: 14px; }
+  .season .state b { color: var(--gold); font-weight: 600; }
+
+  .playlist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer;
+  }
+  .chip .n { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .chip.card { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
+  .chip.zodiac { color: var(--gold); }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f2c14e1c; }
+
+  /* --- storyboards --- */
+  .section { display: grid; gap: 18px; }
+  .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
+  .boards { display: grid; gap: 18px; }
+  .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+  .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--red); letter-spacing: .06em; }
+  .board-head h3 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 22px; }
+  .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; border-radius: 6px; }
+  .thumb canvas { width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #080404; display: block; max-width: 100%; }
+  .thumb span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .thumb b { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--gold); margin-right: 6px; }
+
+  .prose { display: grid; gap: 12px; max-width: 68ch; }
+  .prose p { margin: 0; color: var(--muted); }
+  .prose p strong { color: var(--fg); font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; margin: 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .facts div { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; counter-reset: step; }
+  .flow li { counter-increment: step; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+  .flow li::before { content: "Step " counter(step); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--red); }
+  .flow h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .flow p { margin: 0; color: var(--muted); font-size: 14px; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--fg); }
+
+  .decisions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 24px; }
+  .decisions li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: baseline; }
+  .decisions .id { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+  .decisions li span:last-child { color: var(--muted); font-size: 14px; }
+  .decisions li strong { color: var(--fg); font-weight: 600; }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) {
+    .toggle { margin-left: 0; }
+    .now strong { display: block; margin: 2px 0 0; }
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">A BUSY Bar app · busybartools</p>
+    <h1><span class="r">Lunar</span> <span class="g">New Year</span></h1>
+    <div class="lanterns" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="lede">Festival scenes for a 72 × 16 LED display: lanterns, a dragon dance, a lion dance, red envelopes,
+      dumplings, firecrackers and fireworks, plus the zodiac animal of the year. A clock card and a countdown card
+      appear between scenes. The simulator below plays the same frames the bar plays, at 15 frames per second,
+      with your current time.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now">
+      <div><span class="label" id="stepLabel">Step 1</span><strong id="title">…</strong></div>
+      <span class="t" id="time">0.0 s</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="controls">
+      <button id="prev" type="button">Previous</button>
+      <button id="play" type="button" class="primary">Pause</button>
+      <button id="next" type="button">Next</button>
+      <label class="toggle" for="loopOne"><input type="checkbox" id="loopOne"> Repeat this step</label>
+    </div>
+    <div class="season">
+      <label for="date">Bar date</label>
+      <input type="date" id="date">
+      <button id="start" type="button" aria-pressed="false">Holiday mode (START)</button>
+      <span class="state" id="seasonState">…</span>
+    </div>
+    <ol class="playlist" id="playlist" aria-label="Show order"></ol>
+  </section>
+
+  <section class="section" aria-labelledby="about">
+    <h2 id="about">The show</h2>
+    <div class="prose">
+      <p>Seven scenes celebrate the festival. Sky lanterns rise over curled rooftops. A long dragon on poles chases a pearl
+        down the street. A lion dances to a drum and plucks the greens. A child bows to a grandparent and gets a red
+        envelope. Dumplings steam, and one hides a lucky coin. Firecrackers scare off the Nian. The night ends with
+        red-and-gold fireworks.</p>
+      <p>A short <strong>zodiac scene</strong> shows the animal of the current or upcoming lunar year: twelve versions,
+        picked from the bar's date. Before the new year, the <strong>count card</strong> shows <code>N DAYS</code> /
+        <code>TO LUNAR NEW YEAR</code>. From New Year's Day through the Lantern Festival (day 15), it shows
+        <code>YEAR OF THE</code> / <code>GOAT</code>, <code>HAPPY</code> / <code>NEW YEAR</code> (on day 15,
+        <code>LANTERN</code> / <code>FESTIVAL</code>) and <code>GONG XI</code> / <code>FA CAI</code>. The
+        <strong>clock card</strong> shows the time and then the date.</p>
+      <p><strong>Holiday mode:</strong> START on the bar (or the button above) previews the festival on any date.
+        Each further press steps to the next of the twelve animals. After all twelve, it returns to the real date.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Festival scenes</dt><dd id="fScenes">7</dd></div>
+      <div><dt>Zodiac scenes</dt><dd>12</dd></div>
+      <div><dt>Frame rate</dt><dd>15 fps</dd></div>
+      <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
+      <div><dt>Animation data</dt><dd id="fBytes">–</dd></div>
+    </dl>
+  </section>
+
+  <section class="section">
+    <h2>Scene by scene</h2>
+    <p>Key moments from each scene. Click any frame to jump the simulator to that moment.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="section" aria-labelledby="how">
+    <h2 id="how">How it works</h2>
+    <ol class="flow">
+      <li><h3>Sprites as text</h3><p>The zodiac animals, the dragon's head and the lion are small grids of letters in Python. Eyes and other small details use lit colors, because a black pixel is an unlit LED.</p></li>
+      <li><h3>Render each scene</h3><p>A deterministic Python renderer choreographs every frame: the dragon's wave, the lion's leap, every firecracker's pop and the fireworks.</p></li>
+      <li><h3>Bake into <code>.anim</code></h3><p>Frames go into the bar's own animation format, with a tone curve tuned on real hardware. The firmware plays them smoothly with no network traffic.</p></li>
+      <li><h3>Follow the calendar</h3><p>A small TypeScript app reads the bar's date, picks the playlist and the zodiac animal, and draws the live cards. Tests check it against real dates and against the renderer, pixel for pixel.</p></li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="decisions">
+    <h2 id="decisions">Key decisions</h2>
+    <ul class="decisions">
+      <li><span class="id">D2</span><span><strong>Seven festival scenes.</strong> Lanterns, two dances, family, food, firecrackers, fireworks.</span></li>
+      <li><span class="id">D5</span><span><strong>Twelve short zodiac scenes.</strong> Six seconds each, so all twelve stay small.</span></li>
+      <li><span class="id">D6</span><span><strong>Two playlists.</strong> The festival opens with the year's animal and its greeting.</span></li>
+      <li><span class="id">D10</span><span><strong>START walks the zodiac.</strong> Thirteen presses review all twelve animals and return.</span></li>
+      <li><span class="id">D11</span><span><strong>Beyond the date table.</strong> A generic greeting and no countdown.</span></li>
+      <li><span class="id">D12</span><span><strong>Respectful figures.</strong> Simple shapes, no faces, no caricature.</span></li>
+    </ul>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+const SHOW = /*__SHOW_DATA__*/null;
+
+// The app's date logic (app/shared/lny.ts and the kit's holidays.ts), mirrored for the simulator.
+// tests/logic.test.mts runs this block and checks it agrees with the app every day from 2024 to 2038.
+// <logic>
+const LNY = { 2025: [1, 29], 2026: [2, 17], 2027: [2, 6], 2028: [1, 26], 2029: [2, 13], 2030: [2, 3],
+  2031: [1, 23], 2032: [2, 11], 2033: [1, 31], 2034: [2, 19], 2035: [2, 8], 2036: [1, 28] };
+const ZODIAC = ["RAT", "OX", "TIGER", "RABBIT", "DRAGON", "SNAKE", "HORSE", "GOAT", "MONKEY", "ROOSTER", "DOG", "PIG"];
+const SPAN_DAYS = 15;
+const zodiac = (y) => ZODIAC[(((y - 4) % 12) + 12) % 12];
+const daysUntil = (t, y, m, d) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(t.year, t.month - 1, t.day)) / 86400000);
+function nextOccurrence(t) {
+  for (const year of [t.year - 1, t.year, t.year + 1]) {
+    const md = LNY[year];
+    if (!md) continue;
+    const days = daysUntil(t, year, md[0], md[1]);
+    if (days > 0 || days > -SPAN_DAYS) return { year, days, dayOf: days > 0 ? 0 : 1 - days };
+  }
+  return null;
+}
+function animalWithoutTable(t) {
+  return zodiac(t.month > 2 || (t.month === 2 && t.day >= 21) ? t.year : t.year - 1);
+}
+function season(t) {
+  const occ = nextOccurrence(t);
+  if (!occ) return { kind: "unknown", animal: animalWithoutTable(t) };
+  const animal = zodiac(occ.year);
+  if (occ.days > 0) return { kind: "countdown", days: occ.days, animal };
+  return { kind: "festival", dayOf: occ.dayOf, animal };
+}
+function pressStart(p, current) {
+  if (!p) return { start: Math.max(0, ZODIAC.indexOf(current)), shown: 0 };
+  return p.shown + 1 >= ZODIAC.length ? null : { start: p.start, shown: p.shown + 1 };
+}
+const previewAnimal = (p) => ZODIAC[(p.start + p.shown) % ZODIAC.length];
+const effectiveSeason = (t, p) => (p ? { kind: "festival", dayOf: 1, animal: previewAnimal(p) } : season(t));
+const daysLabel = (n) => n + (n === 1 ? " DAY" : " DAYS");
+function countPages(s) {
+  const T = SHOW.timing;
+  if (s.kind === "countdown") {
+    return [{ ms: T.count, lines: [{ style: "head", text: daysLabel(s.days) }, { style: "sub", text: "TO LUNAR NEW YEAR" }] }];
+  }
+  if (s.kind === "unknown") return [{ ms: T.fallback, lines: [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }] }];
+  const greeting = s.dayOf === SPAN_DAYS
+    ? [{ style: "top", text: "LANTERN" }, { style: "bot", text: "FESTIVAL" }]
+    : [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }];
+  return [
+    { ms: T.animal, lines: [{ style: "small", text: "YEAR OF THE" }, { style: "name", text: s.animal }] },
+    { ms: T.greeting, lines: greeting },
+    { ms: T.wish, lines: [{ style: "top", text: "GONG XI" }, { style: "bot", text: "FA CAI" }] },
+  ];
+}
+function sceneIndex(name) {
+  const i = SHOW.scenes.findIndex((s) => s.name === name);
+  if (i < 0) throw new Error("no scene " + name);
+  return i;
+}
+function playlist(s) {
+  const names = s.kind === "festival" ? SHOW.playlists.festival : SHOW.playlists.countdown;
+  return names.map((n) => {
+    if (n === "clock" || n === "count") return { kind: "card", card: n };
+    if (n === "ZODIAC") return { kind: "scene", scene: sceneIndex("zodiac_" + s.animal.toLowerCase()) };
+    return { kind: "scene", scene: sceneIndex(n) };
+  });
+}
+// </logic>
+
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, T = SHOW.timing;
+  const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const festivalCount = SHOW.festival_scenes.length;
+
+  // ---------- frame data ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const frameAt = (data, i) => data.subarray(i * W * H * 4, (i + 1) * W * H * 4);
+
+  // ---------- LED renderer ----------
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#080404";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    ctx.globalAlpha = 0.22; // soft bloom for lit LEDs
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#1a1010" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // ---------- live text (same fonts, styles and drawing order as the bar app) ----------
+  const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+  function textWidth(text, font) {
+    const ws = [...text].map(c => font.glyphs[c]).filter(Boolean).map(g => g[0].length);
+    return ws.reduce((s, w) => s + w, 0) + font.gap * Math.max(0, ws.length - 1);
+  }
+  function blend(buf, x, y, c, a) {
+    if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) buf[i + k] = Math.round(buf[i + k] + (c[k] - buf[i + k]) * a);
+  }
+  function drawText(buf, text, spec, alpha) {
+    const font = SHOW.fonts[spec.font];
+    let cx = Math.floor((W - textWidth(text, font)) / 2);
+    for (const ch of text) {
+      const g = font.glyphs[ch];
+      if (!g) continue;
+      g.forEach((row, gy) => {
+        const c = mix(spec.top, spec.bottom, gy / Math.max(1, font.height - 1));
+        [...row].forEach((bit, gx) => {
+          if (bit !== "#") return;
+          blend(buf, cx + gx + 1, spec.y + gy + 1, spec.shadow, alpha);
+          blend(buf, cx + gx, spec.y + gy, c, alpha);
+        });
+      });
+      cx += g[0].length + font.gap;
+    }
+  }
+  const pad = n => String(n).padStart(2, "0");
+  const fadeStep = ms => Math.min(1, (Math.floor(ms / 150) + 1) / 3); // the app fades text in 3 steps, 150 ms apart
+
+  // ---------- state: the bar's date and holiday mode ----------
+  const els = {
+    title: document.getElementById("title"), label: document.getElementById("stepLabel"),
+    time: document.getElementById("time"), bar: document.getElementById("bar"),
+    play: document.getElementById("play"), loop: document.getElementById("loopOne"),
+    playlist: document.getElementById("playlist"), date: document.getElementById("date"),
+    start: document.getElementById("start"), state: document.getElementById("seasonState"),
+  };
+  const today = new Date();
+  els.date.value = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+  let preview = null;
+
+  /** The bar's local time: the chosen date with the browser's current time of day. */
+  function barTime() {
+    const now = new Date();
+    const [y, m, d] = (els.date.value || "").split("-").map(Number);
+    return { year: y || now.getFullYear(), month: m || now.getMonth() + 1, day: d || now.getDate(),
+      hour: now.getHours(), minute: now.getMinutes(), second: now.getSeconds() };
+  }
+  function describe() {
+    const s = effectiveSeason(barTime(), preview);
+    const real = season(barTime());
+    els.start.setAttribute("aria-pressed", String(!!preview));
+    if (preview) {
+      els.state.innerHTML = `Holiday mode: <b>${s.animal}</b> (${preview.shown + 1} of 12). Press again for the next animal.`;
+    } else if (real.kind === "countdown") {
+      els.state.innerHTML = `<b>${daysLabel(real.days)}</b> to the Year of the ${real.animal.toLowerCase()}.`;
+    } else if (real.kind === "festival") {
+      els.state.innerHTML = `Festival day <b>${real.dayOf}</b> of 15: Year of the ${real.animal.toLowerCase()}.`;
+    } else {
+      els.state.innerHTML = `Outside the date table: generic greeting, no countdown.`;
+    }
+  }
+
+  // ---------- the show ----------
+  const led = document.getElementById("led").getContext("2d");
+  let data = [], cardBg = null;
+  let steps = [], pages = null, step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
+
+  const stepMs = (s) => s.kind === "scene" ? SHOW.scenes[s.scene].ms : cardPages(s.card).reduce((a, p) => a + p.ms, 0);
+  function cardPages(card) {
+    if (card === "clock") {
+      return [{ ms: T.time, lines: [{ style: "time", text: null }] }, { ms: T.date, lines: [{ style: "date", text: null }] }];
+    }
+    return countPages(effectiveSeason(barTime(), preview));
+  }
+  function liveText(line, now) {
+    if (line.style === "time") return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    if (line.style === "date") {
+      const t = barTime();
+      return `${DAYS[new Date(Date.UTC(t.year, t.month - 1, t.day)).getUTCDay()]} ${t.day} ${MONTHS[t.month - 1]}`;
+    }
+    return line.text;
+  }
+  function cardFrame(card, ms, pg) {
+    const buf = new Uint8ClampedArray(frameAt(cardBg, Math.floor(ms * FPS / 1000) % SHOW.card.frames));
+    let at = 0;
+    const now = new Date();
+    for (const p of pg) {
+      if (ms < at + p.ms) {
+        p.lines.forEach(l => drawText(buf, liveText(l, now), SHOW.styles[l.style], fadeStep(ms - at)));
+        break;
+      }
+      at += p.ms;
+    }
+    return buf;
+  }
+  function stepName(s) {
+    if (s.kind === "card") return s.card === "clock" ? "Clock" : "Count";
+    return SHOW.scenes[s.scene].title;
+  }
+  function newCycle() {
+    steps = playlist(effectiveSeason(barTime(), preview));
+    chips();
+    go(0, 0);
+    describe();
+    updateFacts();
+  }
+  function chips() {
+    els.playlist.textContent = "";
+    steps.forEach((s, k) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      if (s.kind === "scene") {
+        b.className = "chip" + (s.scene >= festivalCount ? " zodiac" : "");
+        b.innerHTML = `<span class="n">${k + 1}</span>`;
+        b.append(SHOW.scenes[s.scene].title);
+      } else {
+        b.className = "chip card";
+        b.textContent = s.card;
+        b.setAttribute("aria-label", `${s.card} card, step ${k + 1}`);
+      }
+      b.addEventListener("click", () => go(k, 0));
+      li.appendChild(b);
+      els.playlist.appendChild(li);
+    });
+  }
+  function elapsed() { return paused ? pausedMs : performance.now() - startedAt; }
+  function go(k, ms) {
+    step = ((k % steps.length) + steps.length) % steps.length;
+    const s = steps[step];
+    pages = s.kind === "card" ? cardPages(s.card) : null;
+    startedAt = performance.now() - ms;
+    pausedMs = ms;
+    lastKey = "";
+    [...els.playlist.querySelectorAll(".chip")].forEach((c, j) => c.setAttribute("aria-current", String(j === step)));
+  }
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) pausedMs = elapsed(); else startedAt = performance.now() - pausedMs;
+    paused = p;
+    els.play.textContent = p ? "Play" : "Pause";
+  }
+  function advance() {
+    if (els.loop.checked) go(step, 0);
+    else if (step + 1 < steps.length) go(step + 1, 0);
+    else newCycle();
+  }
+
+  function tick() {
+    let ms = elapsed();
+    let s = steps[step];
+    let len = s.kind === "scene" ? SHOW.scenes[s.scene].ms : pages.reduce((a, p) => a + p.ms, 0);
+    if (ms >= len) {
+      advance();
+      ms = 0;
+      s = steps[step];
+      len = s.kind === "scene" ? SHOW.scenes[s.scene].ms : pages.reduce((a, p) => a + p.ms, 0);
+    }
+    if (s.kind === "scene") {
+      const sc = SHOW.scenes[s.scene];
+      const f = Math.min(sc.frames - 1, Math.floor(ms * FPS / 1000));
+      const key = `s${s.scene}:${f}`;
+      if (key !== lastKey) { drawLED(led, frameAt(data[s.scene], f), 12); lastKey = key; }
+    } else {
+      const f = Math.floor(ms * FPS / 1000);
+      const key = `c${step}:${f}:${new Date().getMinutes()}`;
+      if (key !== lastKey) { drawLED(led, cardFrame(s.card, ms, pages), 12); lastKey = key; }
+    }
+    els.title.textContent = stepName(s);
+    els.label.textContent = `Step ${step + 1} of ${steps.length}`;
+    els.time.textContent = `${(ms / 1000).toFixed(1)} s / ${(len / 1000).toFixed(1)} s`;
+    els.bar.style.width = `${Math.min(100, (ms / len) * 100)}%`;
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- storyboards ----------
+  function thumb(px, label, seconds, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "thumb";
+    const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+    drawLED(c.getContext("2d"), px, 5);
+    const cap = document.createElement("span");
+    if (seconds !== null) cap.innerHTML = `<b>${seconds.toFixed(1)}s</b>`;
+    cap.append(label);
+    b.append(c, cap);
+    if (onClick) b.addEventListener("click", onClick);
+    return b;
+  }
+  /** Jumps the simulator to a scene (anywhere in the current playlist, or as a one-off if it isn't in it). */
+  function jumpScene(i, ms, play) {
+    let k = steps.findIndex(s => s.kind === "scene" && s.scene === i);
+    if (k < 0) { steps = steps.slice(); steps[0] = { kind: "scene", scene: i }; chips(); k = 0; }
+    go(k, ms);
+    setPaused(!play);
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  function board(numText, title, dur, thumbs, onPlay) {
+    const card = document.createElement("article");
+    card.className = "board";
+    card.innerHTML = `<div class="board-head"><span class="num"></span><h3></h3><span class="dur"></span>
+      ${onPlay ? '<button type="button">Play</button>' : ""}</div><div class="thumbs"></div>`;
+    card.querySelector(".num").textContent = numText;
+    card.querySelector("h3").textContent = title;
+    card.querySelector(".dur").textContent = dur;
+    if (onPlay) card.querySelector("button").addEventListener("click", onPlay);
+    thumbs.forEach(t => card.querySelector(".thumbs").appendChild(t));
+    return card;
+  }
+  function boards() {
+    const host = document.getElementById("boards");
+    for (let i = 0; i < festivalCount; i++) {
+      const sc = SHOW.scenes[i];
+      const thumbs = sc.keyframes.map(k => {
+        const f = Math.min(sc.frames - 1, Math.round(k.s * FPS));
+        return thumb(frameAt(data[i], f), k.caption, k.s, () => jumpScene(i, k.s * 1000, false));
+      });
+      host.appendChild(board(`SCENE ${i + 1}`, sc.title, `${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames`, thumbs,
+        () => jumpScene(i, 0, true)));
+    }
+    const zthumbs = SHOW.zodiac.map(name => {
+      const i = sceneIndex(name);
+      const sc = SHOW.scenes[i];
+      return thumb(frameAt(data[i], Math.round(2.6 * FPS)), sc.title, null, () => jumpScene(i, 0, true));
+    });
+    host.appendChild(board("ZODIAC", "The twelve animals", "6 s each · the year's animal plays", zthumbs, null));
+    const samples = [
+      ["Clock", [{ style: "time", text: "18:05" }]], ["Date", [{ style: "date", text: "SAT 6 FEB" }]],
+      ["Before: the countdown", countPages({ kind: "countdown", days: 72, animal: "GOAT" })[0].lines],
+      ...countPages({ kind: "festival", dayOf: 1, animal: "GOAT" }).map((p, k) => [`New Year, page ${k + 1}`, p.lines]),
+      ["Day 15", countPages({ kind: "festival", dayOf: 15, animal: "GOAT" })[1].lines],
+      ["Outside the date table", countPages({ kind: "unknown", animal: "RAT" })[0].lines],
+    ];
+    const cthumbs = samples.map(([label, lines]) => {
+      const buf = new Uint8ClampedArray(frameAt(cardBg, 20));
+      lines.forEach(l => drawText(buf, l.text, SHOW.styles[l.style], 1));
+      return thumb(buf, label, null, null);
+    });
+    host.appendChild(board("BETWEEN SCENES", "Clock and count cards", "live text from the bar's time", cthumbs, null));
+  }
+
+  function updateFacts() {
+    const loopMs = steps.reduce((a, s) => a + stepMs(s), 0);
+    const loopS = Math.round(loopMs / 1000);
+    document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
+    document.getElementById("built").textContent =
+      `${festivalCount} festival scenes + 12 zodiac scenes · this playlist ≈ ${loopS} s per loop · busybartools · Lunar New Year`;
+  }
+
+  els.play.addEventListener("click", () => setPaused(!paused));
+  document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
+  document.getElementById("next").addEventListener("click", () => advance());
+  els.start.addEventListener("click", () => { preview = pressStart(preview, season(barTime()).animal); newCycle(); setPaused(false); });
+  els.date.addEventListener("change", () => newCycle());
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
+    if (e.key === "ArrowRight") advance();
+    if (e.key === "ArrowLeft") go(step - 1, 0);
+  });
+  document.getElementById("fScenes").textContent = festivalCount;
+  document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
+
+  Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), decode(SHOW.card.sheet)]).then(all => {
+    cardBg = all.pop();
+    data = all;
+    newCycle();
+    boards();
+    els.play.textContent = paused ? "Play" : "Pause";
+    requestAnimationFrame(tick);
+  });
+})();
+</script>
