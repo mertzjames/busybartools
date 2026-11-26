@@ -50,6 +50,12 @@ export const SHOW = {
       "title": "Pumpkin Patronus",
       "path": "animations/patronus.anim",
       "ms": 15000
+    },
+    {
+      "name": "feast",
+      "title": "The Feast Appears",
+      "path": "animations/feast.anim",
+      "ms": 18000
     }
   ],
   "clock": {
