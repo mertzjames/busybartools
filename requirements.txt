@@ -1,0 +1,2 @@
+# Pinned so generated animations are reproducible across machines and CI.
+Pillow==13.0.0
