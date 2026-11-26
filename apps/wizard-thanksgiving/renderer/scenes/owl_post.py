@@ -2,9 +2,9 @@
 
 import math
 
-from canvas import FPS, blit, ease_in_out, ease_out, lerp, new, phase, sec, vgradient
-from font import draw_text, text_width
-from fx import SPARKLE, Particles, Stars, moon, sparkle
+from busybar.canvas import FPS, blit, ease_in_out, ease_out, lerp, new, phase, sec, vgradient
+from busybar.font import draw_text, text_width
+from busybar.fx import SPARKLE, Particles, Stars, moon, sparkle
 from sprites import LETTER, OWL
 
 NAME = "owl_post"

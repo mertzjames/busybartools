@@ -5,9 +5,9 @@ import random
 
 from PIL import ImageFilter
 
-from canvas import FPS, add, blit, lerp, phase, put, sec, tint, vgradient
-from font import draw_text
-from fx import Particles, Stars, puff
+from busybar.canvas import FPS, add, blit, lerp, phase, put, sec, tint, vgradient
+from busybar.font import draw_text
+from busybar.fx import Particles, Stars, puff
 from sprites import TURKEY, WIZARD_GS as WIZARD
 
 NAME = "patronus"

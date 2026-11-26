@@ -41,7 +41,7 @@ def sheet(path: Path) -> None:
 def review(module_name: str, out_dir: Path, every: float | None = None) -> None:
     """Render a scene and write a strip of its keyframes (or every N seconds)."""
     import importlib
-    from canvas import FPS
+    from busybar.canvas import FPS
     m = importlib.import_module(f"scenes.{module_name}")
     frames = m.render()
     if every:

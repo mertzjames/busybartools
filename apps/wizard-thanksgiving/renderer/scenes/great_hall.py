@@ -2,9 +2,9 @@
 
 import math
 
-from canvas import FPS, add, blit, ease_in_out, lerp, phase, put, sec, vgradient
-from font import draw_text
-from fx import SPARKLE, Particles, Stars, sparkle
+from busybar.canvas import FPS, add, blit, ease_in_out, lerp, phase, put, sec, vgradient
+from busybar.font import draw_text
+from busybar.fx import SPARKLE, Particles, Stars, sparkle
 from sprites import CANDLE, ROAST, WIZARD_YB as WIZARD
 
 NAME = "great_hall"
