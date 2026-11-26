@@ -131,3 +131,26 @@ once. Pressing it again goes back. The mockup has the same toggle.
 **Decision:** Slow light changes (windows lighting up, the lantern light ramp, the stage lights, the door's glow) are
 quantized to a few steps, glows are drawn on static backgrounds, and the graveyard mist moves every third frame. The
 eight scenes and two backdrops total about 0.7 MB of `.anim` data, well under the 3 MB budget.
+
+## D11 — Lightning behind the haunted house
+*2026-11-26*
+
+**Review:** "Add a lightning bolt in the background with a flash or two. That would make this one slightly more
+spooky."
+
+**Decision:** The Haunted House has two brief strikes in the sky behind the house, timed for quiet moments so they
+don't fight the scene's beats: one at 0.8 s between the moon and the house (before the windows light up at 2 s), and a
+second, distant one at 15.1 s behind the bare tree (after the bats are out, on the side away from them). Each bolt is
+hand-drawn: a stepped line in lit white-violet, two pixels thick at the top, with a short dimmer branch.
+
+Each strike lasts eight frames (about half a second): a flash with the bolt, the bolt held while the sky dims, a dark
+frame, a softer second flicker with the bolt at 60 %, then a fade over four frames. That is two brightness peaks per
+strike and no strobing (a photosensitivity concern). The sky lifts toward a deep pale violet, never white, most around
+the bolt and towards the top, so the far side of the screen barely changes. On the two bolt frames the house, hill and
+tree brighten a little and their moonlit edges brighten most, so the silhouette stays lighter than the lit sky and
+pops; an earlier, stronger lift made the walls the same tone as the sky and the house vanished. The scene now draws
+the hill, tree and house on their own layer over the sky, so the bolts sit behind them. Stars hide during a strike.
+
+**Size:** the eight flash levels are built once each, and two levels repeat on consecutive frames, so the strikes add
+about 48 KiB to `haunted.anim` (57 KiB to 105 KiB); all ten files total about
+719 KiB, well under the 3 MB budget.

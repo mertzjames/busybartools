@@ -17,7 +17,7 @@ toggle.
 | # | Scene | Length | What happens |
 |---|---|---|---|
 | 1 | Carving Night | 16 s | Four plain pumpkins sit on a porch rail. One at a time, a glinting knife carves each a different face (classic, surprised, winking, goofy) and a candle lights it, until all four glow. A bat flits past. |
-| 2 | The Haunted House | 16 s | A crooked house with a tower and a steep gable stands on a hill under a full moon. Its windows light up one by one (yellow, one green, one purple), a shadowy figure glides past the green attic window, the door creaks open in fits and starts, and three bats flutter out. |
+| 2 | The Haunted House | 16 s | A crooked house with a tower and a steep gable stands on a hill under a full moon. Lightning flickers in the sky behind it, its windows light up one by one (yellow, one green, one purple), a shadowy figure glides past the green attic window, the door creaks open in fits and starts, and three bats flutter out before a second, distant flash behind the bare tree. |
 | 3 | Trick or Treat! | 16 s | A sheet ghost, a little witch, a pumpkin and a caped hero walk up to a house with a jack-o'-lantern on the step. `TRICK OR TREAT!` The door opens, candy flies into each bucket (each kid hops), and they hurry off. |
 | 4 | Bats Across the Moon | 14 s | Bats pour out of a bare tree's hollow and stream across a big full moon, a big bat swoops close past it, and three bats circle the moon. |
 | 5 | A Friendly Ghost | 15 s | Green mist drifts through a graveyard of cartoon tombstones (one says `RIP`). A ghost rises from behind the big stone, blinks, waves and says `BOO!`; two little ghosts join it, and they float away. |
