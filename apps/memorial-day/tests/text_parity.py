@@ -28,7 +28,8 @@ from busybar.canvas import new  # noqa: E402
 from busybar.font import text_width  # noqa: E402
 
 import build  # noqa: E402
-from scenes import ALL, CLOCK_BG, COUNT_BG  # noqa: E402
+from busybar.font import FONTS  # noqa: E402
+from scenes import ALL, CLOCK_BG, COUNT_BG, services  # noqa: E402
 from scenes.text import DAY_TEXT, FULL_TEXT, HALF_TEXT  # noqa: E402
 
 TS = """
@@ -127,6 +128,8 @@ def main() -> int:
         (res["scenes"] == expected, "generated playlist matches renderer"),
         (sorted(res["backdrops"]) == sorted([CLOCK_BG.NAME, COUNT_BG.NAME]), "both card backdrops are exported"),
         (all((APP_DIR / "app" / "src" / p).is_file() for p in paths), "every .anim exists"),
+        (all(text_width(c, "big") + 1 <= 72 and all(ch in FONTS["big"][0] for ch in c)
+             for c in services.CAPTIONS), "every service name fits in the big font with its shadow"),
     ]
     for ok, name in checks:
         failures += not ok

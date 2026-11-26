@@ -122,8 +122,8 @@
     <h1>Memorial <span>Day</span></h1>
     <div class="horizon" aria-hidden="true"></div>
     <p class="lede">A quiet tribute for Memorial Day, which honors those who died in military service, on a 72 × 16
-      LED display. Slow scenes of the flag, a field of poppies, rows of white headstones, a lone bugler at sunset, a
-      missing-man flyover and a memorial wall. Between them come a clock and a countdown, and on the day itself a few
+      LED display. Slow scenes of the flag, the six armed services, a field of poppies, rows of white headstones, a
+      lone bugler at sunset, a missing-man flyover, the Tomb of the Unknown Soldier and a memorial wall. Between them come a clock and a countdown, and on the day itself a few
       words. The simulator below plays the same frames the bar plays, with your current time on the cards.</p>
   </header>
 
@@ -147,22 +147,25 @@
   <section class="section" aria-labelledby="about">
     <h2 id="about">The tribute</h2>
     <div class="prose">
-      <p>Six slow scenes. The flag opens the show; poppies sway in a field; small flags stand before rows of plain white
-        headstones as dusk falls; a lone bugler stands silhouetted against the setting sun; four aircraft fly over in
-        formation and one climbs away alone, the missing man; and a wreath rests between two candles at a memorial
+      <p>Eight slow scenes. The flag opens the show; the six armed services follow one another in order of
+        precedence, each shown by its domain and its name; poppies sway in a field; small flags stand before rows of
+        plain white headstones as dusk falls; a lone bugler stands silhouetted against the setting sun; four aircraft
+        fly over in formation and one climbs away alone, the missing man; a sentinel walks the mat before the Tomb of
+        the Unknown Soldier through sun, rain, snow and night; and a wreath rests between two candles at a memorial
         wall, where the words <strong>WE REMEMBER</strong> appear.</p>
       <p><strong>The flag follows the custom.</strong> On Memorial Day it flies at half-staff from the morning until
         noon, then is raised to full staff. The app picks the half-staff scene on the morning of the day and the
         full-staff scene from noon. On every other day the flag flies at full staff, its normal position.</p>
       <p>No insignia, seals or branch emblems, no likenesses of real people and nothing that depicts combat: flags,
-        poppies, headstones, a silhouette and plain aircraft. Colors stay muted and the pace stays slow.</p>
+        poppies, headstones, a silhouette, plain aircraft and vehicles, generic uniform colors, and the services'
+        names in plain text. The tomb's sentinel carries no rifle and the tomb has no inscription. Colors stay muted and the pace stays slow.</p>
       <p>Between scenes, a <strong>clock card</strong> shows the time, then the date. A <strong>countdown card</strong>
         shows the days to Memorial Day (the last Monday of May). On the day it becomes <strong>MEMORIAL DAY</strong>
         and a few words. Press <strong>START</strong> (on the bar, or above) to preview the day on any date: the first
         press shows the morning (half-staff), the second the afternoon (full staff), the third goes back.</p>
     </div>
     <dl class="facts">
-      <div><dt>Scenes</dt><dd id="fScenes">6</dd></div>
+      <div><dt>Scenes</dt><dd id="fScenes">8</dd></div>
       <div><dt>Display</dt><dd>72 × 16</dd></div>
       <div><dt>Frame rate</dt><dd>15 fps</dd></div>
       <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
@@ -198,6 +201,9 @@
       <li><span class="id">D6</span><span><strong>Full staff on other days.</strong> The flag's normal position.</span></li>
       <li><span class="id">D7</span><span><strong>Words.</strong> MEMORIAL DAY, WE REMEMBER, HONOR AND REMEMBER, and the flag's position.</span></li>
       <li><span class="id">D9</span><span><strong>START previews the day.</strong> Morning, afternoon, then back to the calendar.</span></li>
+      <li><span class="id">D11</span><span><strong>A flag in proportion.</strong> 17 × 9, about 1.9 : 1, like a real flag.</span></li>
+      <li><span class="id">D12</span><span><strong>The Armed Services.</strong> Six vignettes in order of precedence, by domain and name only.</span></li>
+      <li><span class="id">D13</span><span><strong>Always guarded.</strong> A sentinel at the tomb, through sun, rain, snow and night.</span></li>
     </ul>
   </section>
 
@@ -474,7 +480,8 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
   }
   function words() {
-    const list = ["WE REMEMBER", "N DAYS / 1 DAY", "TO MEMORIAL DAY"];
+    const list = ["WE REMEMBER", "N DAYS / 1 DAY", "TO MEMORIAL DAY", "ARMY", "MARINE CORPS", "NAVY", "AIR FORCE",
+      "SPACE FORCE", "COAST GUARD"];
     const t = localNow();
     for (const m of ["morning", "afternoon"]) for (const card of MEM.dayCards(t, m)) for (const page of card) {
       const w = page.lines.map(l => l.text).join(" / ");

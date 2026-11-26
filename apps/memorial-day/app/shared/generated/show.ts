@@ -16,6 +16,12 @@ export const SHOW = {
       "ms": 14000
     },
     {
+      "name": "services",
+      "title": "The Armed Services",
+      "path": "animations/services.anim",
+      "ms": 17000
+    },
+    {
       "name": "poppies",
       "title": "A Field of Poppies",
       "path": "animations/poppies.anim",
@@ -38,6 +44,12 @@ export const SHOW = {
       "title": "The Missing Man",
       "path": "animations/flyover.anim",
       "ms": 14000
+    },
+    {
+      "name": "tomb",
+      "title": "The Tomb of the Unknown Soldier",
+      "path": "animations/tomb.anim",
+      "ms": 16000
     },
     {
       "name": "wall",

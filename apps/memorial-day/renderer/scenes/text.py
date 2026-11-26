@@ -30,7 +30,7 @@ LAYOUT = {
 HALF_TEXT = [("HALF-STAFF", "head"), ("UNTIL NOON", "sub")]
 FULL_TEXT = [("FULL STAFF", "head"), ("RAISED AT NOON", "sub")]
 DAY_TEXT = [
-    [[("MEMORIAL DAY", "word")], [("WE REMEMBER", "word")]],
     [[("MEMORIAL DAY", "word")], [("HONOR AND", "upper"), ("REMEMBER", "lower")]],
+    [[("MEMORIAL DAY", "word")], [("WE REMEMBER", "word")]],
     [[("MEMORIAL DAY", "word")]],  # + HALF_TEXT or FULL_TEXT
 ]

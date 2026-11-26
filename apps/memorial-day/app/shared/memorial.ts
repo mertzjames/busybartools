@@ -95,12 +95,16 @@ export function flagPage(t: LocalTime, mode: Mode = "off"): TextPage {
   };
 }
 
-/** The on-the-day cards, one per count slot in the playlist: MEMORIAL DAY, then a few words (D7). */
+/**
+ * The on-the-day cards, taken in turn by the count slots in the playlist: MEMORIAL DAY, then a few words (D7). The
+ * cycle has four count slots, so the fourth (after the memorial wall, whose caption is WE REMEMBER) shows the first
+ * card again: HONOR AND REMEMBER (D14).
+ */
 export function dayCards(t: LocalTime, mode: Mode = "off"): TextPage[][] {
   return [
-    [word("MEMORIAL DAY"), word("WE REMEMBER")],
     [word("MEMORIAL DAY"),
       { ms: PAIR_MS, lines: [{ style: "upper", text: "HONOR AND" }, { style: "lower", text: "REMEMBER" }] }],
+    [word("MEMORIAL DAY"), word("WE REMEMBER")],
     [word("MEMORIAL DAY"), flagPage(t, mode)],
   ];
 }

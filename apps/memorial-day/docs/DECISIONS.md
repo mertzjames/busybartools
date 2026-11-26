@@ -122,3 +122,75 @@ at a card, as MLK Day does) shows the part that differs most between the modes f
 - **Flyover:** the evening sky is a deeper blue so the pale planes stand out; the missing man's trail starts above
   the formation, so it never joins the planes still flying level.
 - **Size:** slow light changes are quantized (20–40 steps) and glows are steady; total `.anim` data is about 1 MB.
+
+## D11 — A flag in proportion: 17 × 9 (review)
+*2026-11-26*
+
+**Review:** "The flag looks too long ... shorten it on the x-axis and slightly lengthen it on the y-axis", at both
+half- and full-staff.
+
+**Decision:** The scene flag is 17 wide and 9 tall (about 1.9 : 1, a real flag's proportions), down from 24 × 7. It
+has nine one-row stripes (red at the top and bottom) and a 7 × 5 canton over the top five, about 40% of the fly, with
+the dense checker of lit dots kept from D5. The pole moves to column 26 so the flag sits nearer the middle; its
+finial is on row 0. Full staff puts the flag's top on row 1; half-staff on row 5, so its bottom stripe sits just
+above the grass and five rows of bare pole show above it. The lowering now covers 4 rows over the same 6 s. This
+supersedes the seven-stripe flag in D5; only the flag scenes use this flag (the headstones' small flags are
+separate).
+
+**Alternatives:** 11 rows (21 × 11) leaves no room below the peak for a visible half-staff; an even number of rows
+would end on a white stripe.
+
+## D12 — The Armed Services: one scene for all six (review)
+*2026-11-26*
+
+**Review:** "Let's add an animation for each of the armed services. It can be one animation for each one, or a single
+animation that shows all of them."
+
+**Decision:** One 17 s scene, `services`, after the flag. The six services appear in order of precedence, each for
+2.8 s, with its name across the top in the big font over a softly darkened box and a small vignette of its domain in
+rows 8–15 below. Each slides in from the right as the last slides away (0.6 s, eased).
+- `ARMY`: a column of five soldiers in olive marching in step along a road, against a pale sky.
+- `MARINE CORPS` (67 px, the widest name; it fits): three figures in dress blues (white cap, dark-blue coat, gold
+  buttons, white belt and gloves, light-blue trousers with a red stripe) before a sandstone wall; they salute at 1 s.
+- `NAVY`: a plain grey ship with a raked bow, a bridge and a mast, under way with a wake, against a warm horizon.
+- `AIR FORCE`: three jets, seen from below, in echelon trailing white smoke across a deep-blue sky.
+- `SPACE FORCE`: a satellite with solar panels and a blinking light over the curve of the Earth.
+- `COAST GUARD`: a plain orange rescue helicopter hovering over the waves, its hoist line down to a life raft.
+
+**Tone (D2, D3):** the services are shown only by domain, a plain silhouette, generic uniform colors and the name. No
+emblems, seals, insignia, logos, markings or medals (the Coast Guard's diagonal stripe is left out on purpose), no
+faces, no weapons and no combat. The names are new words on screen.
+
+**Art notes:** at first the art vanished: olive soldiers on olive hills, a grey ship on a grey-blue sky and jets as
+plus signs. What worked: a pale or warm band behind every figure, a darker sky only behind the caption, a ship darker
+than the horizon, jets as swept arrows, and drawing the caption's dimmed box before figures that stand just below it.
+The scene file uses only the shared kit, so Veterans Day can copy it.
+
+## D13 — The Tomb of the Unknown Soldier: always guarded (review)
+*2026-11-26*
+
+**Review:** "Let's also add an animation of the unknown tomb and its guards, showing them guarding in any weather."
+
+**Decision:** One 16 s scene, `tomb`, before the memorial wall. A plain white marble tomb (a cornice, faint corner
+pilasters, a two-step plinth) stands on a plaza. A sentinel in dress blues (cap, dark-blue coat, white gloves,
+light-blue trousers with a gold stripe) walks 21 steps across the mat (6.3 s), pauses, turns to face the tomb (seen
+from behind), pauses, turns, pauses and walks back. The weather changes around him, a clear day, rain, snow (which
+settles on the cornice) and night with stars and floodlights, each change a 1 s blend quantized to 20 steps.
+- The real cadence is slower (about one step a second); 0.3 s steps fit the walk, the turns and the walk back in 16 s.
+- The sentinel is 5 × 11 so he reads; at night he is lifted toward white (floodlit) and a warm haze lights the plaza,
+  or his dark-blue coat vanished into the night sky.
+- No caption, so no new words. `ALWAYS GUARDED` or `21 STEPS` would fit if wanted.
+
+**Judgment calls for review:** the real sentinels carry a rifle; following D3 (no weapons) he carries none. The tomb
+has no inscription and he has no face.
+
+## D14 — Eight scenes: the count slots and the day cards
+*2026-11-26*
+
+**Decision:** Show order: flag, services, poppies, headstones, bugler, flyover, tomb, wall (about 3 min a cycle). With
+eight scenes per cycle there are four clock slots and four count slots. On the day the count slots take the three day
+cards in turn, so the fourth (after the wall) repeats the first. The first two day cards swap places, so the repeat is
+`HONOR AND` / `REMEMBER` rather than an echo of the wall's own `WE REMEMBER`: services, then HONOR AND REMEMBER;
+headstones, then WE REMEMBER; flyover, then the flag's position; the wall, then HONOR AND REMEMBER. No new words.
+
+**Alternatives:** a fourth day card would need new words; a countdown of "0 DAYS" on the day reads wrong.

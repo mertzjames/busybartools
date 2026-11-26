@@ -75,8 +75,8 @@ test("the on-the-day cards, morning and afternoon", () => {
   const morning = T("2027-05-31T11:59:00-04:00");
   const noon = T("2027-05-31T12:00:00-04:00");
   assert.deepEqual(M.dayCards(morning).map(texts), [
-    [["MEMORIAL DAY"], ["WE REMEMBER"]],
     [["MEMORIAL DAY"], ["HONOR AND", "REMEMBER"]],
+    [["MEMORIAL DAY"], ["WE REMEMBER"]],
     [["MEMORIAL DAY"], ["HALF-STAFF", "UNTIL NOON"]],
   ]);
   assert.deepEqual(texts(M.cardPages("day2", noon)), [["MEMORIAL DAY"], ["FULL STAFF", "RAISED AT NOON"]]);
@@ -84,7 +84,7 @@ test("the on-the-day cards, morning and afternoon", () => {
     [["MEMORIAL DAY"], ["HALF-STAFF", "UNTIL NOON"]]);
   assert.deepEqual(texts(M.cardPages("day2", T("2026-11-26T08:00:00-05:00"), "afternoon")),
     [["MEMORIAL DAY"], ["FULL STAFF", "RAISED AT NOON"]]);
-  assert.deepEqual(M.dayCards(morning)[1][1].lines.map((l) => l.style), ["upper", "lower"]);
+  assert.deepEqual(M.dayCards(morning)[0][1].lines.map((l) => l.style), ["upper", "lower"]);
   // no festive greeting anywhere
   for (const m of M.MODES) for (const card of M.dayCards(morning, m)) for (const p of card)
     for (const l of p.lines) assert.ok(!/HAPPY/.test(l.text), l.text);
@@ -99,11 +99,12 @@ test("clock card: time, then date, from the bar's wall clock", () => {
 test("playlist: the flag variant follows the custom; the day cards on the day and in holiday mode", () => {
   const sc = SHOW.scenes;
   const before = names(M.playlist(sc, T("2026-11-26T09:00:00-05:00")));
-  assert.deepEqual(before, ["flag_full", "clock", "poppies", "count", "headstones", "clock", "bugler", "count",
-    "flyover", "clock", "wall", "count"]);
+  assert.deepEqual(before, ["flag_full", "clock", "services", "count", "poppies", "clock", "headstones", "count",
+    "bugler", "clock", "flyover", "count", "tomb", "clock", "wall", "count"]);
   const morning = names(M.playlist(sc, T("2027-05-31T11:59:00-04:00")));
-  assert.deepEqual(morning, ["flag_half", "clock", "poppies", "day0", "headstones", "clock", "bugler", "day1",
-    "flyover", "clock", "wall", "day2"]);
+  // four count slots take the three day cards in turn, so the last (after the wall) is day0 again (D14)
+  assert.deepEqual(morning, ["flag_half", "clock", "services", "day0", "poppies", "clock", "headstones", "day1",
+    "bugler", "clock", "flyover", "day2", "tomb", "clock", "wall", "day0"]);
   const afternoon = names(M.playlist(sc, T("2027-05-31T12:00:00-04:00")));
   assert.deepEqual(afternoon, ["flag_full", ...morning.slice(1)]);
   assert.deepEqual(names(M.playlist(sc, T("2028-05-29T08:00:00-04:00"))), morning);
