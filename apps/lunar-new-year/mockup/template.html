@@ -389,6 +389,7 @@ function playlist(s) {
     return { year: y || now.getFullYear(), month: m || now.getMonth() + 1, day: d || now.getDate(),
       hour: now.getHours(), minute: now.getMinutes(), second: now.getSeconds() };
   }
+  const title = (a) => a[0] + a.slice(1).toLowerCase();
   function describe() {
     const s = effectiveSeason(barTime(), preview);
     const real = season(barTime());
@@ -396,9 +397,9 @@ function playlist(s) {
     if (preview) {
       els.state.innerHTML = `Holiday mode: <b>${s.animal}</b> (${preview.shown + 1} of 12). Press again for the next animal.`;
     } else if (real.kind === "countdown") {
-      els.state.innerHTML = `<b>${daysLabel(real.days)}</b> to the Year of the ${real.animal.toLowerCase()}.`;
+      els.state.innerHTML = `<b>${daysLabel(real.days)}</b> to the Year of the ${title(real.animal)}.`;
     } else if (real.kind === "festival") {
-      els.state.innerHTML = `Festival day <b>${real.dayOf}</b> of 15: Year of the ${real.animal.toLowerCase()}.`;
+      els.state.innerHTML = `Festival day <b>${real.dayOf}</b> of 15: Year of the ${title(real.animal)}.`;
     } else {
       els.state.innerHTML = `Outside the date table: generic greeting, no countdown.`;
     }
