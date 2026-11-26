@@ -431,3 +431,97 @@ The app's sprites, scenes, playlist and behavior are unchanged, and every genera
 decision R8).
 
 **Why:** The holiday apps share this pipeline. The next entry here is D28.
+
+---
+
+## D28 — The cast becomes 2 wizards and 2 witches, each with their own look
+*2026-11-25 · version 1.1*
+
+**Decision:** The four students are no longer recolors of one wizard sprite. `renderer/cast.py` defines each one,
+and every scene a student appears in uses that student's own sprites:
+
+| Student | Scenes | House (D19) | Look |
+|---|---|---|---|
+| Wizard | 3 Broom Chase, 9 The Feast Appears | scarlet and gold | messy dark-brown hair, round glasses (silver frames around green eyes, D18), light skin, medium build |
+| Witch | 4 Cauldron Bake-Off, 9 | blue and bronze | big curly chestnut hair (D17) with a blue headband, warm tan skin, brown eyes; the shortest |
+| Wizard | 5 Great Hall Feast, 9 | yellow and black | deep brown skin, stocky build, a striped bobble hat with a pom-pom in house colors; the tallest |
+| Witch | 8 Pumpkin Patronus, 9 | green and silver | **was a wizard.** A long honey-blonde braid over one shoulder, tied with a green bow; fair skin, blue eyes, slim |
+
+- **Everyone has the same frame layout:** stand, step A, stand, step B, wand up, and cheer (both arms up, mouth open).
+  The blue-and-bronze witch also keeps her sideways wand flick for the cauldron.
+- **Wand tips come from the sprite.** Each student records its wand-tip offset (`Student.tip`), so scenes place
+  sparkles from that instead of hard-coded numbers.
+- **One standing grid plus small overlays.** Each student is built from a standing grid and small overlay grids
+  (`_over` and `_feet` in `cast.py`), so a hair or face change carries through every frame.
+- **Faces use lit colors only** (D18):
+  - Eyes are lit browns or blue, never near-black.
+  - The yellow-and-black wizard's skin was lightened one step after the first LED review, because his eyes didn't
+    read against it.
+  - The old cauldron witch had a single near-black eye pixel. She now has two lit eyes like the others.
+- **The cauldron witch now cheers** with both arms up while she hops at the end of her scene.
+- **New review sheet:** `review.py cast <out.png>` renders every frame of every student, plus a lineup at true
+  relative height.
+
+**Why:**
+- You asked for 2 wizards and 2 witches who look different beyond their scarves. Hair, skin tone, height and build,
+  plus one accessory each, keep them apart at 16 px, even in the feast scene where all four stand side by side.
+- The patronus caster became the second witch because it's a solo scene with a fixed pose, so nothing had to be
+  re-choreographed. The Great Hall wizard walks and levitates the turkey. Keeping him a wizard gives a wizard,
+  witch, wizard, witch order across scenes 3, 4, 5 and 8.
+
+**Kept original on purpose:** Each student mixes traits so that none matches a well-known book or film character.
+For example, nobody combines red hair with freckles, and nobody has slicked-back platinum hair.
+
+**Alternatives:**
+- Converting the Great Hall wizard into the witch instead.
+- A pointed hat for one witch. Ruled out because D17 removed one for looking like a Halloween witch.
+
+**Updates:** D19 (scene 8's caster is now a witch; the houses are unchanged) and D17 (the cauldron witch's
+headband and lit eyes).
+
+---
+
+## D29 — New finale: "The Feast Appears"
+*2026-11-25 · version 1.1*
+
+**Decision:** A ninth scene, `renderer/scenes/feast.py` (18 s), plays last:
+
+| Time | What happens |
+|---|---|
+| 0–0.8 s | The Great Hall's long table with empty plates, under floating candles |
+| 0.8–3.6 s | The four students walk in behind the table, two from each side |
+| 5.6 s | All four raise their wands together, and light gathers at the tips |
+| 6.3–11.8 s | Every 1.2 s, sparkle streams from all four wands meet over the table and a dish pops in with a flash: the turkey, a pumpkin pie on a stand, mashed potatoes, the gravy boat, then four goblets. Everyone hops as each dish lands |
+| 12.8 s | Wands down, arms up: they cheer and hop under house-colored confetti |
+| 15–18 s | The hall dims to 45 % brightness and **DIG IN!** wipes in, in gold |
+
+How it's staged:
+- **The students stand behind the table**, which hides their legs. The walk-in uses their full sprites, so no
+  separate seated versions are needed, and their different heights stay visible.
+- **The table is 4 rows tall** (2 tabletop, 2 front), so heads, scarves and the top of each robe show above it.
+- **The pie sits on a silver cake stand**, because a plain orange pie disappeared against the wooden tabletop. The
+  table also uses a darker wood than the Great Hall scene, for contrast with the dishes.
+- **The hall dims behind the caption.** Without it, the letters ran into the turkey and the students' hair. Confetti
+  keeps falling at full brightness over the dimmed hall.
+- **New sprites:** `PIE_STAND`, `POTATOES` and `GOBLET`. The turkey (`ROAST`) and `GRAVY_BOAT` are reused.
+
+**Updates:** D6 (eight scenes become nine).
+
+**Playlist position: the finale (#9, after Pumpkin Patronus).**
+- Each student first gets a solo scene (3, 4, 5, 8), then all four meet at one table to close the loop.
+- That's a natural ensemble ending, and the caption reads like a send-off before Owl Post starts again.
+- The alternative was right after the Great Hall Feast (#6). That would put two Great Hall backdrops back to back,
+  and the turkey would appear right after it had just been levitated.
+
+**Effect on the loop:**
+- 9 scenes: 148 s of animation plus 9 clock cards of 8 s each. One loop now takes about **3 minutes 40 seconds**
+  (it was 3 m 14 s).
+- The `.anim` data grows from about 1.12 MB to 1.27 MB.
+
+---
+
+## D30 — Version 1.1.0
+*2026-11-25*
+
+**Decision:** The manifest goes to `1.1.0`. It's a minor version: a new scene and redrawn characters, with no
+change to the controls, the clock or the install requirements.
