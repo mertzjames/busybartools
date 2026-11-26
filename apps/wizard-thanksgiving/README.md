@@ -78,11 +78,10 @@ python3 tests/clock_parity.py                            # app vs renderer clock
 | `renderer/sprites.py` | Original pixel-art sprites as text grids, one letter per pixel, with a palette |
 | `renderer/scenes/` | One file per scene (`SECONDS`, `KEYFRAMES`, `render()`); `PLAYLIST` order in `__init__.py` |
 | `renderer/scenes/clock_bg.py` | Clock backdrop, plus `LAYOUT` (clock and date colors and timing) |
-| `renderer/font.py` | Pixel fonts shared by the scenes, the app's clock and the mockup |
-| `renderer/canvas.py`, `fx.py` | 72×16 compositing, easing, particles, stars, smoke |
+| `lib/python/busybar/` (repo root) | Shared render kit: fonts, 72×16 canvas, effects, `Sprite` and the build pipeline (`showbuild`) |
 | `renderer/build.py` | Renders everything. `GAMMA` sets overall brightness (1.0 = original, lower = brighter darks) |
 | `app/src/main.ts` | Playlist, clock card, input handling |
-| `app/shared/clocktext.ts` | XPM clock text and parsing of the bar's local time |
+| `app/shared/clocktext.ts` | Re-exports the shared XPM text and bar-time helpers from `lib/ts/busybar/` |
 | `app/shared/generated/show.ts` | Generated playlist, durations, fonts and clock layout (don't edit by hand) |
 | `app/src/animations/` | Generated `.anim` files (committed) |
 | `mockup/` | `template.html` → generated `index.html` |

@@ -416,3 +416,18 @@ LAN addresses and low risk. Removing them would mean rewriting history before pu
 
 **Why:** More apps are coming, and you asked for formal releases and a development workflow. Earlier entries keep
 their original paths (`renderer/…`, `scripts/deploy.sh`, `release/`) as a historical record.
+
+---
+
+## D27 — Renderer basics now come from the shared render kit
+*2026-11-25*
+
+**Decision:**
+- `renderer/canvas.py`, `font.py`, `fx.py` and the `Sprite` class moved to `lib/python/busybar/`. `build.py` now uses
+  `busybar.showbuild`.
+- The clock-text TypeScript moved to `lib/ts/busybar/`. `app/shared/clocktext.ts` re-exports it.
+
+The app's sprites, scenes, playlist and behavior are unchanged, and every generated file is byte-identical (repo
+decision R8).
+
+**Why:** The holiday apps share this pipeline. The next entry here is D28.

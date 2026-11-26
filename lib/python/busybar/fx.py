@@ -1,4 +1,4 @@
-"""Deterministic effects: starfields, sparkles, particles, smoke, mist, confetti.
+"""Deterministic effects: starfields, sparkles, particles, smoke, mist, confetti (shared render kit).
 
 Everything is seeded so a rebuild produces byte-identical .anim files.
 """
@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 import random
 
-from canvas import H, W, add, mix, put
+from .canvas import H, W, add, mix, put
 
 
 class Stars:
