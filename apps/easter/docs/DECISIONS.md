@@ -138,3 +138,15 @@ an early one: 384 days after Easter 2027). The tests check `399 DAYS` fits and t
 glows hold steady between frames. Total `.anim` data is about 450 KiB (the sunrise is the largest at about 165 KiB).
 
 **Why:** Round-2 discovery: per-frame changes over large soft areas multiply the file size.
+
+## D11 — The bunny's ears stay on when it bends down
+*2026-11-26*
+
+**Decision:** in the bunny's head-down frame (frame 3, used when it bends to hide an egg), the ears move down a row
+with the head.
+
+**Why:** the head dropped one row but the ears stayed where they were, which left a row of sky between them. Review
+feedback caught it: on the panel the ears looked detached.
+
+**Alternatives:** keeping the ears up and stretching them a pixel longer would also close the gap, but would make the
+bunny look taller while it crouches.
