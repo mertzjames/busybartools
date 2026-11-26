@@ -1,11 +1,12 @@
-"""Scene 3 (playlist #5): Great Hall Feast. Floating candles; a wizard levitates the turkey."""
+"""Scene 3 (playlist #5): Great Hall Feast. Floating candles; the yellow-and-black wizard levitates the turkey."""
 
 import math
 
 from busybar.canvas import FPS, add, blit, ease_in_out, lerp, phase, put, sec, vgradient
 from busybar.font import draw_text
 from busybar.fx import SPARKLE, Particles, Stars, sparkle
-from sprites import CANDLE, ROAST, WIZARD_YB as WIZARD
+from cast import WALK, WAND, YELLOW
+from sprites import CANDLE, ROAST
 
 NAME = "great_hall"
 TITLE = "Great Hall Feast"
@@ -17,6 +18,8 @@ CANDLES = [(4, 0.0), (15, 1.3), (27, 2.1), (39, 0.7), (50, 1.9), (62, 2.8), (69,
 TABLE_Y = 13
 WIZ_STOP = 5
 TURKEY_X, TURKEY_Y = 54, 5
+WIZARD = YELLOW.sprite
+WIZ_Y = 16 - WIZARD.h
 
 
 def table(img):
@@ -71,11 +74,11 @@ def render():
         # wizard walks in, raises the wand 6-16s
         if t < 5.0:
             wx = lerp(-10, WIZ_STOP, phase(f, sec(0.8), sec(5.0)))
-            wf = (f // 3) % 4 if t > 0.8 else 0
+            wf = WALK[(f // 3) % 4] if t > 0.8 else WALK[0]
         else:
-            wx, wf = WIZ_STOP, (4 if 6.0 <= t < 16.2 else 0)
-        blit(img, WIZARD.img(wf), wx, 2)
-        tip = (WIZ_STOP + 8, 2)
+            wx, wf = WIZ_STOP, (WAND if 6.0 <= t < 16.2 else WALK[0])
+        blit(img, WIZARD.img(wf), wx, WIZ_Y)
+        tip = (WIZ_STOP + YELLOW.tip[0], WIZ_Y + YELLOW.tip[1])
         if 6.2 <= t < 8.0:
             # sparkle stream along an arc from wand tip to the turkey
             k = phase(f, sec(6.2), sec(8.0))

@@ -1,4 +1,4 @@
-"""Scene 5 (playlist #8): Pumpkin Patronus. A glowing silver turkey bursts from a wand."""
+"""Scene 5 (playlist #8): Pumpkin Patronus. A glowing silver turkey bursts from the green-and-silver witch's wand."""
 
 import math
 import random
@@ -8,7 +8,8 @@ from PIL import ImageFilter
 from busybar.canvas import FPS, add, blit, lerp, phase, put, sec, tint, vgradient
 from busybar.font import draw_text
 from busybar.fx import Particles, Stars, puff
-from sprites import TURKEY, WIZARD_GS as WIZARD
+from cast import GREEN, STAND, WAND
+from sprites import TURKEY
 
 NAME = "patronus"
 TITLE = "Pumpkin Patronus"
@@ -17,8 +18,9 @@ KEYFRAMES = [(1.5, "A dark, misty wood"), (3.6, "Wand raised, light gathers"), (
              (10.0, "...and gallops back"), (13.5, "EXPECTO PIE!")]
 
 SILVER = (170, 215, 255)
-WIZ_X, WIZ_Y = 2, 2
-TIP = (WIZ_X + 8, WIZ_Y)
+CASTER = GREEN.sprite
+CASTER_X, CASTER_Y = 2, 16 - CASTER.h
+TIP = (CASTER_X + GREEN.tip[0], CASTER_Y + GREEN.tip[1])
 
 
 def trees(img):
@@ -56,7 +58,7 @@ def render():
             add(img, x, 15, (90, 120, 150), a * 1.3)
 
         raised = 2.0 <= t < 13.0
-        blit(img, WIZARD.img(4 if raised else 0), WIZ_X, WIZ_Y)
+        blit(img, CASTER.img(WAND if raised else STAND), CASTER_X, CASTER_Y)
 
         # light gathers at the wand tip 2.4-4.0s
         if 2.4 <= t < 13.0:

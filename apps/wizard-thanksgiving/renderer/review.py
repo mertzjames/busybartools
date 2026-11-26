@@ -1,6 +1,7 @@
 """Review helpers for this app: a sprite contact sheet and keyframe strips of a scene.
 
     python3 renderer/review.py sprites out.png
+    python3 renderer/review.py cast out.png        # the four students: every frame + a lineup
     python3 renderer/review.py scene dragon_roast out_dir/ [every_seconds]
 """
 
@@ -38,6 +39,44 @@ def sheet(path: Path) -> None:
     print(f"wrote {path} ({len(tiles)} frames)")
 
 
+def cast_sheet(path: Path) -> None:
+    """The four students side by side, one row per student (every frame), plus a lineup at true relative height."""
+    from busybar.canvas import new
+    import cast
+
+    bg = (14, 12, 34)  # a typical night-sky backdrop, so dark colors are judged in context
+    rows = []
+    for st in cast.CAST:
+        tiles = []
+        for i in range(len(st.sprite)):
+            im = new(bg).crop((0, 0, st.sprite.w + 2, 17))
+            im.alpha_composite(st.sprite.img(i), (1, 17 - st.sprite.h))
+            tiles.append(led(im, cell=10))
+        rows.append(tiles)
+    lineup = new(bg)
+    x = 3
+    for st in cast.CAST:
+        lineup.alpha_composite(st.sprite.img(cast.STAND), (x, 16 - st.sprite.h))
+        x += st.sprite.w + 6
+    lineup.alpha_composite(cast.SCARLET_BROOM.img(0), (x, 3))
+    pad = 10
+    width = max(sum(t.width + pad for t in r) for r in rows) + pad
+    lt = led(lineup, cell=10)
+    width = max(width, lt.width + 2 * pad)
+    height = sum(max(t.height for t in r) + pad for r in rows) + lt.height + 2 * pad
+    out = Image.new("RGB", (width, height), (40, 40, 48))
+    y = pad
+    for r in rows:
+        x = pad
+        for t in r:
+            out.paste(t, (x, y))
+            x += t.width + pad
+        y += max(t.height for t in r) + pad
+    out.paste(lt, (pad, y + pad))
+    out.save(path)
+    print(f"wrote {path}")
+
+
 def review(module_name: str, out_dir: Path, every: float | None = None) -> None:
     """Render a scene and write a strip of its keyframes (or every N seconds)."""
     import importlib
@@ -56,6 +95,8 @@ def review(module_name: str, out_dir: Path, every: float | None = None) -> None:
 if __name__ == "__main__":
     if sys.argv[1:2] == ["sprites"]:
         sheet(Path(sys.argv[2] if len(sys.argv) > 2 else "sprites.png"))
+    elif sys.argv[1:2] == ["cast"]:
+        cast_sheet(Path(sys.argv[2] if len(sys.argv) > 2 else "cast.png"))
     elif sys.argv[1:2] == ["scene"]:
         review(sys.argv[2], Path(sys.argv[3] if len(sys.argv) > 3 else "."),
                float(sys.argv[4]) if len(sys.argv) > 4 else None)
