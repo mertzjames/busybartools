@@ -142,3 +142,21 @@ Additions:
 
 **Why:** The Advent Calendar, Christmas Day and New Year's Eve apps reuse the same pipeline. One tested kit keeps their
 art, fonts and live text consistent and avoids four copies drifting apart.
+
+---
+
+## R9 — Parallel workstreams: worktrees, exclusive ownership, orchestrator-only shared files
+*2026-11-25*
+
+**Decision:** The holiday apps were built by four sub-agents at once, following `docs/playbooks/holiday-apps.md`:
+- each had its own git worktree and `<contributor>/<topic>` branch;
+- each could change only its own `apps/<folder>/`;
+- `lib/`, `tools/`, root docs and CI were frozen for them;
+- the orchestrator relayed each agent's findings to the others while they worked, reviewed every agent's LED strips
+  before publishing anything, published one review artifact per workstream, and opened one PR per workstream into
+  `dev`. Scene PRs stay open until the user approves the scenes;
+- shared-code fixes the agents found went into separate orchestrator PRs (#10), and the catalog rows into this one.
+
+**Why:** Exclusive path ownership meant no two branches ever touched the same file, so the PRs can merge in any
+order. Relaying findings spread lessons quickly, for example dark skin tones needing lighter values for the eyes,
+contrast traps, captions over a dimmed frame, and fine time-window reviews.

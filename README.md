@@ -12,7 +12,10 @@ Custom apps, animations and developer tools for the [BUSY Bar](https://busy.app)
 
 | App | What it does | Get it |
 |---|---|---|
-| [Wizarding Thanksgiving](apps/wizard-thanksgiving/) | Eight wizard-themed Thanksgiving scenes (owls, broomsticks, a talking hat, a winged serpent dragon) with a 24-hour clock and the date between them | [Latest release](https://github.com/mertzjames/busybartools/releases?q=wizard-thanksgiving) |
+| [Wizarding Thanksgiving](apps/wizard-thanksgiving/) | Nine wizard-themed Thanksgiving scenes (owls, broomsticks, a talking hat, a winged serpent dragon, and a feast conjured by an old wizard) with a 24-hour clock and the date between them | [Latest release](https://github.com/mertzjames/busybartools/releases?q=wizard-thanksgiving) |
+| [Advent Calendar](apps/advent-calendar/) | A new animation behind every door from Dec 1 to Christmas, with a live countdown to Christmas | [Latest release](https://github.com/mertzjames/busybartools/releases?q=advent-calendar) |
+| [Christmas Day](apps/christmas-day/) | Eight little Christmas stories, from trimming the tree to fireworks, with a candy-cane clock and the date between scenes | [Latest release](https://github.com/mertzjames/busybartools/releases?q=christmas-day) |
+| [New Year's Eve](apps/new-years-eve/) | Party scenes with a countdown to midnight, huge digits for the last ten seconds, then fireworks and HAPPY NEW YEAR (START runs a demo any day) | [Latest release](https://github.com/mertzjames/busybartools/releases?q=new-years-eve) |
 
 More apps and tools will be added over time. Want to build one? See [Adding a new app](docs/DEVELOPMENT.md#adding-a-new-app).
 
