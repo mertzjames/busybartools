@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "id": "busybartools.lunarnewyear",
+  "name": "Lunar New Year",
+  "version": "1.0.0",
+  "api_version": "27.12.0",
+  "description": "Lunar New Year scenes, the zodiac animal of the year, and a countdown to the festival",
+  "author": "busybartools contributors"
+}
