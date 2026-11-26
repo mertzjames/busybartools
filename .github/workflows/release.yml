@@ -1,0 +1,85 @@
+# Publishes a GitHub Release when an app version tag is pushed: <app-folder>-v<version>, e.g. wizard-thanksgiving-v1.0.0.
+# Create tags with tools/release.sh from an up-to-date main (see CONTRIBUTING.md#releasing).
+name: Release
+
+on:
+  push:
+    tags: ["*-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Resolve the app and version from the tag
+        id: app
+        run: |
+          tag="$GITHUB_REF_NAME"
+          folder="${tag%-v*}"
+          version="${tag##*-v}"
+          manifest="apps/$folder/app/src/appmeta/manifest.json"
+          [ -f "$manifest" ] || { echo "::error::No app folder apps/$folder for tag $tag"; exit 1; }
+          id=$(jq -r .id "$manifest"); name=$(jq -r .name "$manifest"); mver=$(jq -r .version "$manifest")
+          desc=$(jq -r .description "$manifest"); api=$(jq -r .api_version "$manifest")
+          [ "$mver" = "$version" ] || { echo "::error::Tag version $version != manifest version $mver"; exit 1; }
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "::error::Tag $tag is not on main"; exit 1; }
+          {
+            echo "folder=$folder"; echo "version=$version"; echo "id=$id"; echo "name=$name"
+            echo "desc=$desc"; echo "api=$api"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Build and test from the committed assets
+        run: tools/check.sh --no-prebuild "${{ steps.app.outputs.folder }}"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FOLDER: ${{ steps.app.outputs.folder }}
+          VERSION: ${{ steps.app.outputs.version }}
+          APP_ID: ${{ steps.app.outputs.id }}
+          APP_NAME: ${{ steps.app.outputs.name }}
+          APP_DESC: ${{ steps.app.outputs.desc }}
+          API: ${{ steps.app.outputs.api }}
+        run: |
+          asset="$APP_ID-$VERSION.tgz"
+          cp "apps/$FOLDER/app/dist/$APP_ID.tgz" "$asset"
+          sha=$(sha256sum "$asset" | cut -d' ' -f1)
+          cat > notes.md <<NOTES
+          $APP_DESC
+
+          ## Install
+
+          1. Download **$asset** below. Don't unpack it.
+          2. Open your BUSY Bar's web page: **http://10.0.4.20** over USB, or \`http://<bar-ip>\` on Wi-Fi.
+          3. Go to **Apps → + Add app**, choose the file, and click **Install app**.
+          4. On the bar, open the **Apps** menu and choose **$APP_NAME**.
+
+          Full guide: [Installing apps](https://github.com/$GITHUB_REPOSITORY/blob/main/docs/INSTALLING.md) ·
+          App details: [apps/$FOLDER](https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME/apps/$FOLDER)
+
+          | | |
+          |---|---|
+          | App id | \`$APP_ID\` |
+          | Version | $VERSION |
+          | Requires | BUSY Bar HTTP API $API or newer |
+          | SHA-256 | \`$sha\` |
+          NOTES
+          gh release create "$GITHUB_REF_NAME" "$asset" --title "$APP_NAME $VERSION" --notes-file notes.md --verify-tag
