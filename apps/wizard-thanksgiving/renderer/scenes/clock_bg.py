@@ -6,8 +6,8 @@ center stays calm. Everything here is periodic in LOOP frames so the loop never 
 
 import math
 
-from canvas import FPS, add, blit, put, sec, vgradient
-from fx import Stars
+from busybar.canvas import FPS, add, blit, put, sec, vgradient
+from busybar.fx import Stars
 from sprites import CANDLE
 
 NAME = "clock_bg"

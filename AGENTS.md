@@ -31,7 +31,9 @@ tools/new-app.sh <folder> --id <id> --name "<Name>" --description "<one line>"  
 
 ```
 apps/<folder>/            one self-contained app (see "App convention")
-lib/python/busybar/       shared Python: anim.py (.anim write/read), preview.py (LED-style renders)
+lib/python/busybar/       shared render kit (Python): canvas, fx, font, sprite, showbuild, anim, preview
+lib/ts/busybar/           shared TypeScript: xpmtext (live pixel text), walltime (bar time math), drawqueue
+lib/tests/                kit tests; tools/check.sh runs them first
 tools/                    shared scripts: check, deploy, release, new-app, screens, lib.sh
 docs/                     INSTALLING.md (users), DEVELOPMENT.md (devs), DECISIONS.md (repo-level R1…)
 .github/workflows/        ci.yml (PR checks, job "check"), release.yml (tag -> GitHub Release)

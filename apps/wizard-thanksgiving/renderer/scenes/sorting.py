@@ -2,9 +2,9 @@
 
 import math
 
-from canvas import FPS, blit, ease_in_out, ease_out, lerp, phase, put, rect, sec, vgradient
-from font import draw_text, text_width
-from fx import HOUSE, SPARKLE, Particles, Stars
+from busybar.canvas import FPS, blit, ease_in_out, ease_out, lerp, phase, put, rect, sec, vgradient
+from busybar.font import draw_text, text_width
+from busybar.fx import HOUSE, SPARKLE, Particles, Stars
 from sprites import HAT, TURKEY
 
 NAME = "sorting"

@@ -3,9 +3,9 @@
 import math
 import random
 
-from canvas import FPS, add, blit, ease_in_out, lerp, mix, new, phase, put, sec
-from font import draw_text
-from fx import FIRE, SPARKLE, Particles, bricks, puff, sparkle
+from busybar.canvas import FPS, add, blit, ease_in_out, lerp, mix, new, phase, put, sec
+from busybar.font import draw_text
+from busybar.fx import FIRE, SPARKLE, Particles, bricks, puff, sparkle
 from sprites import APPLE, CAULDRON, PIE, PUMPKIN, SPARK, WITCH_BB as WITCH
 
 NAME = "cauldron"

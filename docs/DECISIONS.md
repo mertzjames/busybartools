@@ -115,3 +115,30 @@ asset commits without failing builds over cross-platform pixel noise.
 - One rule was added after a near-miss while writing these guides: generate files with real file tools or
   uniquely named heredoc delimiters, never a nested `<<EOF` inside another `<<EOF`. That mistake made a shell run
   documentation text as commands. Nothing was harmed, but backticks in prose became command substitutions.
+
+---
+
+## R8 — The shared render kit
+*2026-11-25 · when three more scene-based apps were planned*
+
+**Decision:** Wizarding Thanksgiving's generic renderer modules moved into the shared kit, under R2's "promote when a
+second app needs it" rule:
+- **Python** (`lib/python/busybar/`): `canvas.py`, `font.py`, `fx.py`, `sprite.py`, and the build pipeline as
+  `showbuild.py`.
+- **TypeScript** (`lib/ts/busybar/`): `xpmtext.ts`, `walltime.ts` and `drawqueue.ts`. Apps import them by relative
+  path from `app/shared/`.
+
+Additions:
+- `font.register_font()` for app-local glyphs and fonts, and `export_json(names)`.
+- Calendar and countdown math in `walltime.ts`.
+- Kit tests in `lib/tests/`, which `tools/check.sh` (and so CI) runs first.
+
+**Verification:**
+- Wizarding Thanksgiving's 13 generated outputs (`.anim`, `show.ts`, icons, mockup) are byte-identical before and
+  after the move, and its clock parity test passes.
+- `busy-cli build` still emits only `scripts/main.js`, with the shared TypeScript bundled in. busy-cli only splits
+  out modules located inside the app directory.
+- Deployed to a bar: the clock card rendered the time and date correctly.
+
+**Why:** The Advent Calendar, Christmas Day and New Year's Eve apps reuse the same pipeline. One tested kit keeps their
+art, fonts and live text consistent and avoids four copies drifting apart.

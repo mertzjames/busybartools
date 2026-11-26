@@ -18,9 +18,10 @@ from pathlib import Path
 
 APP_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(APP_DIR / "renderer"))
+sys.path.insert(0, str(APP_DIR.parents[1] / "lib" / "python"))
 
-from canvas import new  # noqa: E402
-from font import draw_text, text_width  # noqa: E402
+from busybar.canvas import new  # noqa: E402
+from busybar.font import draw_text, text_width  # noqa: E402
 
 import build  # noqa: E402  (for the exported, tone-mapped clock layout)
 

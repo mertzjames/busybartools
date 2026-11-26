@@ -34,8 +34,8 @@ python3 tests/clock_parity.py                           # app TS vs renderer: id
 - **Tone curve.** `GAMMA` in `build.py` (currently 0.8) is applied to every output frame **and** to the clock colors.
   Scenes draw in "linear" colors; don't pre-brighten inside scenes.
 - **Clock parity.** The clock text is drawn by three implementations that must agree pixel-for-pixel:
-  - `renderer/font.py` with `LAYOUT` in `renderer/scenes/clock_bg.py`;
-  - `app/shared/clocktext.ts`;
+  - the shared `lib/python/busybar/font.py` with `LAYOUT` in `renderer/scenes/clock_bg.py`;
+  - the shared `lib/ts/busybar/xpmtext.ts` and `walltime.ts`, re-exported by `app/shared/clocktext.ts`;
   - the mockup template.
 
   If you change glyphs, layout, colors or rounding, update all three and keep `tests/clock_parity.py` passing.
