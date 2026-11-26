@@ -1,7 +1,9 @@
 # Development guide
 
 How this repo is put together, how to build and test apps, and what we've learned about the BUSY Bar platform.
-For the branch model, pull requests and releases, see [CONTRIBUTING.md](../CONTRIBUTING.md).
+For the branch model, pull requests and releases, see [CONTRIBUTING.md](../CONTRIBUTING.md). If you work with an
+AI coding agent, point it at [AGENTS.md](../AGENTS.md). Claude Code loads it automatically through
+[CLAUDE.md](../CLAUDE.md).
 
 - [Setup](#setup)
 - [Repository layout](#repository-layout)
@@ -86,6 +88,7 @@ apps/<folder>/
   tests/check.sh           OPTIONAL. App tests, run by tools/check.sh after the build
   README.md                REQUIRED. What it does, controls, how to change it
   docs/DECISIONS.md        REQUIRED. Decision log: what was decided, why, what else was considered
+  AGENTS.md, CLAUDE.md     OPTIONAL. App-specific notes for AI coding agents (CLAUDE.md imports AGENTS.md)
 ```
 
 The package for upload is `app/dist/<app-id>.tgz`. A release names it `<app-id>-<version>.tgz`.
@@ -101,7 +104,7 @@ tools/new-app.sh fireplace --id busybartools.fireplace --name "Fireplace" --desc
 ```
 
 This runs the official scaffolder into `apps/fireplace/app` with no prompts and installs dependencies. It also
-creates `README.md` and `docs/DECISIONS.md` stubs. The author defaults to "busybartools contributors"; pass
+creates `README.md`, `docs/DECISIONS.md`, `AGENTS.md` and `CLAUDE.md` stubs. The author defaults to "busybartools contributors"; pass
 `--author` to change it. Then:
 
 1. Write `app/src/main.ts`. The scaffold draws "Hello" every second. The smallest useful app draws one element:

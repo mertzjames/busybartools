@@ -51,6 +51,8 @@ tools/deploy.sh wizard-thanksgiving          # install and launch on your bar
   BUSY Bar platform notes and testing on the device.
 - [CONTRIBUTING.md](CONTRIBUTING.md): branch model (`main` for releases, `dev` for integration,
   `<you>/<topic>` for work), pull requests and how releases are cut.
+- [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md): instructions for AI coding agents (Codex, Cursor, Copilot,
+  Claude Code and others) working in this repo.
 
 ## License
 
