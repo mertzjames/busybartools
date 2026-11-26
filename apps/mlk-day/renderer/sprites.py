@@ -51,13 +51,14 @@ BBBBB
 ..B..
 """)
 
-# a bell, swung by drawing it rotated in code; 7x7 with a lit clapper
+# a bell (crown loop, rounded shoulder, flared lip, lit clapper); swung by shearing its rows in code
 BELL = Sprite("bell", {"Y": "#FFC850", "y": "#C88A32", "L": "#FFE6A0", "c": "#FFF0C8"}, """
 ...y...
-..YYy..
-..YLYy.
-.YYLYy.
-.YYYYYy
+..YYY..
+.YLYYy.
+.YLYYy.
+.YLYYy.
+YLYYYYy
 yyyyyyy
 ...c...
 """)

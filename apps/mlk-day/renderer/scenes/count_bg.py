@@ -27,7 +27,7 @@ def render():
                 d = math.hypot(dx, dy * 2.2)
                 # horizon glow, strongest at the bottom center
                 g = max(0.0, 1 - d / 34) ** 2
-                add(img, x, y, mix((255, 120, 60), (255, 180, 90), g), (0.5 + 0.1 * breathe) * g)
+                add(img, x, y, mix((255, 120, 60), (255, 180, 90), g), (0.75 + 0.15 * breathe) * g)
                 # soft rays, rotating slowly, faded out in the text band
                 ang = math.atan2(dy, dx)
                 ray = 0.5 + 0.5 * math.cos(9 * ang + 2 * math.pi * f / LOOP)
