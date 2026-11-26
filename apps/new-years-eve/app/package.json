@@ -1,7 +1,7 @@
 {
-  "name": "new-years-eve",
+  "name": "app",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Party scenes, a countdown to midnight, and a celebration when the new year rings in",
   "author": "busybartools contributors",
   "type": "module",
