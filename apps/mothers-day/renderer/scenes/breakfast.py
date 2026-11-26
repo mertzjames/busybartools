@@ -163,12 +163,13 @@ def render():
         elif f < PUSH1:
             p = ease_in_out(phase(f, PUSH0, PUSH1))
             tx = int(round(lerp(CHILD_STOP + 4, TRAY_FINAL, p)))
-            cx = min(CHILD_END, tx - 4)
+            cx = tx - 4  # the child walks the tray all the way to Mom
             walking, arms_out = 0 < p < 1, True
-        else:
+        else:  # lets go, then steps back to watch
             tx = TRAY_FINAL
-            cx = CHILD_END
-            walking, arms_out = False, f < PUSH1 + sec(0.4)
+            back = phase(f, PUSH1 + sec(0.4), PUSH1 + sec(1.0))
+            cx = int(round(lerp(TRAY_FINAL - 4, CHILD_END, back)))
+            walking, arms_out = 0 < back < 1, f < PUSH1 + sec(0.4)
         tray(img, tx, f)
         child(img, cx, f, walking, arms_out)
         # hearts after the delight
