@@ -198,3 +198,28 @@ contrast traps, captions over a dimmed frame, and fine time-window reviews.
 - A line that keeps its text and style from one page to the next now stays on screen instead of fading in again.
   Kwanzaa's `HABARI GANI?` headline and the principle split over two pages showed the problem.
 - `start(from)` restarts the cycle at a given step, so a mode switch can land on a card at once (MLK Day needed it).
+
+---
+
+## R11 — App settings and sun times in the kit
+*2026-11-26 · from review feedback on Hanukkah, Kwanzaa and Lunar New Year*
+
+**Decision:**
+- Apps expose user choices through the firmware's own settings (`app/src/appmeta/settings.json`), read once at start
+  with `lib/ts/busybar/settings.ts`. Examples: Kwanzaa's candle order, Lunar New Year's greeting language, and how
+  Hanukkah finds sundown.
+- `lib/ts/busybar/sun.ts` computes sunrise and sunset (the NOAA approximation).
+  - The location comes from the app's `geolocation` setting when the bar has coordinates.
+  - Otherwise it is estimated from the time zone: the UTC offset in the bar's timestamp gives the zone's meridian,
+    paired with latitude 39°N.
+
+**Why:**
+- The firmware already shows a Setup page on the bar (enum, boolean and integer fields can be edited there), plus
+  every field in the web interface. One more on-device menu would duplicate it.
+- Apps may only call a short list of endpoints. `/api/time/timezone` is not on it, but `/api/time` carries the UTC
+  offset, and `apps/settings` carries the location.
+- The time-zone estimate lands within about 30 minutes of the true US sunset (tests check New York, Chicago and Los
+  Angeles), which is close enough to light a candle. A location setting makes it exact.
+
+**Safety:** `loadSettings` never throws. A failed request, an older settings version or a mistyped value falls back to
+the default, so a show never fails to start because of settings.
