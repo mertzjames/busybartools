@@ -118,7 +118,7 @@ class ZodiacScene:
             if a == "hop":
                 k = (after // 14) % 2 == 0 and after < sec(3.6)
                 hop = abs(math.sin(math.pi * (after % 14) / 14)) if (after // 14) % 2 == 0 else 0
-                y -= int(round(3 * hop)) if after < sec(3.6) else 0
+                y -= int(round(2 * hop)) if after < sec(3.6) else 0
                 frame = 1 if (hop > 0.2 and k) else 0
             elif a == "crow":
                 frame = 1 if sec(1.2) <= after < sec(2.4) else 0
