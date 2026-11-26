@@ -92,10 +92,11 @@ def render():
         t = f / FPS
         img = base.copy()
         mp = missing_path(t)
-        if mp and mp[2] is CLIMB:
+        if mp and mp[2] is CLIMB and int(mp[1] + 0.5) + CLIMB.height <= 3:
+            # the trail starts above the formation, so it never joins the planes still flying level
             trail.append((int(mp[0] + 0.5), int(mp[1] + 0.5) + CLIMB.height, t))
         for x, y, t0 in trail:  # a faint trail that thins out over two seconds
-            a = 0.45 * (1 - phase(int(t * 100), int(t0 * 100), int((t0 + 2.0) * 100)))
+            a = 0.35 * (1 - phase(int(t * 100), int(t0 * 100), int((t0 + 2.0) * 100)))
             if a > 0 and 0 <= y < H:
                 put(img, x, y, (230, 234, 242), a)
                 put(img, x + 1, y, (230, 234, 242), a * 0.4)
