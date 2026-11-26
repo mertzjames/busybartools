@@ -76,6 +76,29 @@ def test_ts_module_format() -> None:
     assert 'export const A = {\n  "x": 1\n} as const;\n\nexport const B: number[] = [1];\n' in src
 
 
+def test_party_effects_match_new_years_eve() -> None:
+    # The kit copy must draw exactly what New Year's Eve's app-local original draws.
+    from busybar import party
+    nye = Path(__file__).resolve().parents[2] / "apps" / "new-years-eve" / "renderer"
+    sys.path.insert(0, str(nye))
+    try:
+        import party as nye_party  # noqa: E402  (the app-local module of the same name)
+    finally:
+        sys.path.remove(str(nye))
+    results = []
+    for mod in (party, nye_party):
+        frames = []
+        for f in (0, 12, 30):
+            img = new()
+            mod.Firework(3, 10, 36, 6, kind="willow").draw(img, f)
+            mod.Confetti(4, 0, 36, 8).draw(img, f)
+            mod.Snowfall(5, 20, 60).draw(img, f)
+            mod.glitter(img, 6, f)
+            frames.append(img.tobytes())
+        results.append(frames)
+    assert results[0] == results[1] and any(any(b) for b in results[0])
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

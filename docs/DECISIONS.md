@@ -160,3 +160,66 @@ art, fonts and live text consistent and avoids four copies drifting apart.
 **Why:** Exclusive path ownership meant no two branches ever touched the same file, so the PRs can merge in any
 order. Relaying findings spread lessons quickly, for example dark skin tones needing lighter values for the eyes,
 contrast traps, captions over a dimmed frame, and fine time-window reviews.
+
+---
+
+## R10 — Holiday date rules, a shared show runner and party effects in the kit
+*2026-11-26 · before the second round of holiday apps*
+
+**Decision:** Three additions to the shared kit, ahead of sixteen more holiday apps:
+- **`lib/ts/busybar/holidays.ts`:** date rules for every holiday the apps celebrate.
+  - Fixed dates, and the nth or last weekday of a month.
+  - Western Easter, by the Gregorian computus.
+  - Hanukkah, from the arithmetic Hebrew calendar (Dershowitz & Reingold).
+  - Lunar New Year, from a table (2025–2036) checked against several published calendars, plus the zodiac.
+  - `nextOccurrence(t, rule, spanDays)` finds the occurrence the bar's date is in, or the next one.
+- **`lib/ts/busybar/showrunner.ts`:** the scene-and-card playback loop that each app had its own copy of.
+  - It plays scenes, and cards made of pages of live text.
+  - It redraws text when the minute rolls over and keeps one request in flight.
+  - It handles the buttons.
+  - It can re-pick the playlist each cycle from the date.
+- **`lib/python/busybar/party.py`:** fireworks, confetti, snowfall and glitter, copied from New Year's Eve.
+
+**Why:**
+- Sixteen apps need countdowns to dates that move: floating Mondays, Easter, Hanukkah and Lunar New Year. One tested
+  implementation beats sixteen guesses.
+  - Computing Hanukkah means it never needs a table update.
+  - Lunar New Year depends on astronomical new moons, so a table is the honest option.
+- The runner lets each new app's `main.ts` shrink to configuration, and its correctness is tested once with fake
+  timers. Several apps need fireworks or confetti (Independence Day, Lunar New Year, St. Patrick's Day).
+
+**Alternatives:**
+- Migrating the four released apps onto the runner and the kit effects now. Rejected: it would change released
+  apps for no visible gain. New Year's Eve keeps its own `party.py`, and a kit test checks that the two copies draw
+  identical pixels.
+- A Lunar New Year algorithm. Rejected: it needs a lunar ephemeris, which is too much code for a 12-row table.
+
+**Follow-up (from the first apps built on the runner):**
+- A line that keeps its text and style from one page to the next now stays on screen instead of fading in again.
+  Kwanzaa's `HABARI GANI?` headline and the principle split over two pages showed the problem.
+- `start(from)` restarts the cycle at a given step, so a mode switch can land on a card at once (MLK Day needed it).
+
+---
+
+## R11 — App settings and sun times in the kit
+*2026-11-26 · from review feedback on Hanukkah, Kwanzaa and Lunar New Year*
+
+**Decision:**
+- Apps expose user choices through the firmware's own settings (`app/src/appmeta/settings.json`), read once at start
+  with `lib/ts/busybar/settings.ts`. Examples: Kwanzaa's candle order, Lunar New Year's greeting language, and how
+  Hanukkah finds sundown.
+- `lib/ts/busybar/sun.ts` computes sunrise and sunset (the NOAA approximation).
+  - The location comes from the app's `geolocation` setting when the bar has coordinates.
+  - Otherwise it is estimated from the time zone: the UTC offset in the bar's timestamp gives the zone's meridian,
+    paired with latitude 39°N.
+
+**Why:**
+- The firmware already shows a Setup page on the bar (enum, boolean and integer fields can be edited there), plus
+  every field in the web interface. One more on-device menu would duplicate it.
+- Apps may only call a short list of endpoints. `/api/time/timezone` is not on it, but `/api/time` carries the UTC
+  offset, and `apps/settings` carries the location.
+- The time-zone estimate lands within about 30 minutes of the true US sunset (tests check New York, Chicago and Los
+  Angeles), which is close enough to light a candle. A location setting makes it exact.
+
+**Safety:** `loadSettings` never throws. A failed request, an older settings version or a mistyped value falls back to
+the default, so a show never fails to start because of settings.

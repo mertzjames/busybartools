@@ -36,6 +36,7 @@ apps/
 lib/python/busybar/         shared render kit (Python); see "Shared render kit"
   anim.py                   .anim writer + reader (round-trip verification)
   canvas.py, fx.py          72×16 frames, blending, easing; seeded stars, particles, smoke, hills...
+  party.py                  fireworks, confetti, snowfall, glitter, string lights, skyline
   font.py                   big / tiny / clock pixel fonts, draw_text, register_font, export_json
   sprite.py                 Sprite: text-grid pixel art with palettes, flip, recolor
   showbuild.py              scene build pipeline: tone curve, encode+verify, mockup data, generated TS, icons
@@ -44,6 +45,10 @@ lib/ts/busybar/             shared TypeScript, imported by relative path from an
   xpmtext.ts                pixel-font text -> xpmbitmap (gradient + shadow)
   walltime.ts               the bar's local time: parse, format, days/seconds until a date or midnight
   drawqueue.ts              one-request-in-flight draw queue with per-slot replacement
+  holidays.ts               holiday date rules (nth weekday, Easter, Hanukkah, Lunar New Year), next occurrence
+  showrunner.ts             the scene-and-card playback loop (scenes, live-text cards, buttons)
+  settings.ts               read the app's settings (appmeta/settings.json) safely, enum and location readers
+  sun.ts                    sunrise and sunset, UTC offset parsing, location estimated from the time zone
 lib/tests/                  kit tests (run first by tools/check.sh)
 tools/
   check.sh                  build + typecheck + test apps; CI runs this
@@ -149,6 +154,7 @@ TypeScript draws live text on the device.
 ```python
 from busybar.canvas import FPS, W, H, new, vgradient, blit, put, add, mix, ease_in_out, lerp, phase, sec
 from busybar.fx import Stars, Particles, sparkle, puff, moon, hills, SPARKLE, FIRE
+from busybar.party import Firework, Confetti, Snowfall, glitter, string_lights, draw_looped
 from busybar.font import draw_text, text_width, register_font, export_json
 from busybar.sprite import Sprite
 from busybar.showbuild import build_scenes, tone_lut, tone_rgb, ts_module, FONT_TS_TYPE, fill_template, save_icon
@@ -171,7 +177,45 @@ from busybar.showbuild import build_scenes, tone_lut, tone_rgb, ts_module, FONT_
 import { textBitmap, type Font, type TextSpec } from "../../../../lib/ts/busybar/xpmtext.ts";
 import { parseLocal, formatDate, daysUntil, secondsToMidnight, secondsUntilDate, addSeconds } from "../../../../lib/ts/busybar/walltime.ts";
 import { createDrawQueue } from "../../../../lib/ts/busybar/drawqueue.ts";
+import { HOLIDAYS, nextOccurrence, daysLabel, zodiac } from "../../../../lib/ts/busybar/holidays.ts";
+import { createShow, type Card, type Step } from "../../../../lib/ts/busybar/showrunner.ts";
 ```
+
+- **Show runner:** `createShow({ app, device, fonts, scenes, cards, steps? })` plays scenes and live-text cards
+  with one request in flight, and handles OK, the encoder and Back. A **card** is a looping backdrop `.anim` plus
+  pages of up to four lines, and each line's text is a function of the bar's time. The runner redraws a line when
+  the minute rolls over. `steps(t)` picks the playlist again at the start of every cycle, so the show can follow
+  the date. A minimal `main.ts`:
+
+  ```ts
+  const show = createShow({ app: manifest.id, device, fonts: FONTS, scenes: SHOW.scenes, cards: { clock: CLOCK } });
+  show.start();
+  const unbind = listen("input", (e) => { if (show.input(e) === "quit") setTimeout(unbind, 0); });
+  ```
+- **App settings:** ship `app/src/appmeta/settings.json` to give an app a Setup page on the bar (Apps → app → Setup)
+  and in the bar's web interface:
+
+  ```json
+  { "format_version": 1, "version": 1, "fields": {
+      "greeting": { "type": "enum", "label": "Greeting", "default": "mandarin",
+                    "options": [{ "value": "mandarin", "label": "Mandarin" }, { "value": "none", "label": "None" }] },
+      "location": { "type": "geolocation", "label": "Location", "default": { "mode": "auto", "name": "Bar location" } } } }
+  ```
+
+  - Field types: `enum`, `boolean`, `integer`, `string`, `color`, `time`, `geolocation`, `group`. Only `enum`,
+    `boolean` and `integer` can be edited on the bar itself; the others need the web interface.
+  - Bump `version` when you change fields incompatibly; the bar then drops stored values.
+  - Read them once at start with `loadSettings(device, manifest.id, VERSION, defaults)`. It never throws, and any
+    missing or mistyped value falls back to its default. Changes apply when the app next starts.
+  - `readGeolocation(value)` returns `{ lat, lon }` only when the bar has coordinates.
+- **Sun times:** `sunTimes(y, m, d, { lat, lon }, offset)` gives sunrise and sunset in minutes after local midnight.
+  - `offsetMinutes(info.timestamp)` reads the bar's UTC offset.
+  - Without a location setting, `locationFromOffset(offset, usDst(y, m, d))` estimates one from the time zone. It is
+    usually within half an hour.
+- **Holiday dates:** `nextOccurrence(t, HOLIDAYS.easter)` returns the occurrence `t` falls in, or the next one,
+  with `days` until it (0 on the day). Pass `spanDays` for holidays that last more than one day, like Kwanzaa (7).
+  `HOLIDAYS.hanukkah` is the evening of the first candle, computed from the Hebrew calendar. `lunarNewYear` uses a
+  table (2025–2036) and returns null outside it.
 
 - **Live text:** `textBitmap(text, FONTS[spec.font], spec)` returns an XPM2 `data` string, centered (or at `x`), for an
   `xpmbitmap` element. It must draw identically to `font.draw_text`. Add a parity test like
