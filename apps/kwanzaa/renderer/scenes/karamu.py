@@ -21,7 +21,7 @@ KEYFRAMES = [(1.6, "KARAMU, DEC 31"), (4.4, "The family sits down"), (7.0, "The 
 
 TABLE_Y = 11  # tabletop row
 KIN = Kinara(8, 10, small=True)
-LIT = LIGHT_ORDER[:6]  # the sixth day
+LIT = LIGHT_ORDER[:6]  # the sixth day: the same six candles in both lighting orders (D14)
 T_TITLE_OUT = 3.2
 T_SIT0 = 3.0
 T_DISH0, T_DISH_STEP = 5.6, 0.8

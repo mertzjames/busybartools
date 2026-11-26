@@ -4,11 +4,16 @@
 // app/shared/kwanzaa.ts against real dates (the day index across the new year, the count, the card texts and the
 // playlist), the holiday-mode cycle, and the app's configuration driven through the real show runner.
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mock, test } from "node:test";
 
-import { countPages, cycleSteps, kwanzaaDay, nextPreview, type PageText } from "../app/shared/kwanzaa.ts";
-import { createShow, parseLocal, textWidth, type Font, type LocalTime, type ShowDevice } from "../app/shared/kit.ts";
+import {
+  DEFAULT_ORDER, ORDERS, SETTINGS_VERSION, countPages, cycleSteps, kwanzaaDay, loadOrder, nextPreview, type Order,
+  type PageText,
+} from "../app/shared/kwanzaa.ts";
+import {
+  createShow, parseLocal, textWidth, type Font, type LocalTime, type SettingsDevice, type ShowDevice,
+} from "../app/shared/kit.ts";
 import { FONTS, SHOW } from "../app/shared/generated/show.ts";
 
 const t = (iso: string): LocalTime => {
@@ -67,21 +72,57 @@ test("every card text fits the display and uses only glyphs the fonts have", () 
   assert.ok(textWidth("WED 30 DEC", (FONTS as Record<string, Font>).big) + 1 <= 72);
 });
 
-test("playlist: the day's kinara first, then scenes with clock and count cards between", () => {
-  assert.equal(SHOW.kinara, 8);
-  for (let day = 0; day <= 7; day++) {
-    const steps = cycleSteps(day);
-    assert.deepEqual(steps[0], { kind: "scene", scene: day });
-    assert.equal(SHOW.scenes[day].name, `kinara_${day}`);
-    const cards = steps.filter((s) => s.kind === "card").map((s) => (s.kind === "card" ? s.card : ""));
-    assert.deepEqual(cards, ["clock", "count", "clock", "count", "clock", "count"]);
-    const scenes = steps.filter((s) => s.kind === "scene").map((s) => (s.kind === "scene" ? SHOW.scenes[s.scene].name : ""));
-    assert.deepEqual(scenes, [`kinara_${day}`, "harvest", "unity_cup", "drums", "kente", "karamu"]);
-    steps.forEach((s, i) => assert.equal(s.kind, i % 2 === 0 ? "scene" : "card"));
+// The kinara variant each day shows, per lighting order. The unlit kinara and day 1 are shared by both orders.
+const KINARA_NAMES: Record<Order, string[]> = {
+  official: [0, 1, 2, 3, 4, 5, 6, 7].map((d) => `kinara_${d}`),
+  center_out: ["kinara_0", "kinara_1", ...[2, 3, 4, 5, 6, 7].map((d) => `kinara_center_${d}`)],
+};
+
+test("playlist: the day's kinara (in each lighting order) first, then scenes with cards between", () => {
+  assert.deepEqual([...SHOW.orders], [...ORDERS]);
+  for (const order of ORDERS) {
+    for (let day = 0; day <= 7; day++) {
+      const steps = cycleSteps(day, order);
+      const names = steps.map((s) => (s.kind === "scene" ? SHOW.scenes[s.scene].name : s.card));
+      assert.deepEqual(names, [KINARA_NAMES[order][day], "clock", "harvest", "count", "unity_cup", "clock", "drums",
+        "count", "kente", "clock", "karamu", "count"], `${order} day ${day}`);
+    }
   }
+  assert.deepEqual(cycleSteps(3), cycleSteps(3, "official")); // the default order
   const app = new URL("../app/src/", import.meta.url);
   for (const s of SHOW.scenes) assert.ok(existsSync(new URL(s.path, app)), s.path);
   assert.ok(existsSync(new URL(SHOW.card.path, app)));
+});
+
+test("settings.json declares the candle order the app reads", () => {
+  const doc = JSON.parse(readFileSync(new URL("../app/src/appmeta/settings.json", import.meta.url), "utf8"));
+  assert.equal(doc.format_version, 1);
+  assert.equal(doc.version, SETTINGS_VERSION);
+  const f = doc.fields.lighting_order;
+  assert.equal(f.type, "enum");
+  assert.equal(f.default, DEFAULT_ORDER);
+  assert.equal(SHOW.default_order, DEFAULT_ORDER);
+  assert.deepEqual(f.options.map((o: { value: string }) => o.value), [...ORDERS]);
+  for (const o of f.options) assert.ok(o.label.length > 0 && o.label.length <= 20, o.label);
+});
+
+test("the candle order setting: stored values, and every failure falls back to the default", async () => {
+  const dev = (doc: unknown, fail = false): SettingsDevice => ({
+    async AppsSettingsGet() {
+      if (fail) throw new Error("offline");
+      return doc as { version: number; values: Record<string, unknown> };
+    },
+  });
+  const quiet = () => {};
+  assert.equal(await loadOrder(dev({ version: 1, values: { lighting_order: "center_out" } }), "a", quiet), "center_out");
+  assert.equal(await loadOrder(dev({ version: 1, values: { lighting_order: "official" } }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev(null, true), "a", quiet), "official"); // request fails
+  assert.equal(await loadOrder(dev({ version: 2, values: { lighting_order: "center_out" } }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev({ version: 1, values: { lighting_order: "sideways" } }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev({ version: 1, values: { lighting_order: 2 } }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev({ version: 1, values: {} }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev({ version: 1 }), "a", quiet), "official");
+  assert.equal(await loadOrder(dev(undefined), "a", quiet), "official");
 });
 
 test("holiday mode cycles off -> day 1 .. day 7 -> off", () => {
@@ -119,7 +160,7 @@ test("runner: Dec 31 plays kinara_6, then the clock card", async () => {
     show.start();
     await flush(0);
     assert.deepEqual(log.splice(0), ["anim animations/kinara_6.anim"]);
-    await flush(SHOW.scenes[6].ms);
+    await flush(SHOW.scenes[SHOW.kinara.official[6]].ms);
     await flush(0);
     assert.deepEqual(log.splice(0), ["anim animations/card_bg.anim"]);
     show.stop();

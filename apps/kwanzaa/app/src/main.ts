@@ -8,16 +8,20 @@
 // Buttons: OK = next step, encoder = next/previous step, Back = quit.
 // START = holiday mode (docs/DECISIONS.md D7): each press previews the next day of Kwanzaa (1..7), then back to
 // the real date.
+//
+// Setting (Apps → Kwanzaa → Setup on the bar): "Candle order", official site (default) or from the center (D14).
+// It is read once when the app starts.
 
 import { device } from "@shared/device";
 import { createShow, formatDate, pad2, type Card, type Font, type LocalTime, type TextSpec } from "@shared/kit";
-import { countPages, cycleSteps, kwanzaaDay, nextPreview } from "@shared/kwanzaa";
+import { DEFAULT_ORDER, countPages, cycleSteps, kwanzaaDay, loadOrder, nextPreview, type Order } from "@shared/kwanzaa";
 import { FONTS, SHOW } from "@shared/generated/show";
 import manifest from "./appmeta/manifest.json";
 
 const STYLES = SHOW.styles as Record<string, TextSpec>;
 
 let preview = 0; // holiday mode: 0 = off, else the day of Kwanzaa being previewed
+let order: Order = DEFAULT_ORDER; // the candle lighting order, from the app's settings
 
 function today(t: LocalTime) {
   return preview ? { day: preview, days: 0 } : kwanzaaDay(t);
@@ -43,15 +47,16 @@ const COUNT: Card = {
 };
 
 function main(): void {
+  const report = (err: unknown) => console.error(`${manifest.id}: ${err instanceof Error ? err.message : String(err)}`);
   const show = createShow({
     app: manifest.id,
     device,
     fonts: FONTS as Record<string, Font>,
     scenes: SHOW.scenes,
     cards: { clock: CLOCK, count: COUNT },
-    steps: (t) => cycleSteps(today(t).day),
+    steps: (t) => cycleSteps(today(t).day, order),
+    report,
   });
-  show.start();
 
   const unbind = listen("input", (event) => {
     const r = show.input(event);
@@ -63,6 +68,12 @@ function main(): void {
       preview = nextPreview(preview);
       show.start(); // a new cycle: re-picks the playlist from the top
     }
+  });
+
+  // read the setting once, then start (loadOrder never rejects: it falls back to the default order)
+  void loadOrder(device, manifest.id, report).then((o) => {
+    order = o;
+    show.start();
   });
 }
 

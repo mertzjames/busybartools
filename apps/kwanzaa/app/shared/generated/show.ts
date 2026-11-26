@@ -52,6 +52,42 @@ export const SHOW = {
       "ms": 14000
     },
     {
+      "name": "kinara_center_2",
+      "title": "Lighting the Kinara: Day 2 (from the center)",
+      "path": "animations/kinara_center_2.anim",
+      "ms": 14000
+    },
+    {
+      "name": "kinara_center_3",
+      "title": "Lighting the Kinara: Day 3 (from the center)",
+      "path": "animations/kinara_center_3.anim",
+      "ms": 14000
+    },
+    {
+      "name": "kinara_center_4",
+      "title": "Lighting the Kinara: Day 4 (from the center)",
+      "path": "animations/kinara_center_4.anim",
+      "ms": 14000
+    },
+    {
+      "name": "kinara_center_5",
+      "title": "Lighting the Kinara: Day 5 (from the center)",
+      "path": "animations/kinara_center_5.anim",
+      "ms": 14000
+    },
+    {
+      "name": "kinara_center_6",
+      "title": "Lighting the Kinara: Day 6 (from the center)",
+      "path": "animations/kinara_center_6.anim",
+      "ms": 14000
+    },
+    {
+      "name": "kinara_center_7",
+      "title": "Lighting the Kinara: Day 7 (from the center)",
+      "path": "animations/kinara_center_7.anim",
+      "ms": 14000
+    },
+    {
       "name": "harvest",
       "title": "The Harvest",
       "path": "animations/harvest.anim",
@@ -82,7 +118,40 @@ export const SHOW = {
       "ms": 16000
     }
   ],
-  "kinara": 8,
+  "kinara": {
+    "official": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "center_out": [
+      0,
+      1,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "orders": [
+    "official",
+    "center_out"
+  ],
+  "default_order": "official",
+  "playlist": [
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
   "card": {
     "path": "animations/card_bg.anim"
   },

@@ -2,6 +2,7 @@
 
     python3 renderer/review.py scene harvest previews/ [every_seconds [start end]]
     python3 renderer/review.py kinara 3 previews/ [every_seconds [start end]]     (one kinara variant, 0..7)
+    python3 renderer/review.py center 3 previews/ [every_seconds [start end]]     (center-out order, 2..7)
     python3 renderer/review.py cards previews/      (every card page: clock, before Kwanzaa, each day's pages)
     python3 renderer/review.py all previews/        (every scene and kinara variant at its keyframes, plus cards)
 
@@ -77,12 +78,15 @@ if __name__ == "__main__":
     elif cmd == ["kinara"]:
         from scenes import KINARA
         review(KINARA[int(sys.argv[2])], Path(sys.argv[3]), *_args(4))
+    elif cmd == ["center"]:
+        from scenes import KINARA_CENTER
+        review(KINARA_CENTER[int(sys.argv[2]) - 2], Path(sys.argv[3]), *_args(4))
     elif cmd == ["cards"]:
         cards(Path(sys.argv[2] if len(sys.argv) > 2 else "."))
     elif cmd == ["all"]:
-        from scenes import KINARA, PLAYLIST
+        from scenes import KINARA, KINARA_CENTER, PLAYLIST
         out = Path(sys.argv[2] if len(sys.argv) > 2 else ".")
-        for mod in KINARA + PLAYLIST:
+        for mod in KINARA + KINARA_CENTER + PLAYLIST:
             review(mod, out)
         cards(out)
     else:

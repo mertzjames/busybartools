@@ -8,3 +8,5 @@ export type { LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
 export { HOLIDAYS, daysLabel, nextOccurrence } from "../../../../lib/ts/busybar/holidays.ts";
 export { createShow } from "../../../../lib/ts/busybar/showrunner.ts";
 export type { Card, Line, Page, Show, ShowDevice, ShowInput, Step } from "../../../../lib/ts/busybar/showrunner.ts";
+export { enumValue, loadSettings } from "../../../../lib/ts/busybar/settings.ts";
+export type { SettingsDevice } from "../../../../lib/ts/busybar/settings.ts";

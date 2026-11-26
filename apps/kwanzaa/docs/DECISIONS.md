@@ -105,8 +105,8 @@ the usual English gloss of "Habari gani?".
 **Why:** The greeting and its answer make a natural two-page card, and they teach the principle as it is used. The
 English is never abbreviated, so it stays accurate.
 
-**Note:** The show runner fades every line in at the start of each page, so the repeated Swahili word briefly
-fades again on the second page. This is acceptable; it would need a kit change to avoid (reported).
+**Note:** With the original runner, the repeated Swahili word faded in again on the second page. The runner update
+in the kit (it keeps lines whose text and style don't change) fixed this, so the word now stays on screen.
 
 ---
 
@@ -215,3 +215,38 @@ defines with the same fields as `show.ts`.
 
 **Why:** It replaces a hand-written JavaScript mirror that could drift from the tested app code. The mockup now
 shows exactly what the bar would.
+
+---
+
+## D14 — Both candle orders, chosen in the app's settings
+*2026-11-26*
+
+**Decision:** The app has a setting, `app/src/appmeta/settings.json`, field `lighting_order`, labeled "Candle order".
+It can be edited on the bar under Apps → Kwanzaa → Setup.
+- **Official site** (`official`, the default) is D3's order, which keeps D3's sourcing.
+- **From the center** (`center_out`): the black candle first, then red and green alternately, moving outward. Day
+  2 is the red next to the black, day 3 the green next to it, day 4 the middle red, day 5 the middle green, day 6
+  the outer red, and day 7 the outer green.
+
+How it works:
+- `main.ts` reads the setting once at start with the kit's `loadSettings`, through `loadOrder` in
+  `app/shared/kwanzaa.ts`. Any failure (no response, a different settings version, an unknown or mistyped value)
+  gives the default.
+- `cycleSteps(day, order)` picks the kinara through `SHOW.kinara[order][day]`.
+- The renderer draws `kinara_center_2` … `kinara_center_7`. The unlit kinara and day 1 are the same in both orders,
+  so they reuse `kinara_0` and `kinara_1`.
+
+**Why:**
+- The user asked for both orders, because families light the candles differently.
+- Days 6 and 7 end with the same candles lit in both orders, but they are still rendered twice. The scene shows the
+  taper lighting the candles one at a time, and on those days the order of lighting differs, which is the whole
+  point of the setting. The extra cost is about 170 KiB.
+- The karamu scene's small kinara shows day 6, and it lights the same six candles in both orders, so it needs no
+  variant.
+- The six extra renders take total `.anim` data from about 1.1 MB to about 1.5 MB.
+
+**Alternatives:**
+- Reusing day 6 and 7 from the official order. Rejected: the setting would then light those days in the wrong
+  order.
+- Drawing the flames live. Rejected: too slow on the device (D4).
+- Picking the order with a button. Rejected: a setting persists, and START is already used for holiday mode.

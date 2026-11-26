@@ -26,7 +26,9 @@ from busybar.canvas import new  # noqa: E402
 from busybar.font import draw_text, text_width  # noqa: E402
 
 import build  # noqa: E402  (for the exported, tone-mapped text styles)
-from scenes import CARD_BG, KINARA, PLAYLIST  # noqa: E402
+from kfx import CANDLE_COLORS, DEFAULT_ORDER, LIGHT_ORDERS  # noqa: E402
+from scenes import CARD_BG, KINARA, KINARA_CENTER, PLAYLIST  # noqa: E402
+from scenes.kinara import variant_names  # noqa: E402
 from scenes.text import count_pages  # noqa: E402
 
 DAYS = [(0, 1), (0, 30), (0, 358)] + [(d, 0) for d in range(1, 8)]
@@ -48,7 +50,9 @@ const bitmaps = [...samples.values()].map(([txt, style]) => {
   const b = textBitmap(txt, FONTS[spec.font] as Font, spec);
   return { txt, style, data: b.data, x: b.x, y: b.y };
 });
-console.log(JSON.stringify({ pages, bitmaps, scenes: SHOW.scenes.map((s) => [s.name, s.ms, s.path]), card: SHOW.card.path }));
+const kinara = Object.fromEntries(Object.entries(SHOW.kinara).map(([o, idx]) => [o, idx.map((i) => SHOW.scenes[i].name)]));
+console.log(JSON.stringify({ pages, bitmaps, scenes: SHOW.scenes.map((s) => [s.name, s.ms, s.path]), card: SHOW.card.path,
+  kinara, playlist: SHOW.playlist.map((i) => SHOW.scenes[i].name), defaultOrder: SHOW.default_order }));
 """
 
 
@@ -98,12 +102,19 @@ def main() -> int:
         failures += not ok
         print(f"  {'ok  ' if ok else 'FAIL'} {b['style']:5} {b['txt']!r:22} {len(app_px)} px")
     ref_pages = [[[ms, [list(line) for line in lines]] for ms, lines in count_pages(d, n)] for d, n in DAYS]
-    expected = [[m.NAME, int(m.SECONDS * 1000), f"animations/{m.NAME}.anim"] for m in KINARA + PLAYLIST]
+    expected = [[m.NAME, int(m.SECONDS * 1000), f"animations/{m.NAME}.anim"] for m in KINARA + KINARA_CENTER + PLAYLIST]
+    # the two lighting orders, as specified (docs/DECISIONS.md D3 and D14)
+    spec = {"official": (3, 0, 4, 1, 5, 2, 6), "center_out": (3, 2, 4, 1, 5, 0, 6)}
+    colors = {o: [CANDLE_COLORS[p] for p in order] for o, order in LIGHT_ORDERS.items()}
     anims = [APP_DIR / "app" / "src" / p for _, _, p in res["scenes"]] + [APP_DIR / "app" / "src" / res["card"]]
     checks = [
         (res["pages"] == ref_pages, "card pages: app (kwanzaa.ts) == renderer (text.py) for every day"),
         (res["scenes"] == expected, "generated scene list matches the renderer"),
         (res["card"] == f"animations/{CARD_BG.NAME}.anim", "card backdrop path"),
+        (dict(LIGHT_ORDERS) == spec and DEFAULT_ORDER == "official", "lighting orders: official and center-out"),
+        (all(c == ["black"] + ["red", "green"] * 3 for c in colors.values()), "both orders: black, then red/green"),
+        (res["kinara"] == {o: variant_names(o) for o in LIGHT_ORDERS}, "app's kinara variant per order and day"),
+        (res["playlist"] == [m.NAME for m in PLAYLIST] and res["defaultOrder"] == DEFAULT_ORDER, "playlist, default"),
         (all(p.is_file() for p in anims), "every .anim exists"),
     ]
     for ok, name in checks:

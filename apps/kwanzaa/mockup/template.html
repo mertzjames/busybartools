@@ -153,6 +153,10 @@
           <option value="5">Day 5 · Nia</option><option value="6">Day 6 · Kuumba (karamu)</option>
           <option value="7">Day 7 · Imani</option>
         </select>
+        <select id="order" aria-label="Candle order (the app's setting)" title="The app's Candle order setting (Apps → Kwanzaa → Setup on the bar)">
+          <option value="official">Candle order: Official site</option>
+          <option value="center_out">Candle order: From the center</option>
+        </select>
         <span class="state" id="modeState"></span>
       </span>
     </div>
@@ -170,6 +174,10 @@
         counts the days to Kwanzaa. During Kwanzaa the count card greets you with <code>HABARI GANI?</code>
         ("What's the news?") and answers with the day's principle, in Swahili and English.</p>
       <p>Use <strong>START</strong> (or the menu) to preview each day of Kwanzaa on any date, as the bar's START button does.</p>
+      <p>Families light the candles in different orders, so the bar has a <strong>Candle order</strong> setting (Apps →
+        Kwanzaa → Setup): <em>Official site</em> (the default, described above) or <em>From the center</em>, which lights
+        the red next to the black candle on day 2, the green next to it on day 3, then the middle pair, then the outer
+        pair. The candle-order menu above shows either.</p>
     </div>
     <ul class="principles" id="principles"></ul>
     <dl class="facts">
@@ -195,6 +203,7 @@
       <li><span class="id">D5</span><span><strong>A lit black candle.</strong> Black is an unlit LED, so the black candle is charcoal grey with a highlight.</span></li>
       <li><span class="id">D6</span><span><strong>Habari gani?</strong> The greeting, then its answer: the day's principle in Swahili over the English.</span></li>
       <li><span class="id">D7</span><span><strong>Holiday mode on START.</strong> Each press previews the next day, 1 to 7, then returns to the real date.</span></li>
+      <li><span class="id">D14</span><span><strong>Two candle orders.</strong> A bar setting picks the official site's order or center-out; six extra kinara renders.</span></li>
       <li><span class="id">D8</span><span><strong>Simple figures, warm skin tones.</strong> No eyes on 3-pixel faces, no caricature; headwraps and kufis in bright colors.</span></li>
     </ul>
   </section>
@@ -206,7 +215,7 @@
 const SHOW = /*__SHOW_DATA__*/null;
 /*__KW_LOGIC__*/
 (() => {
-  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, T = SHOW.timing, K = SHOW.kinara;
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, T = SHOW.timing;
   const COLORS = ["k", "r", "g", "r", "g", "r", "g"]; // candle color per day (D3)
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -290,11 +299,12 @@ const SHOW = /*__SHOW_DATA__*/null;
 
   // ---------- state: the day shown (0 = from the date), the playlist ----------
   let preview = 0;
+  let order = SHOW.default_order; // the "Candle order" app setting (D14)
   const today = () => preview ? { day: preview, days: 0 } : kwanzaaDay(new Date());
   let steps = [];
   function buildSteps() {
     const { day, days } = today();
-    const s = KW.cycleSteps(day).map(st => st.kind === "scene" ? { kind: "scene", i: st.scene } : { kind: "card", card: st.card });
+    const s = KW.cycleSteps(day, order).map(st => st.kind === "scene" ? { kind: "scene", i: st.scene } : { kind: "card", card: st.card });
     s.forEach(st => {
       if (st.kind === "scene") st.ms = SHOW.scenes[st.i].ms;
       else { st.pages = st.card === "clock" ? clockPages() : countPages(day, days); st.ms = st.pages.reduce((a, p) => a + p.ms, 0); }
@@ -325,7 +335,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     time: document.getElementById("time"), bar: document.getElementById("bar"),
     play: document.getElementById("play"), loop: document.getElementById("loopOne"),
     playlist: document.getElementById("playlist"), day: document.getElementById("day"),
-    mode: document.getElementById("modeState"),
+    mode: document.getElementById("modeState"), order: document.getElementById("order"),
   };
   let data = [], cardBg = null;
   let step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
@@ -430,16 +440,18 @@ const SHOW = /*__SHOW_DATA__*/null;
   }
   const scrollStage = () => document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   function boards() {
-    // the kinara: every variant at the moment its last candle has caught
-    const kin = board("SCENE 1", "Lighting the Kinara", `${SHOW.scenes[0].ms / 1000} s · one render per day`, "Play today's", () => { go(0, 0); setPaused(false); scrollStage(); });
-    for (let d = 0; d < K; d++) {
-      const sc = SHOW.scenes[d];
+    document.getElementById("boards").innerHTML = "";
+    // the kinara: every day's variant in the chosen order, at the moment its last candle has caught
+    const orderLabel = els.order.selectedOptions[0].textContent.toLowerCase();
+    const kin = board("SCENE 1", "Lighting the Kinara", `${SHOW.scenes[0].ms / 1000} s · one render per day · ${orderLabel}`, "Play today's", () => { go(0, 0); setPaused(false); scrollStage(); });
+    SHOW.kinara[order].forEach((idx, d) => {
+      const sc = SHOW.scenes[idx];
       const f = Math.min(sc.frames - 1, Math.round(12.5 * FPS));
-      kin.appendChild(thumb(frameAt(data[d], f), d ? `Day ${d}: ${SHOW.principles[d - 1].word.charAt(0) + SHOW.principles[d - 1].word.slice(1).toLowerCase()}` : "Before Dec 26: unlit", null,
+      kin.appendChild(thumb(frameAt(data[idx], f), d ? `Day ${d}: ${SHOW.principles[d - 1].word.charAt(0) + SHOW.principles[d - 1].word.slice(1).toLowerCase()}` : "Before Dec 26: unlit", null,
         () => { preview = d; refresh(true); go(0, 12500); setPaused(true); scrollStage(); }));
-    }
-    SHOW.scenes.slice(K).forEach((sc, j) => {
-      const i = K + j;
+    });
+    SHOW.playlist.forEach((i, j) => {
+      const sc = SHOW.scenes[i];
       const host = board(`SCENE ${j + 2}`, sc.title, `${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames`, "Play scene",
         () => { go(2 * (j + 1), 0); setPaused(false); scrollStage(); });
       sc.keyframes.forEach(k => {
@@ -478,6 +490,7 @@ const SHOW = /*__SHOW_DATA__*/null;
   document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
   document.getElementById("next").addEventListener("click", () => go(step + 1, 0));
   document.getElementById("start").addEventListener("click", () => { preview = KW.nextPreview(preview); refresh(true); });
+  els.order.addEventListener("change", () => { order = els.order.value; refresh(true); boards(); });
   els.day.addEventListener("change", () => { preview = Number(els.day.value); refresh(true); });
   document.addEventListener("keydown", e => {
     if (e.target.closest("button, input, select")) return;
@@ -491,11 +504,12 @@ const SHOW = /*__SHOW_DATA__*/null;
     data = all;
     buildSteps();
     const loopS = Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000);
-    document.getElementById("fScenes").textContent = 1 + SHOW.scenes.length - K;
+    const variants = new Set([...SHOW.kinara.official, ...SHOW.kinara.center_out]).size;
+    document.getElementById("fScenes").textContent = 1 + SHOW.playlist.length;
     document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
     document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
     document.getElementById("built").textContent =
-      `${1 + SHOW.scenes.length - K} scenes (the kinara in ${K} variants) · about ${loopS} s per loop · busybartools · Kwanzaa`;
+      `${1 + SHOW.playlist.length} scenes (the kinara in ${variants} variants, for two candle orders) · about ${loopS} s per loop · busybartools · Kwanzaa`;
     principles();
     refresh(true);
     boards();

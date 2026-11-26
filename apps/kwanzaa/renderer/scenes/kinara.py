@@ -17,7 +17,7 @@ from busybar.canvas import FPS, W, add, ease_in_out, lerp, put, sec, vgradient
 from busybar.font import draw_text, text_width
 from busybar.fx import SPARKLE, Particles
 from busybar.party import glitter
-from kfx import (GOLD_HI, LIGHT_ORDER, ROOM_BOTTOM, ROOM_TOP, Kinara, basket, corn_lying, fruit, mkeka,
+from kfx import (GOLD_HI, LIGHT_ORDERS, ROOM_BOTTOM, ROOM_TOP, Kinara, basket, corn_lying, fruit, mkeka,
                  room_glow, unity_cup)
 
 SECONDS = 14
@@ -26,8 +26,6 @@ T_TAPER_IN = 1.6  # the taper appears
 T_LIGHT0 = 2.4  # first candle catches
 T_LIGHT_END = 10.4  # the last candle has caught by here
 T_CAPTION = 11.0
-
-DAY_WORDS = ("UMOJA", "KUJICHAGULIA", "UJIMA", "UJAMAA", "NIA", "KUUMBA", "IMANI")
 
 
 def table(img) -> None:
@@ -63,9 +61,9 @@ def draw_taper(img, x: float, y: float, f: int, a: float = 1.0) -> None:
         add(img, x + dx, y + dy, (140, 70, 10), 0.4 * a)
 
 
-def render_day(day: int):
+def render_day(day: int, light: str = "official"):
     n = day
-    order = LIGHT_ORDER[:n]
+    order = LIGHT_ORDERS[light][:n]
     times = taper_path(n)
     bg = vgradient(ROOM_TOP, ROOM_BOTTOM)
     table(bg)
@@ -128,22 +126,38 @@ def render_day(day: int):
     return frames
 
 
-def _variant(day: int):
-    title = "The Kinara Waits" if day == 0 else f"Lighting the Kinara: Day {day}"
+def _variant(day: int, light: str = "official"):
+    center = light == "center_out"
     if day == 0:
+        title = "The Kinara Waits"
         keys = [(1.0, "The Kwanzaa table: mkeka, kinara, mazao, muhindi, unity cup"),
                 (12.0, "The candles wait for Dec 26")]
     else:
+        title = f"Lighting the Kinara: Day {day}" + (" (from the center)" if center else "")
         times = taper_path(day)
         keys = [(1.0, "The Kwanzaa table"), (times[0] + 0.4, "The black candle first: Umoja")]
         if day > 1:
-            keys.append((times[-1] + 0.4, f"Day {day}: {DAY_WORDS[day - 1].capitalize()} candle lit"))
+            keys.append((times[-1] + 0.4, f"Day {day}: the last candle catches"))
         keys.append((12.5, f"DAY {day}"))
-    return SimpleNamespace(NAME=f"kinara_{day}", TITLE=title, SECONDS=SECONDS, KEYFRAMES=keys,
-                           render=lambda d=day: render_day(d))
+    name = f"kinara_center_{day}" if center else f"kinara_{day}"
+    return SimpleNamespace(NAME=name, TITLE=title, SECONDS=SECONDS, KEYFRAMES=keys,
+                           render=lambda d=day, o=light: render_day(d, o))
 
 
+# The default (official-site) order: kinara_0 (unlit) .. kinara_7
 VARIANTS = [_variant(d) for d in range(8)]
+# The center-out order (docs/DECISIONS.md D14). The unlit kinara and day 1 (the black candle alone) are the same in
+# both orders, so they reuse kinara_0 and kinara_1. Days 2-7 are rendered again: days 6 and 7 end with the same
+# candles lit, but the taper lights them in a different order on the way.
+CENTER_VARIANTS = [_variant(d, "center_out") for d in range(2, 8)]
+
+
+def variant_names(light: str) -> list[str]:
+    """The .anim name for each day 0..7 in a lighting order."""
+    if light == "center_out":
+        return ["kinara_0", "kinara_1"] + [m.NAME for m in CENTER_VARIANTS]
+    return [m.NAME for m in VARIANTS]
+
 
 # caption guards: "DAY N" stays left of the first candle; "DEC 26" stays right of the last one
 assert text_width("DAY 7", "tiny") + 2 < KIN.candle_x(0)

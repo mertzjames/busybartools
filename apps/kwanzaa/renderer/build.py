@@ -4,7 +4,8 @@
     python3 renderer/build.py [--no-gif] [--only harvest,...]     (run from apps/kwanzaa/)
 
 Outputs
-  app/src/animations/<scene>.anim      firmware-played animations: kinara_0..7, the scenes, card_bg
+  app/src/animations/<scene>.anim      firmware-played animations: kinara_0..7, kinara_center_2..7, the scenes,
+                                       card_bg
   app/shared/generated/show.ts         scenes, durations, text styles, timings, the Nguzo Saba, fonts
   app/src/appmeta/icon_*.png           menu icons
   mockup/index.html                    self-contained browser simulator + storyboards
@@ -32,7 +33,9 @@ from busybar import font  # noqa: E402
 from busybar.canvas import FPS, H, W  # noqa: E402
 from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_template, save_icon,  # noqa: E402
                                tone_lut, tone_rgb, ts_module)
-from scenes import CARD_BG, KINARA, PLAYLIST  # noqa: E402
+from kfx import DEFAULT_ORDER, LIGHT_ORDERS  # noqa: E402
+from scenes import CARD_BG, KINARA, KINARA_CENTER, PLAYLIST  # noqa: E402
+from scenes.kinara import variant_names  # noqa: E402
 from scenes.text import GREETING, PRINCIPLES, STYLES, TEXT_FONTS, TIMING  # noqa: E402
 
 APP_ID = "busybartools.kwanzaa"
@@ -50,7 +53,7 @@ META = ROOT / "app" / "src" / "appmeta"
 REPO = HERE.parents[2]
 # The app's own date and card logic, run by the mockup (in dependency order; see docs/DECISIONS.md D13)
 MOCKUP_TS = [REPO / "lib" / "ts" / "busybar" / "walltime.ts", REPO / "lib" / "ts" / "busybar" / "holidays.ts",
-             ROOT / "app" / "shared" / "kwanzaa.ts"]
+             REPO / "lib" / "ts" / "busybar" / "settings.ts", ROOT / "app" / "shared" / "kwanzaa.ts"]
 
 
 def tone(img):
@@ -109,12 +112,17 @@ def scene_entry(m: dict) -> dict:
     return {"name": m["name"], "title": m["title"], "path": f"animations/{m['name']}.anim", "ms": m["ms"]}
 
 
-def show_data(kinara_metas, scene_metas, card_meta) -> dict:
-    """What the app needs. scenes = the eight kinara variants (index = day, 0 = unlit), then the playlist."""
+def show_data(metas, card_meta) -> dict:
+    """What the app needs. scenes = every kinara variant, then the playlist. kinara[order][day] is the scene index of
+    that day's kinara (day 0 = unlit) in each lighting order; playlist lists the scenes that follow it."""
+    names = [m["name"] for m in metas]
     return {
         "fps": FPS,
-        "scenes": [scene_entry(m) for m in kinara_metas + scene_metas],
-        "kinara": len(kinara_metas),
+        "scenes": [scene_entry(m) for m in metas],
+        "kinara": {order: [names.index(n) for n in variant_names(order)] for order in LIGHT_ORDERS},
+        "orders": list(LIGHT_ORDERS),
+        "default_order": DEFAULT_ORDER,
+        "playlist": [names.index(m.NAME) for m in PLAYLIST],
         "card": {"path": f"animations/{card_meta['name']}.anim"},
         "styles": text_styles(),
         "timing": TIMING,
@@ -155,7 +163,7 @@ def mockup_logic() -> str:
                          capture_output=True, text=True, check=True)
     names, parts = [], []
     for path, js in zip(MOCKUP_TS, json.loads(res.stdout)):
-        js = re.sub(r"^import [^\n]*;[ \t]*$", "", js, flags=re.M)
+        js = re.sub(r"^import\b[^;]*;[ \t]*$", "", js, flags=re.M)  # also multi-line imports
         names += re.findall(r"^export (?:function|const) (\w+)", js, flags=re.M)
         js = re.sub(r"^export ", "", js, flags=re.M)
         js = "\n".join(ln.rstrip() for ln in js.splitlines())
@@ -165,15 +173,15 @@ def mockup_logic() -> str:
     return "const KW = (() => {\n" + "\n".join(parts) + f"return {{ {', '.join(sorted(set(names)))} }};\n}})();"
 
 
-def write_mockup(show: dict, kinara_metas, scene_metas, card_meta) -> None:
+def write_mockup(show: dict, metas, card_meta) -> None:
     def full(m):
         return {k: m[k] for k in ("name", "title", "ms", "frames", "keyframes", "sheet")}
     data = {
         **show, "w": W, "h": H,
-        "scenes": [full(m) for m in kinara_metas + scene_metas],
+        "scenes": [full(m) for m in metas],
         "card": {"frames": card_meta["frames"], "sheet": card_meta["sheet"]},
         "fonts": font.export_json(TEXT_FONTS),
-        "anim_bytes": sum(m["bytes"] for m in kinara_metas + scene_metas) + card_meta["bytes"],
+        "anim_bytes": sum(m["bytes"] for m in metas) + card_meta["bytes"],
     }
     tmp = MOCKUP / ".template.tmp"
     tmp.write_text((MOCKUP / "template.html").read_text().replace("/*__KW_LOGIC__*/", mockup_logic()))
@@ -190,18 +198,17 @@ def main() -> None:
     args = ap.parse_args()
     only = {s for s in args.only.split(",") if s}
 
-    metas = build_scenes(KINARA + PLAYLIST + [CARD_BG], ANIM_DIR, LUT, None if args.no_gif else PREVIEWS,
-                         only=only, keep=(CARD_BG,))
+    metas = build_scenes(KINARA + KINARA_CENTER + PLAYLIST + [CARD_BG], ANIM_DIR, LUT,
+                         None if args.no_gif else PREVIEWS, only=only, keep=(CARD_BG,))
     if only:
         print("  --only: skipped show.ts, icons and mockup (they need every scene)")
         return
     card_meta = metas.pop()  # CARD_BG is always rendered last
-    kinara_metas, scene_metas = metas[:len(KINARA)], metas[len(KINARA):]
-    show = show_data(kinara_metas, scene_metas, card_meta)
+    show = show_data(metas, card_meta)
     write_ts(show)
     write_icons()
     if (MOCKUP / "template.html").exists():
-        write_mockup(show, kinara_metas, scene_metas, card_meta)
+        write_mockup(show, metas, card_meta)
         print(f"  wrote {MOCKUP / 'index.html'}")
 
 

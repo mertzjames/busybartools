@@ -3,7 +3,9 @@
 // Kwanzaa runs seven days, Dec 26 - Jan 1, so it crosses the new year; the kit's nextOccurrence handles that.
 // Day 1 = Dec 26 (Umoja) ... day 7 = Jan 1 (Imani). Outside Kwanzaa, day = 0 and the count is to the next Dec 26.
 
-import { HOLIDAYS, daysLabel, nextOccurrence, type LocalTime, type Step } from "./kit.ts";
+import {
+  HOLIDAYS, daysLabel, enumValue, loadSettings, nextOccurrence, type LocalTime, type SettingsDevice, type Step,
+} from "./kit.ts";
 import { SHOW } from "./generated/show.ts";
 
 export interface KwanzaaDay {
@@ -53,18 +55,30 @@ export function countPages(day: number, days: number): PageText[] {
   return pages;
 }
 
+/** Candle lighting orders (app setting "lighting_order", app/src/appmeta/settings.json; docs/DECISIONS.md D14). */
+export type Order = "official" | "center_out";
+export const ORDERS: readonly Order[] = ["official", "center_out"];
+export const DEFAULT_ORDER: Order = "official";
+/** Bump with app/src/appmeta/settings.json "version" when its fields change incompatibly. */
+export const SETTINGS_VERSION = 1;
+
+/** The lighting order from the bar's app settings. Never throws: anything unexpected gives the default. */
+export async function loadOrder(device: SettingsDevice, appId: string, report?: (err: unknown) => void): Promise<Order> {
+  const s = await loadSettings(device, appId, SETTINGS_VERSION, { lighting_order: DEFAULT_ORDER as string }, report);
+  return enumValue(s.lighting_order, ORDERS, DEFAULT_ORDER);
+}
+
 /**
- * One cycle of the show: the day's kinara (scene index = day; 0 = unlit), then the other scenes, with cards
- * alternating clock, count, clock, ... between them, and a count card to close.
+ * One cycle of the show: the day's kinara in the chosen lighting order (day 0 = unlit), then the other scenes, with
+ * cards alternating clock, count, clock, ... between them, and a count card to close.
  */
-export function cycleSteps(day: number): Step[] {
-  const steps: Step[] = [{ kind: "scene", scene: day }];
-  const others = SHOW.scenes.length - SHOW.kinara;
-  for (let i = 0; i < others; i++) {
+export function cycleSteps(day: number, order: Order = DEFAULT_ORDER): Step[] {
+  const steps: Step[] = [{ kind: "scene", scene: SHOW.kinara[order][day] }];
+  SHOW.playlist.forEach((scene, i) => {
     steps.push({ kind: "card", card: i % 2 === 0 ? "clock" : "count" });
-    steps.push({ kind: "scene", scene: SHOW.kinara + i });
-  }
-  steps.push({ kind: "card", card: others % 2 === 0 ? "clock" : "count" });
+    steps.push({ kind: "scene", scene });
+  });
+  steps.push({ kind: "card", card: SHOW.playlist.length % 2 === 0 ? "clock" : "count" });
   return steps;
 }
 

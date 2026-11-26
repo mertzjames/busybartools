@@ -7,7 +7,7 @@ deliberate.
 ## How this app is built
 
 ```
-renderer/ (Python)  ──build.py──►  app/src/animations/*.anim     kinara_0..7, five scenes, card_bg
+renderer/ (Python)  ──build.py──►  app/src/animations/*.anim     kinara_0..7, kinara_center_2..7, scenes, card_bg
                                     app/shared/generated/show.ts  scenes, styles, timings, principles, fonts
                                     app/src/appmeta/icon_*.png    menu icons
                                     mockup/index.html             browser simulator (from mockup/template.html)
@@ -26,10 +26,15 @@ python3 tests/text_parity.py                                # app TS vs renderer
 ## Invariants: don't break these
 
 - **The candles are right.** Red ×3 left, black center, green ×3 right. Day 1 lights the black. Then the colors
-  alternate red, green, …, each side from left to right (`LIGHT_ORDER`, D3). Day N relights all N candles. Never
-  change this without a source and a D-note.
-- **Scene indices.** `SHOW.scenes[0..7]` are `kinara_0` (unlit) through `kinara_7`, and the playlist follows from index
-  `SHOW.kinara`. `cycleSteps(day)` and the tests rely on this.
+  alternate red, green, … in one of two orders: `official` (each side from left to right, D3; the default) or
+  `center_out` (outward from the center, D14), from `LIGHT_ORDERS`. Day N relights all N candles. Never change an
+  order without a source and a D-note.
+- **Scene indices come from `show.ts`.** `SHOW.kinara[order][day]` is the kinara scene index for each order, and
+  `SHOW.playlist` lists the scenes that follow. `cycleSteps(day, order)` and the tests rely on this. Don't index
+  `SHOW.scenes` by position.
+- **The setting.** `app/src/appmeta/settings.json` (`lighting_order`, version 1) must match `ORDERS`,
+  `DEFAULT_ORDER` and `SETTINGS_VERSION` in `app/shared/kwanzaa.ts` (tested). Bump the version on incompatible
+  changes.
 - **One source for card text.** `renderer/scenes/text.py` (styles, timings, principles) is exported into `show.ts`.
   `count_pages` (Python) and `countPages` (`app/shared/kwanzaa.ts`) must agree; `tests/text_parity.py` checks this.
   The mockup runs `kwanzaa.ts` itself (D13).
@@ -40,7 +45,7 @@ python3 tests/text_parity.py                                # app TS vs renderer
 - **Card rows.** The backdrop's border uses rows 0 and 15 only. `head` text uses rows 1–8 and `sub` rows 9–14.
 - **Generated files are outputs.** Never hand-edit `.anim`, `show.ts`, the icons or `mockup/index.html`.
 - **One script.** Helpers live in `app/shared/`. The build output must say `scripts: main.js` only.
-- **Size.** About 1.1 MB of `.anim` data now. Keep it under about 3 MB.
+- **Size.** About 1.5 MB of `.anim` data now. Keep it under about 3 MB.
 
 ## Pixel-art rules
 
@@ -58,7 +63,8 @@ python3 tests/text_parity.py                                # app TS vs renderer
 | Change | Where | Then |
 |---|---|---|
 | Add or replace a scene | `renderer/scenes/<name>.py` + `PLAYLIST` | `build.py`, review strips, README table, the playlist test |
-| Kinara art or timing | `Kinara` in `renderer/kfx.py`, `renderer/scenes/kinara.py` | review all eight variants |
+| Kinara art or timing | `Kinara` in `renderer/kfx.py`, `renderer/scenes/kinara.py` | review every variant (both orders) |
+| Settings | `app/src/appmeta/settings.json`, `loadOrder` in `app/shared/kwanzaa.ts` | README settings, the settings tests |
 | Card text or timing | `renderer/scenes/text.py` and `app/shared/kwanzaa.ts` | `tools/check.sh kwanzaa` |
 | Buttons or holiday mode | `app/src/main.ts`, `nextPreview` in `app/shared/kwanzaa.ts` | README controls, D7 |
 | Release | bump `"version"` in `app/src/appmeta/manifest.json` in a PR to `dev` | maintainers release |

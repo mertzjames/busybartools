@@ -49,11 +49,23 @@ ROOM_BOTTOM = (44, 20, 12)
 # Candle positions, left to right: three red, the black in the center, three green (the official placement).
 CANDLE_COLORS = ("red", "red", "red", "black", "green", "green", "green")
 
-# Lighting order by day (docs/DECISIONS.md D3): day 1 the black candle (Umoja); then the official site's red
-# Kujichagulia, Ujamaa, Kuumba (left of the black) and green Ujima, Nia, Imani (right of it), each side lit from
-# left to right, so the days alternate red, green, red, green, starting with red.
+# Lighting orders by day: candle positions, day 1 first. Both light the black candle (Umoja) first and then alternate
+# red and green, starting with red; they differ in where each color starts (docs/DECISIONS.md D3, D14).
 #   position: 0=R Kujichagulia  1=R Ujamaa  2=R Kuumba  3=B Umoja  4=G Ujima  5=G Nia  6=G Imani
-LIGHT_ORDER = (3, 0, 4, 1, 5, 2, 6)
+# "official": the official Kwanzaa website's "from left to right": the reds outer, middle, inner and the greens inner,
+#             middle, outer (each candle on its own principle's day). The default.
+# "center_out": outward from the center: the red next to the black, the green next to it, then the middle pair, then
+#             the outer pair.
+LIGHT_ORDERS = {
+    "official": (3, 0, 4, 1, 5, 2, 6),
+    "center_out": (3, 2, 4, 1, 5, 0, 6),
+}
+DEFAULT_ORDER = "official"
+LIGHT_ORDER = LIGHT_ORDERS[DEFAULT_ORDER]
+
+for _o in LIGHT_ORDERS.values():  # each is a permutation: black first, then red, green, red, green, ...
+    assert sorted(_o) == list(range(7)) and _o[0] == 3
+    assert [CANDLE_COLORS[p] for p in _o[1:]] == ["red", "green"] * 3
 
 _SHADES = {
     "red": (RED, RED_HI, RED_DK),
