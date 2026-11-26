@@ -35,6 +35,9 @@ def tone_lut(gamma: float) -> list[int]:
 
 
 def apply_tone(img: Image.Image, lut: list[int]) -> Image.Image:
+    """Tone-map a frame. RGBA (or other) frames are flattened to RGB first; frames are always opaque on the bar."""
+    if img.mode != "RGB":
+        img = img.convert("RGB")
     return img.point(lut * 3)
 
 
