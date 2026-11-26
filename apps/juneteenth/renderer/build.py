@@ -78,11 +78,11 @@ def draw_live(img, text: str, style: str) -> None:
 
 ICON_FRONT = """
 BBBWBBBB
-BWBBBWBB
+BWBWBWBB
 BBWWWBBB
 WWWWWWWB
 BBWWWBBB
-BWBRBWBR
+BWRWRWBR
 RRRRRRRR
 RRRRRRRR
 """  # 8x8: the Juneteenth flag: a white star burst on blue over red
