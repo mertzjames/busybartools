@@ -15,11 +15,11 @@ from busybar.canvas import FPS, W, ease_in_out, mix, phase, put, sec
 from mdfx import draw_flag, pole, sky
 
 SECONDS = 14
-POLE_X = 24
-POLE_TOP = 1
-FULL_Y = 2  # flag top row at the peak
-HALF_Y = 7  # flag top row at half-staff (the middle of the pole above the ground)
-FLAG_W = 24
+POLE_X = 26
+POLE_TOP = 0
+FULL_Y = 1  # flag top row at the peak
+HALF_Y = 5  # flag top row at half-staff (its bottom stripe just above the grass)
+FLAG_W = 17  # 17 x 9: about 1.9 : 1, a real flag's proportions (D11)
 WAVE_PERIOD = 2.6  # seconds per wave cycle: a slow, steady breeze
 
 MORNING = [(0, (40, 62, 128)), (7, (78, 104, 166)), (12, (168, 150, 160))]

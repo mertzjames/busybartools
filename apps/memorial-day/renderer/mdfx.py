@@ -79,8 +79,8 @@ def dim_rect(img, x0: int, y0: int, x1: int, y1: int, k: float = 0.45, feather: 
 
 # --- the flag ---------------------------------------------------------------------------------------------------
 
-FLAG_H = 7  # seven stripes, one row each: red at the top and bottom (a 72x16 panel can't show thirteen)
-CANTON_W, CANTON_H = 9, 4
+FLAG_H = 9  # nine stripes, one row each: red at the top and bottom (a 72x16 panel can't show thirteen)
+CANTON_W, CANTON_H = 7, 5  # over the top five stripes, about 40% of the fly, as on the real flag
 
 
 def flag_color(u: int, v: int):

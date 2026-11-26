@@ -3,6 +3,7 @@
     python3 renderer/review.py scene flag_half previews/ [every_seconds [start end]]
     python3 renderer/review.py all previews/        (every scene and both backdrops, at their keyframes)
     python3 renderer/review.py cards previews/      (every card page over its backdrop, before and on the day)
+    python3 renderer/review.py grid services previews/ 1 [start end]   (a labeled 2-column grid, one frame per step)
 
 Card strips draw the live text exactly as the app does (build.draw_live), over the tone-mapped backdrop.
 """
@@ -53,6 +54,35 @@ def review(name: str, out_dir: Path, every: float | None = None, start: float = 
     return p
 
 
+def grid(name: str, out_dir: Path, every: float, start: float = 0.0, end: float | None = None,
+         cell: int = 6) -> Path:
+    """A 2-column grid of LED frames every `every` seconds, each labeled with its time (easier to read than a long
+    strip when checking fine timing)."""
+    from PIL import Image, ImageDraw
+
+    from busybar.preview import led
+
+    m = module(name)
+    frames = [tone(f.convert("RGB")) for f in m.render()]
+    stop = len(frames) / FPS if end is None else end
+    times = [start + i * every for i in range(int((stop - start) / every + 1e-6) + 1)]
+    tiles = [led(frames[min(len(frames) - 1, int(t * FPS))], cell=cell) for t in times]
+    tw, th, pad, lab = tiles[0].width, tiles[0].height, 6, 14
+    rows = (len(tiles) + 1) // 2
+    out = Image.new("RGB", (2 * tw + 3 * pad, rows * (th + lab + pad) + pad), (40, 40, 48))
+    d = ImageDraw.Draw(out)
+    for k, (t, tile) in enumerate(zip(times, tiles)):
+        x = pad + (k % 2) * (tw + pad)
+        y = pad + (k // 2) * (th + lab + pad)
+        d.text((x, y), f"{t:.1f} s", fill=(220, 220, 230))
+        out.paste(tile, (x, y + lab))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    p = out_dir / f"grid_{name}_{start:g}-{end or 'end'}.png"
+    out.save(p)
+    print(f"{name}: grid of {len(tiles)} -> {p}")
+    return p
+
+
 def cards(out_dir: Path) -> Path:
     """Every card page: the clock, the countdown, and the three on-the-day cards (morning and afternoon)."""
     import build
@@ -85,6 +115,9 @@ if __name__ == "__main__":
     if args[:1] == ["scene"] and len(args) >= 3:
         review(args[1], Path(args[2]), float(args[3]) if len(args) > 3 else None,
                float(args[4]) if len(args) > 4 else 0.0, float(args[5]) if len(args) > 5 else None)
+    elif args[:1] == ["grid"] and len(args) >= 4:
+        grid(args[1], Path(args[2]), float(args[3]), float(args[4]) if len(args) > 4 else 0.0,
+             float(args[5]) if len(args) > 5 else None)
     elif args[:1] == ["all"] and len(args) >= 2:
         from scenes import ALL, CLOCK_BG, COUNT_BG
         for mod in list(ALL) + [CLOCK_BG, COUNT_BG]:
