@@ -14,8 +14,14 @@ Custom apps, animations and developer tools for the [BUSY Bar](https://busy.app)
 |---|---|---|
 | [Wizarding Thanksgiving](apps/wizard-thanksgiving/) | Nine wizard-themed Thanksgiving scenes (owls, broomsticks, a talking hat, a winged serpent dragon, and a feast conjured by an old wizard) with a 24-hour clock and the date between them | [Latest release](https://github.com/mertzjames/busybartools/releases?q=wizard-thanksgiving) |
 | [Advent Calendar](apps/advent-calendar/) | A new animation behind every door from Dec 1 to Christmas, with a live countdown to Christmas | [Latest release](https://github.com/mertzjames/busybartools/releases?q=advent-calendar) |
+| [Hanukkah](apps/hanukkah/) | A menorah lit for tonight's night (at sunset, or a time you pick in the app's settings), with dreidels, latkes, sufganiyot, gelt and a countdown to Hanukkah | [Latest release](https://github.com/mertzjames/busybartools/releases?q=hanukkah) |
 | [Christmas Day](apps/christmas-day/) | Eight little Christmas stories, from trimming the tree to fireworks, with a candy-cane clock and the date between scenes | [Latest release](https://github.com/mertzjames/busybartools/releases?q=christmas-day) |
+| [Kwanzaa](apps/kwanzaa/) | A kinara lit for the day, with the day's principle in Swahili and English, plus harvest, unity cup, drums and karamu scenes (the candle order is a setting) | [Latest release](https://github.com/mertzjames/busybartools/releases?q=kwanzaa) |
 | [New Year's Eve](apps/new-years-eve/) | Party scenes with a countdown to midnight, huge digits for the last ten seconds, then fireworks and HAPPY NEW YEAR (START runs a demo any day) | [Latest release](https://github.com/mertzjames/busybartools/releases?q=new-years-eve) |
+| [MLK Day](apps/mlk-day/) | A quiet tribute: dawn, a march, a dove and a day of service, with a countdown to the day | [Latest release](https://github.com/mertzjames/busybartools/releases?q=mlk-day) |
+| [Lunar New Year](apps/lunar-new-year/) | Lanterns, dragon and lion dances, red envelopes and the year's zodiac animal, with a countdown and a greeting in Mandarin, Cantonese, Vietnamese or Korean | [Latest release](https://github.com/mertzjames/busybartools/releases?q=lunar-new-year) |
+| [Valentine's Day](apps/valentines-day/) | Sweet scenes with hearts, a cherub, lovebirds, chocolates and a rose, with a countdown | [Latest release](https://github.com/mertzjames/busybartools/releases?q=valentines-day) |
+| [Presidents' Day](apps/presidents-day/) | Stars, stripes and landmarks: a flag, a cherry tree, monuments at sunset and fireworks | [Latest release](https://github.com/mertzjames/busybartools/releases?q=presidents-day) |
 
 More apps and tools will be added over time. Want to build one? See [Adding a new app](docs/DEVELOPMENT.md#adding-a-new-app).
 
