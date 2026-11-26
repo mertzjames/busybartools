@@ -1,7 +1,9 @@
 # Development guide
 
 How this repo is put together, how to build and test apps, and what we've learned about the BUSY Bar platform.
-For the branch model, pull requests and releases, see [CONTRIBUTING.md](../CONTRIBUTING.md).
+For the branch model, pull requests and releases, see [CONTRIBUTING.md](../CONTRIBUTING.md). If you work with an
+AI coding agent, point it at [AGENTS.md](../AGENTS.md). Claude Code loads it automatically through
+[CLAUDE.md](../CLAUDE.md).
 
 - [Setup](#setup)
 - [Repository layout](#repository-layout)
@@ -31,9 +33,18 @@ Every tool reads it.
 ```
 apps/
   wizard-thanksgiving/      an app (see "Anatomy of an app")
-lib/python/busybar/
+lib/python/busybar/         shared render kit (Python); see "Shared render kit"
   anim.py                   .anim writer + reader (round-trip verification)
+  canvas.py, fx.py          72×16 frames, blending, easing; seeded stars, particles, smoke, hills...
+  font.py                   big / tiny / clock pixel fonts, draw_text, register_font, export_json
+  sprite.py                 Sprite: text-grid pixel art with palettes, flip, recolor
+  showbuild.py              scene build pipeline: tone curve, encode+verify, mockup data, generated TS, icons
   preview.py                LED-style renders of frames: led(), strip()
+lib/ts/busybar/             shared TypeScript, imported by relative path from an app's app/shared/
+  xpmtext.ts                pixel-font text -> xpmbitmap (gradient + shadow)
+  walltime.ts               the bar's local time: parse, format, days/seconds until a date or midnight
+  drawqueue.ts              one-request-in-flight draw queue with per-slot replacement
+lib/tests/                  kit tests (run first by tools/check.sh)
 tools/
   check.sh                  build + typecheck + test apps; CI runs this
   deploy.sh                 build one app and install/launch it on the bar from .env
@@ -86,6 +97,7 @@ apps/<folder>/
   tests/check.sh           OPTIONAL. App tests, run by tools/check.sh after the build
   README.md                REQUIRED. What it does, controls, how to change it
   docs/DECISIONS.md        REQUIRED. Decision log: what was decided, why, what else was considered
+  AGENTS.md, CLAUDE.md     OPTIONAL. App-specific notes for AI coding agents (CLAUDE.md imports AGENTS.md)
 ```
 
 The package for upload is `app/dist/<app-id>.tgz`. A release names it `<app-id>-<version>.tgz`.
@@ -101,7 +113,7 @@ tools/new-app.sh fireplace --id busybartools.fireplace --name "Fireplace" --desc
 ```
 
 This runs the official scaffolder into `apps/fireplace/app` with no prompts and installs dependencies. It also
-creates `README.md` and `docs/DECISIONS.md` stubs. The author defaults to "busybartools contributors"; pass
+creates `README.md`, `docs/DECISIONS.md`, `AGENTS.md` and `CLAUDE.md` stubs. The author defaults to "busybartools contributors"; pass
 `--author` to change it. Then:
 
 1. Write `app/src/main.ts`. The scaffold draws "Hello" every second. The smallest useful app draws one element:
@@ -126,6 +138,48 @@ creates `README.md` and `docs/DECISIONS.md` stubs. The author defaults to "busyb
    [Gotchas](#gotchas-we-hit)).
 4. `tools/check.sh fireplace`, then `tools/deploy.sh fireplace`.
 5. Add a row to the **Apps** table in the root `README.md`, and open a PR into `dev`.
+
+## Shared render kit
+
+Scene-based apps (Wizarding Thanksgiving and the holiday apps) share one toolkit. Python renders the art, and
+TypeScript draws live text on the device.
+
+**Python** (`sys.path.insert(0, "<repo>/lib/python")`, then `from busybar...`):
+
+```python
+from busybar.canvas import FPS, W, H, new, vgradient, blit, put, add, mix, ease_in_out, lerp, phase, sec
+from busybar.fx import Stars, Particles, sparkle, puff, moon, hills, SPARKLE, FIRE
+from busybar.font import draw_text, text_width, register_font, export_json
+from busybar.sprite import Sprite
+from busybar.showbuild import build_scenes, tone_lut, tone_rgb, ts_module, FONT_TS_TYPE, fill_template, save_icon
+```
+
+- **A scene module** exposes `NAME`, `TITLE`, `SECONDS`, `KEYFRAMES = [(seconds, caption)]` and
+  `render() -> [72×16 RGBA frames at FPS]`. Make it deterministic: seed every RNG.
+- **`build_scenes(modules, anim_dir, tone_lut(gamma), previews_dir)`** renders, tone-maps, writes and
+  round-trip-verifies each `.anim`. It returns metadata (`name`, `title`, `ms`, `frames`, `keyframes`, base64
+  `sheet`, `bytes`) for the generated TS and the mockup. See `apps/wizard-thanksgiving/renderer/build.py` for a
+  complete build in about 100 lines.
+- **Fonts:** `big` (5×7, A–Z 0–9 and `!',-.:?`), `tiny` (3×5) and `clock` (7×12 digits and `:`). Need another glyph
+  or font? Call `register_font()` in your app. Don't edit `font.py` for one app.
+- **Tone curve:** apply the same `tone_lut` to frames (through `build_scenes`) and to every live-text color
+  (`tone_rgb`), so the device matches the mockup.
+
+**TypeScript** (from `app/shared/*.ts`; files outside `app/src/` are bundled into `main.js`):
+
+```ts
+import { textBitmap, type Font, type TextSpec } from "../../../../lib/ts/busybar/xpmtext.ts";
+import { parseLocal, formatDate, daysUntil, secondsToMidnight, secondsUntilDate, addSeconds } from "../../../../lib/ts/busybar/walltime.ts";
+import { createDrawQueue } from "../../../../lib/ts/busybar/drawqueue.ts";
+```
+
+- **Live text:** `textBitmap(text, FONTS[spec.font], spec)` returns an XPM2 `data` string, centered (or at `x`), for an
+  `xpmbitmap` element. It must draw identically to `font.draw_text`. Add a parity test like
+  `apps/wizard-thanksgiving/tests/clock_parity.py`.
+- **Time:** `parseLocal(info.timestamp)` reads the bar's wall-clock fields. Use `daysUntil` and `secondsUntilDate`
+  for countdowns to a date, and `secondsToMidnight` for midnight. Don't use JS `Date` local-time methods.
+- **Kit changes:** they need their own PR with tests in `lib/tests/`. During parallel work, `lib/` is frozen (see the
+  playbooks in `docs/playbooks/`).
 
 ## Making animations (`.anim`)
 
@@ -180,7 +234,7 @@ Guidelines from building the first app:
 - Built-in fonts are ASCII-only bitmaps: `tiny` (6 px line), `small` (9), `normal` / `bold` / `condensed` (11),
   `large` (13), `extra_large` (14).
 - For styled text (gradients, shadows, custom glyphs), render it as an `xpmbitmap`: XPM2 text, at most 32 colors,
-  no larger than the display. See `apps/wizard-thanksgiving/app/shared/clocktext.ts`.
+  no larger than the display. Use `textBitmap` from `lib/ts/busybar/xpmtext.ts`.
 
 **JS runtime.**
 - Apps run on JerryScript (roughly ES2020): not Node, not a browser.

@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "id": "busybartools.advent",
+  "name": "Advent Calendar",
+  "version": "1.0.0",
+  "api_version": "27.12.0",
+  "description": "A unique animation for every day of Advent, with a countdown to Christmas",
+  "author": "busybartools contributors"
+}

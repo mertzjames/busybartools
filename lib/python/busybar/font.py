@@ -4,13 +4,14 @@
 - TINY:  5 px tall, 3 px wide (small captions)
 - CLOCK: 12 px tall, 7 px wide digits with 2 px strokes (the live 24-hour clock)
 
-The same glyph tables are exported to JSON by build.py so the on-device JS app
-and the browser mockup draw identical text (docs/DECISIONS.md D10).
+The same glyph tables are exported to JSON (export_json) so an app's on-device JS and its
+browser mockup draw identical text. Apps add their own glyphs or fonts with register_font()
+instead of editing this shared module. Characters missing from a font are skipped silently.
 """
 
 from __future__ import annotations
 
-from canvas import put
+from .canvas import mix, put
 
 
 def _parse(table: str, rows: int) -> dict[str, list[str]]:
@@ -798,6 +799,26 @@ CLOCK = _parse("""
 FONTS = {"big": (BIG, 7, 1), "tiny": (TINY, 5, 1), "clock": (CLOCK, 12, 1)}
 
 
+def register_font(name: str, table, height: int, gap: int = 1, extend: bool = False) -> None:
+    """Add an app-local font, or extra glyphs for an existing one, without editing this shared module.
+
+    table:  a glyph table string in the format above ("[A]" then `height` rows of '#'/'.'), or {char: [rows]}.
+    extend: merge the glyphs into the existing font `name` (its height must match) instead of replacing it.
+
+        register_font("big", {"+": [".....", "..#..", "..#..", "#####", "..#..", "..#..", "....."]}, 7, extend=True)
+        register_font("snow", SNOW_TABLE, 9)        # a new font, exported by export_json() too
+    """
+    glyphs = _parse(table, height) if isinstance(table, str) else {k: list(v) for k, v in table.items()}
+    for ch, rows in glyphs.items():
+        assert len(rows) == height and len({len(r) for r in rows}) == 1, f"{name}: glyph {ch!r} malformed"
+    if extend:
+        base, base_h, base_gap = FONTS[name]
+        assert base_h == height, f"{name}: extend height {height} != {base_h}"
+        FONTS[name] = ({**base, **glyphs}, base_h, base_gap)
+    else:
+        FONTS[name] = (glyphs, height, gap)
+
+
 def text_width(text: str, font: str = "big") -> int:
     glyphs, _, gap = FONTS[font]
     widths = [len(glyphs[c][0]) for c in text.upper() if c in glyphs]
@@ -822,7 +843,6 @@ def draw_text(img, text: str, x: int, y: int, color, font: str = "big", shadow=N
         for gy, row in enumerate(g):
             c = color
             if gradient:
-                from canvas import mix
                 c = mix(gradient[0], gradient[1], gy / max(1, rows - 1))
             for gx, bit in enumerate(row):
                 if bit != "#":
@@ -837,6 +857,10 @@ def draw_text(img, text: str, x: int, y: int, color, font: str = "big", shadow=N
     return cx - gap
 
 
-def export_json() -> dict:
-    """Glyph tables for the JS app and mockup: {font: {height, gap, glyphs: {ch: [rows]}}}."""
-    return {name: {"height": rows, "gap": gap, "glyphs": glyphs} for name, (glyphs, rows, gap) in FONTS.items()}
+def export_json(names=None) -> dict:
+    """Glyph tables for the JS app and mockup: {font: {height, gap, glyphs: {ch: [rows]}}}.
+
+    names: export only these fonts (default: every registered font), to keep generated TS small.
+    """
+    return {name: {"height": rows, "gap": gap, "glyphs": glyphs} for name, (glyphs, rows, gap) in FONTS.items()
+            if names is None or name in names}

@@ -1,0 +1,587 @@
+<title>Advent Calendar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  /* One column. The simulated bar is the hero; under it the calendar of 25 doors doubles as the day picker.
+     Look: fir-green ground, gilt door numbers, cranberry for actions. Dark only (it previews an LED panel). */
+  :root {
+    --fir: #0f2219;
+    --bough: #183327;
+    --bough-2: #1f3d30;
+    --needle: #2e5040;
+    --snow: #eef0e6;
+    --lichen: #a3b9aa;
+    --berry: #d8394a;
+    --gilt: #e8bf5a;
+    --bezel: #08120d;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fir); color: var(--snow); font: 16px/1.6 var(--body); }
+  .wrap {
+    max-width: 1000px; margin: 0 auto;
+    padding: 40px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px));
+    display: grid; gap: 56px;
+  }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(38px, 7vw, 64px); line-height: 1.02; letter-spacing: -0.01em; }
+  h2 { font-size: 30px; line-height: 1.15; }
+  h3 { font-size: 20px; line-height: 1.2; }
+  p { margin: 0; }
+  .lede { max-width: 62ch; color: var(--lichen); font-size: 17px; }
+  header { display: grid; gap: 14px; }
+
+  /* --- the bar --- */
+  .stage { display: grid; gap: 16px; }
+  .bezel {
+    background: var(--bezel); border: 1px solid var(--needle); border-radius: 16px;
+    padding: clamp(10px, 2vw, 20px);
+  }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #050a07; }
+  .now { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; }
+  .now strong { font-family: var(--display); font-size: 24px; font-weight: 500; }
+  .now span { color: var(--lichen); font-variant-numeric: tabular-nums; }
+  .progress { height: 3px; background: var(--needle); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--gilt); }
+  .buttons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: 700 15px/1 var(--body); color: var(--snow); background: var(--bough-2);
+    border: 1px solid var(--needle); border-radius: 10px; padding: 11px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--lichen); }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--gilt); outline-offset: 2px; }
+  button.go { background: var(--berry); border-color: var(--berry); }
+  .hint { color: var(--lichen); font-size: 14px; }
+
+  /* --- the simulated date and the calendar --- */
+  .when {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 28px;
+    background: var(--bough); border: 1px solid var(--needle); border-radius: 18px; padding: 22px;
+  }
+  .when-controls { display: grid; gap: 14px; align-content: start; }
+  .when-controls label { display: grid; gap: 6px; font-weight: 700; }
+  .when-controls output { font-family: var(--display); font-size: 28px; font-weight: 500; color: var(--gilt); }
+  input[type=range] { width: 100%; accent-color: var(--berry); }
+  input[type=time] {
+    font: 16px var(--body); color: var(--snow); background: var(--bough-2); border: 1px solid var(--needle);
+    border-radius: 8px; padding: 8px 10px; width: max-content; color-scheme: dark;
+  }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .presets button { padding: 8px 10px; font-size: 14px; font-weight: 400; }
+  .season { color: var(--lichen); }
+  .doors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; align-content: start; max-width: 340px; }
+  .door {
+    aspect-ratio: 1; display: grid; place-items: center; padding: 0; border-radius: 8px;
+    font: 700 18px/1 var(--display); color: var(--gilt);
+    background: #2a1a1c; border: 1px solid #4a2a2e;
+  }
+  .door[data-open="true"] { background: var(--bough-2); border-color: var(--needle); color: var(--snow); }
+  .door[data-open="false"] { cursor: not-allowed; color: #b48a4a; }
+  .door[aria-current="true"] { border-color: var(--gilt); box-shadow: inset 0 0 0 1px var(--gilt); }
+  .door.today { background: var(--berry); border-color: var(--berry); color: var(--snow); }
+
+  /* --- storyboards --- */
+  .section { display: grid; gap: 18px; }
+  .section > p { max-width: 64ch; color: var(--lichen); }
+  .boards { display: grid; gap: 14px; }
+  .board {
+    display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 16px;
+    padding: 16px 18px; border-radius: 14px; background: var(--bough); border: 1px solid var(--needle);
+  }
+  .board .num { grid-row: span 2; font: 700 40px/1 var(--display); color: var(--gilt); }
+  .board .num.word { font-size: 18px; line-height: 1.2; padding-top: 6px; }
+  .board-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .board-head .dur { color: var(--lichen); font-size: 14px; }
+  .board-head button { margin-left: auto; padding: 8px 12px; font-size: 14px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; margin-top: 8px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; font-weight: 400; }
+  .thumb canvas { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 3px; background: #050a07; }
+  .thumb span { font-size: 14px; line-height: 1.35; color: var(--lichen); }
+  .thumb b { color: var(--snow); margin-right: 6px; font-variant-numeric: tabular-nums; }
+
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 0; }
+  .facts div { border-top: 2px solid var(--needle); padding-top: 10px; }
+  .facts dt { color: var(--lichen); font-size: 14px; }
+  .facts dd { margin: 0; font: 500 26px/1.2 var(--display); color: var(--snow); font-variant-numeric: tabular-nums; }
+  .rules { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 68ch; color: var(--lichen); }
+  .rules strong { color: var(--snow); }
+  footer { color: var(--lichen); font-size: 14px; border-top: 1px solid var(--needle); padding-top: 16px; }
+
+  @media (max-width: 720px) {
+    .when { grid-template-columns: 1fr; }
+    .board { grid-template-columns: 1fr; }
+    .board .num { grid-row: auto; font-size: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<main class="wrap">
+  <header>
+    <h1>Advent Calendar</h1>
+    <p class="lede">An Advent calendar for the BUSY Bar's 72 × 16 LED display. Each day a door opens on a new little
+      animation, from the first snowflake on December 1 to Christmas morning, then a card counts down to Christmas
+      using the bar's own clock. This page plays the same frames the bar plays, at 15 frames per second.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now"><strong id="title">Loading…</strong><span id="time"></span></div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="buttons">
+      <button id="encPrev" type="button" aria-label="Turn the encoder back one day">Earlier day</button>
+      <button id="encNext" type="button" aria-label="Turn the encoder forward one day">Later day</button>
+      <button id="ok" type="button" class="go">OK: back to today</button>
+      <button id="play" type="button">Pause</button>
+    </div>
+    <p class="hint">The buttons act like the bar's controls: the encoder browses the doors already opened, OK returns
+      to today, and a short press of Back quits the app.</p>
+  </section>
+
+  <section class="when" aria-labelledby="whenTitle">
+    <div class="when-controls">
+      <h2 id="whenTitle">Pick the bar's date</h2>
+      <label for="date">Date <output id="dateOut" for="date"></output></label>
+      <input id="date" type="range" min="0" max="60" step="1" value="30">
+      <label for="clock">Time of day</label>
+      <input id="clock" type="time" value="18:05">
+      <div class="presets" aria-label="Jump to a date">
+        <button type="button" data-preset="11-20">Nov 20</button>
+        <button type="button" data-preset="12-01">Dec 1</button>
+        <button type="button" data-preset="12-07">Dec 7</button>
+        <button type="button" data-preset="12-24">Christmas Eve</button>
+        <button type="button" data-preset="12-25">Christmas Day</button>
+        <button type="button" data-preset="12-27">Dec 27</button>
+      </div>
+      <p class="season" id="seasonText"></p>
+    </div>
+    <div>
+      <div class="doors" id="doors" role="group" aria-label="The calendar's doors"></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="facts">
+    <h2 id="facts">The calendar</h2>
+    <dl class="facts" id="factList"></dl>
+    <ul class="rules">
+      <li><strong>Every loop</strong> opens the day's door, plays that day's vignette, then shows the countdown card.</li>
+      <li><strong>December 1 to 23:</strong> the card reads <em>N DAYS / TO CHRISTMAS</em>.</li>
+      <li><strong>Christmas Eve:</strong> hours and minutes until midnight, <em>HH:MM / TO GO</em>, ticking each minute.</li>
+      <li><strong>Christmas Day:</strong> the finale, then <em>MERRY / CHRISTMAS</em>.</li>
+      <li><strong>Before December:</strong> a winter scene and <em>N DAYS / TO ADVENT</em>. <strong>From December 26:</strong>
+        the finale and <em>SEE YOU / NEXT YEAR!</em>, with all 25 doors open to browse.</li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="days">
+    <h2 id="days">Behind every door</h2>
+    <p>Key moments from each day's vignette. They grow busier toward Christmas: quiet objects in the first week,
+      animals and treats next, then characters, and finally the tree, the sleigh and the star. Click a frame to show
+      it on the simulated bar.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+const SHOW = /*__SHOW_DATA__*/null;
+
+/* <logic> — a mirror of app/shared/advent.ts and lib/ts/busybar (walltime, xpmtext); tests/advent.test.mts checks
+   that both agree for every day of a year and draw identical text. Keep it free of DOM access. */
+const LOGIC = (() => {
+  const pad2 = n => (n < 10 ? "0" : "") + n;
+  const daysUntil = (t, y, m, d) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(t.year, t.month - 1, t.day)) / 86400000);
+  const secondsToMidnight = t => 86400 - (t.hour * 3600 + t.minute * 60 + t.second);
+  const FINALE = 25;
+  function season(t) {
+    if (t.month < 12) return "pre";
+    if (t.day <= 23) return "advent";
+    if (t.day === 24) return "eve";
+    if (t.day === 25) return "christmas";
+    return "post";
+  }
+  function openedDays(t) {
+    const s = season(t);
+    return s === "pre" ? 0 : s === "post" ? FINALE : t.day;
+  }
+  const dateLabel = day => "DEC " + day;
+  const plural = (n, unit) => n + " " + unit + (n === 1 ? "" : "S");
+  function cardLines(t) {
+    switch (season(t)) {
+      case "pre": return [{ text: plural(daysUntil(t, t.year, 12, 1), "DAY"), style: "head" }, { text: "TO ADVENT", style: "sub" }];
+      case "advent": return [{ text: plural(daysUntil(t, t.year, 12, 25), "DAY"), style: "head" }, { text: "TO CHRISTMAS", style: "sub" }];
+      case "eve": {
+        const m = Math.ceil(secondsToMidnight(t) / 60);
+        return [{ text: pad2(Math.floor(m / 60)) + ":" + pad2(m % 60), style: "head" }, { text: "TO GO", style: "sub" }];
+      }
+      case "christmas": return [{ text: "MERRY", style: "top" }, { text: "CHRISTMAS", style: "bot" }];
+      default: return [{ text: "SEE YOU", style: "top" }, { text: "NEXT YEAR!", style: "bot" }];
+    }
+  }
+  const msUntilCardChange = t => season(t) === "eve" ? (60 - t.second) * 1000 : secondsToMidnight(t) * 1000;
+  function cycleSteps(t, view) {
+    if (view !== null) return [{ kind: "door", day: view }, { kind: "scene", day: view }, { kind: "card" }];
+    switch (season(t)) {
+      case "pre": return [{ kind: "scene", day: 0 }, { kind: "card" }];
+      case "post": return [{ kind: "scene", day: FINALE }, { kind: "card" }];
+      default: return [{ kind: "door", day: t.day }, { kind: "scene", day: t.day }, { kind: "card" }];
+    }
+  }
+  function browse(t, view, delta) {
+    const opened = openedDays(t);
+    if (opened === 0) return null;
+    const current = view ?? opened;
+    const next = Math.max(1, Math.min(opened, current + delta));
+    if (season(t) !== "post" && next === t.day) return null;
+    if (season(t) === "post" && view === null && next === current) return null;
+    return next;
+  }
+  /* text: same drawing order as font.draw_text and xpmtext.textBitmap (shadow first, then a row gradient) */
+  const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+  function textWidth(text, font) {
+    const ws = [...text].map(c => font.glyphs[c]).filter(Boolean).map(g => g[0].length);
+    return ws.reduce((s, w) => s + w, 0) + font.gap * Math.max(0, ws.length - 1);
+  }
+  function blend(buf, W, H, x, y, c, a) {
+    if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) buf[i + k] = Math.round(buf[i + k] + (c[k] - buf[i + k]) * a);
+  }
+  function drawText(buf, W, H, text, spec, font, alpha) {
+    let cx = Math.floor((W - textWidth(text, font)) / 2);
+    for (const ch of text) {
+      const g = font.glyphs[ch];
+      if (!g) continue;
+      g.forEach((row, gy) => {
+        const c = mix(spec.top, spec.bottom, gy / Math.max(1, font.height - 1));
+        [...row].forEach((bit, gx) => {
+          if (bit !== "#") return;
+          blend(buf, W, H, cx + gx + 1, spec.y + gy + 1, spec.shadow, alpha);
+          blend(buf, W, H, cx + gx, spec.y + gy, c, alpha);
+        });
+      });
+      cx += g[0].length + font.gap;
+    }
+  }
+  return { season, openedDays, dateLabel, cardLines, msUntilCardChange, cycleSteps, browse, drawText, daysUntil };
+})();
+/* </logic> */
+
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, S = SHOW.show;
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const YEAR = new Date().getFullYear();
+  const $ = id => document.getElementById(id);
+
+  // ---------- frames ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const pixels = {};
+  const frameAt = (name, i) => {
+    const a = SHOW.anims[name];
+    const k = Math.max(0, Math.min(a.frames - 1, i));
+    return new Uint8ClampedArray(pixels[name].subarray(k * W * H * 4, (k + 1) * W * H * 4));
+  };
+
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#050a07";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    ctx.globalAlpha = 0.2;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#131c17" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // The app fades text in with three opacity steps, 150 ms apart.
+  const fadeStep = ms => Math.min(1, (Math.floor(ms / 150) + 1) / 3);
+  function withLines(buf, lines, alpha) {
+    for (const l of lines) {
+      const spec = S.styles[l.style];
+      LOGIC.drawText(buf, W, H, l.text, spec, SHOW.fonts[spec.font], alpha);
+    }
+    return buf;
+  }
+
+  // ---------- simulated bar time ----------
+  const sim = { base: null, startedAt: performance.now() };
+  function dateFromSlider(v) {             // 0 = Nov 1 ... 29 = Nov 30, 30 = Dec 1 ... 60 = Dec 31
+    return v < 30 ? { month: 11, day: v + 1 } : { month: 12, day: v - 29 };
+  }
+  function setBase() {
+    const d = dateFromSlider(Number($("date").value));
+    const [hh, mm] = ($("clock").value || "18:05").split(":").map(Number);
+    sim.base = { year: YEAR, month: d.month, day: d.day, hour: hh, minute: mm, second: 0 };
+    sim.startedAt = performance.now();
+  }
+  function barTime() {                     // simulated time advances in real time from the picked moment
+    const b = sim.base;
+    const ms = Date.UTC(b.year, b.month - 1, b.day, b.hour, b.minute, b.second) + (performance.now() - sim.startedAt);
+    const d = new Date(ms);
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate(),
+             hour: d.getUTCHours(), minute: d.getUTCMinutes(), second: d.getUTCSeconds() };
+  }
+
+  // ---------- the show (same sequence as app/src/main.ts) ----------
+  let view = null, steps = [], stepIdx = 0, stepStart = performance.now(), paused = reduce, pausedMs = 0, frozen = null;
+  const dayInfo = d => d === 0 ? S.winter : S.days[d - 1];
+  const stepMs = s => s.kind === "door" ? S.door.ms : s.kind === "card" ? S.card.ms : dayInfo(s.day).ms;
+  function newCycle() {
+    steps = LOGIC.cycleSteps(barTime(), view);
+    stepIdx = 0; stepStart = performance.now(); pausedMs = 0; frozen = null;
+    paintDoors();
+  }
+  function restart() { newCycle(); }
+  function elapsed() { return paused ? pausedMs : performance.now() - stepStart; }
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) pausedMs = elapsed(); else stepStart = performance.now() - pausedMs;
+    paused = p;
+    $("play").textContent = p ? "Play" : "Pause";
+  }
+
+  function frameFor(step, ms) {
+    const f = Math.floor(ms * FPS / 1000);
+    if (step.kind === "door") {
+      const buf = frameAt("door", f);
+      if (ms >= S.door.text_ms) withLines(buf, [{ text: LOGIC.dateLabel(step.day), style: "date" }], fadeStep(ms - S.door.text_ms));
+      return buf;
+    }
+    if (step.kind === "scene") return frameAt(dayInfo(step.day).name, f);
+    const buf = frameAt("card_bg", f % SHOW.anims.card_bg.frames);
+    return withLines(buf, LOGIC.cardLines(barTime()), fadeStep(ms));
+  }
+  function label(step) {
+    if (step.kind === "door") return `Opening the door: ${LOGIC.dateLabel(step.day)}`;
+    if (step.kind === "card") return "Countdown card";
+    return step.day === 0 ? "Before Advent: Winter Night" : `December ${step.day}: ${dayInfo(step.day).title}`;
+  }
+
+  const led = $("led").getContext("2d");
+  let lastKey = "";
+  function tick() {
+    let ms = elapsed();
+    if (frozen) {
+      drawLED(led, frozen.buf, 12);
+    } else {
+      if (ms >= stepMs(steps[stepIdx])) {
+        stepIdx++;
+        if (stepIdx >= steps.length) newCycle();
+        stepStart = performance.now(); pausedMs = 0; ms = 0;
+      }
+      const step = steps[stepIdx];
+      const t = barTime();
+      const key = `${stepIdx}:${Math.floor(ms * FPS / 1000)}:${t.minute}:${Math.min(3, Math.floor(ms / 150))}`;
+      if (key !== lastKey) { drawLED(led, frameFor(step, ms), 12); lastKey = key; }
+      $("title").textContent = label(step);
+      $("time").textContent = `${(ms / 1000).toFixed(1)} s of ${(stepMs(step) / 1000).toFixed(1)} s`;
+      $("bar").style.width = `${Math.min(100, ms / stepMs(step) * 100)}%`;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- the calendar grid ----------
+  function paintDoors() {
+    const t = barTime();
+    const opened = LOGIC.openedDays(t);
+    const showing = view ?? (LOGIC.season(t) === "post" ? 25 : (opened || null));
+    $("doors").querySelectorAll(".door").forEach((b, i) => {
+      const d = i + 1;
+      b.dataset.open = String(d <= opened);
+      b.classList.toggle("today", LOGIC.season(t) !== "pre" && LOGIC.season(t) !== "post" && d === t.day);
+      b.setAttribute("aria-current", String(d === showing));
+      b.setAttribute("aria-label", d <= opened ? `Show December ${d}` : `December ${d}, not opened yet`);
+    });
+    const s = LOGIC.season(t);
+    const text = {
+      pre: `Before Advent: ${LOGIC.daysUntil(t, t.year, 12, 1)} days until the first door opens. The encoder does nothing yet.`,
+      advent: `Advent: door ${t.day} is open, and you can browse doors 1 to ${t.day}.`,
+      eve: "Christmas Eve: the card counts hours and minutes to midnight.",
+      christmas: "Christmas Day: the finale plays after its door opens.",
+      post: "After Christmas: the finale loops, and all 25 doors can be browsed.",
+    }[s];
+    $("seasonText").textContent = text + (view ? ` Browsing December ${view}.` : "");
+    const d = dateFromSlider(Number($("date").value));
+    $("dateOut").textContent = `${MONTHS[d.month - 1]} ${d.day}`;
+  }
+  function buildDoors() {
+    for (let d = 1; d <= 25; d++) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "door"; b.textContent = d;
+      b.addEventListener("click", () => {
+        const t = barTime();
+        if (d > LOGIC.openedDays(t)) return;
+        view = (LOGIC.season(t) !== "post" && d === t.day) ? null : d;
+        restart();
+      });
+      $("doors").appendChild(b);
+    }
+  }
+
+  // ---------- storyboards ----------
+  function thumb(buf, caption, at, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "thumb";
+    const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+    drawLED(c.getContext("2d"), buf, 5);
+    const cap = document.createElement("span");
+    if (at !== null) { const k = document.createElement("b"); k.textContent = at; cap.append(k); }
+    cap.append(caption);
+    b.append(c, cap);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+  function board(num, title, dur, thumbs, numIsWord) {
+    const card = document.createElement("article");
+    card.className = "board";
+    const n = document.createElement("div");
+    n.className = "num" + (numIsWord ? " word" : ""); n.textContent = num;
+    const head = document.createElement("div"); head.className = "board-head";
+    const h = document.createElement("h3"); h.textContent = title;
+    const d = document.createElement("span"); d.className = "dur"; d.textContent = dur;
+    head.append(h, d);
+    const th = document.createElement("div"); th.className = "thumbs";
+    thumbs.forEach(x => th.appendChild(x));
+    card.append(n, head, th);
+    return card;
+  }
+  function show(buf, title) {
+    frozen = { buf };
+    setPaused(true);
+    $("title").textContent = title;
+    $("time").textContent = "Paused on a storyboard frame. Press Play to resume.";
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  function boards() {
+    const host = $("boards");
+    const sceneBoard = (num, info, isWord) => {
+      const a = SHOW.anims[info.name];
+      const ts = a.keyframes.map(k => {
+        const buf = frameAt(info.name, Math.round(k.s * FPS));
+        return thumb(buf, k.caption, `${k.s.toFixed(1)} s`, () => show(frameAt(info.name, Math.round(k.s * FPS)), info.title));
+      });
+      host.appendChild(board(num, info.title, `${(info.ms / 1000).toFixed(0)} s, ${a.frames} frames`, ts, isWord));
+    };
+    // the intro, with the live date written in
+    const door = SHOW.anims.door;
+    const doorThumbs = door.keyframes.map(k => {
+      const ms = k.s * 1000;
+      const mk = () => {
+        const buf = frameAt("door", Math.round(k.s * FPS));
+        return ms >= S.door.text_ms ? withLines(buf, [{ text: "DEC 7", style: "date" }], 1) : buf;
+      };
+      return thumb(mk(), k.caption, `${k.s.toFixed(1)} s`, () => show(mk(), "The door opens"));
+    });
+    host.appendChild(board("Intro", "The door opens", `${S.door.ms / 1000} s, the date is drawn live`, doorThumbs, true));
+    S.days.forEach(d => sceneBoard(String(d.day), d, false));
+    // countdown cards for sample dates, computed with the same logic as the bar
+    const samples = [
+      [{ year: YEAR, month: 11, day: 20, hour: 9, minute: 0, second: 0 }, "Nov 20"],
+      [{ year: YEAR, month: 12, day: 7, hour: 9, minute: 0, second: 0 }, "Dec 7"],
+      [{ year: YEAR, month: 12, day: 23, hour: 9, minute: 0, second: 0 }, "Dec 23"],
+      [{ year: YEAR, month: 12, day: 24, hour: 17, minute: 18, second: 0 }, "Dec 24, 17:18"],
+      [{ year: YEAR, month: 12, day: 25, hour: 9, minute: 0, second: 0 }, "Dec 25"],
+      [{ year: YEAR, month: 12, day: 28, hour: 9, minute: 0, second: 0 }, "Dec 28"],
+    ];
+    const cardThumbs = samples.map(([t, cap]) => {
+      const mk = () => withLines(frameAt("card_bg", 0), LOGIC.cardLines(t), 1);
+      return thumb(mk(), cap, null, () => show(mk(), `Countdown card on ${cap}`));
+    });
+    host.appendChild(board("Card", "Countdown card", `${S.card.ms / 1000} s, drawn live from the bar's date`, cardThumbs, true));
+    sceneBoard("Winter", S.winter, true);
+  }
+
+  function facts() {
+    const totalDays = S.days.reduce((a, d) => a + d.ms, 0);
+    const items = [
+      ["Vignettes", "25"], ["Display", "72 × 16"], ["Frame rate", "15 fps"],
+      ["All 25 days", `${Math.floor(totalDays / 60000)} m ${Math.round(totalDays / 1000) % 60} s`],
+      ["Animation data", `${(SHOW.bytes / 1048576).toFixed(1)} MB`],
+    ];
+    for (const [k, v] of items) {
+      const div = document.createElement("div");
+      const dt = document.createElement("dt"); dt.textContent = k;
+      const dd = document.createElement("dd"); dd.textContent = v;
+      div.append(dt, dd);
+      $("factList").appendChild(div);
+    }
+  }
+
+  // ---------- wiring ----------
+  $("date").addEventListener("input", () => { setBase(); view = null; restart(); });
+  $("clock").addEventListener("change", () => { setBase(); restart(); });
+  document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => {
+    const [m, d] = b.dataset.preset.split("-").map(Number);
+    $("date").value = String(m === 11 ? d - 1 : d + 29);
+    if (m === 12 && d === 24) $("clock").value = "17:18";
+    setBase(); view = null; restart();
+  }));
+  const turn = delta => {
+    const next = LOGIC.browse(barTime(), view, delta);
+    if (next === view) return;
+    view = next; restart();
+  };
+  $("encPrev").addEventListener("click", () => turn(-1));
+  $("encNext").addEventListener("click", () => turn(1));
+  $("ok").addEventListener("click", () => { view = null; restart(); });
+  $("play").addEventListener("click", () => { frozen = null; setPaused(!paused); });
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === "ArrowLeft") turn(-1);
+    if (e.key === "ArrowRight") turn(1);
+    if (e.key === " ") { e.preventDefault(); frozen = null; setPaused(!paused); }
+  });
+
+  // Start on ?date=MM-DD&time=HH:MM if given (shareable review links), else today in Nov-Dec, else Dec 7.
+  const q = new URLSearchParams(location.search);
+  const today = new Date();
+  let [m, d] = [today.getMonth() + 1, today.getDate()];
+  const qd = /^(11|12)-(\d{2})$/.exec(q.get("date") || "");
+  if (qd) [m, d] = [Number(qd[1]), Number(qd[2])];
+  $("date").value = String(m === 11 ? d - 1 : m === 12 ? d + 29 : 36);
+  const qt = /^\d{2}:\d{2}$/.test(q.get("time") || "") ? q.get("time")
+    : `${String(today.getHours()).padStart(2, "0")}:${String(today.getMinutes()).padStart(2, "0")}`;
+  $("clock").value = qt;
+  setBase();
+  $("built").textContent = "Advent Calendar for the BUSY Bar. Original pixel art, rendered by the app's Python renderer; "
+    + "the countdown logic on this page is checked against the bar app's code by the app's tests.";
+
+  const names = Object.keys(SHOW.anims);
+  Promise.all(names.map(n => decode(SHOW.anims[n].sheet))).then(all => {
+    names.forEach((n, i) => { pixels[n] = all[i]; });
+    buildDoors();
+    facts();
+    boards();
+    newCycle();
+    $("play").textContent = paused ? "Play" : "Pause";
+    requestAnimationFrame(tick);
+  });
+})();
+</script>

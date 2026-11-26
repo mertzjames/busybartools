@@ -1,11 +1,12 @@
-"""Scene 2 (playlist #3): Broom Chase. A young wizard chases a winged golden pie over the castle."""
+"""Scene 2 (playlist #3): Broom Chase. The scarlet-and-gold wizard chases a winged golden pie over the castle."""
 
 import math
 
-from canvas import FPS, add, blit, ease_in_out, lerp, phase, put, sec, vgradient
-from font import draw_text
-from fx import SPARKLE, Particles, Stars, puff, sparkle
-from sprites import BROOM_RIDER_SG as BROOM_RIDER, GOLDEN_PIE
+from busybar.canvas import FPS, add, blit, ease_in_out, lerp, phase, put, sec, vgradient
+from busybar.font import draw_text
+from busybar.fx import SPARKLE, Particles, Stars, puff, sparkle
+from cast import SCARLET_BROOM as BROOM_RIDER
+from sprites import GOLDEN_PIE
 
 NAME = "broom_chase"
 TITLE = "Broom Chase"

@@ -1,4 +1,4 @@
-"""72x16 frame helpers: colors, blending, sprite blitting, simple shapes, easing.
+"""72x16 frame helpers: colors, blending, sprite blitting, simple shapes, easing (shared render kit).
 
 Frames are Pillow RGBA images. Everything drawn here is composited over an opaque
 background; build.py flattens to RGB before encoding, so the device always gets

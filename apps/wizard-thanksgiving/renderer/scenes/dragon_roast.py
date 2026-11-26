@@ -9,9 +9,9 @@ import bisect
 import math
 import random
 
-from canvas import FPS, add, blit, ease_in, ease_out, lerp, mix, phase, put, sec, vgradient
-from font import draw_text
-from fx import FIRE, SPARKLE, Particles, Stars, sparkle
+from busybar.canvas import FPS, add, blit, ease_in, ease_out, lerp, mix, phase, put, sec, vgradient
+from busybar.font import draw_text
+from busybar.fx import FIRE, SPARKLE, Particles, Stars, sparkle
 from sprites import DRAGON_HEAD, DRAGON_WING, RAW_TURKEY, ROAST, SPIT
 
 NAME = "dragon_roast"

@@ -2,9 +2,9 @@
 
 import math
 
-from canvas import FPS, add, blit, ease_in, ease_out, lerp, new, phase, put, sec, vgradient
-from font import draw_text
-from fx import Stars, hills, moon, puff
+from busybar.canvas import FPS, add, blit, ease_in, ease_out, lerp, new, phase, put, sec, vgradient
+from busybar.font import draw_text
+from busybar.fx import Stars, hills, moon, puff
 from sprites import CAR, GRAVY_BOAT, LOCO, PUMPKIN, ROAST
 
 NAME = "gravy_express"

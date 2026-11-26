@@ -1,12 +1,13 @@
-"""Scene 7 (playlist #4): Cauldron Bake-Off. A young witch in school robes brews a pumpkin pie."""
+"""Scene 7 (playlist #4): Cauldron Bake-Off. The blue-and-bronze witch brews a pumpkin pie."""
 
 import math
 import random
 
-from canvas import FPS, add, blit, ease_in_out, lerp, mix, new, phase, put, sec
-from font import draw_text
-from fx import FIRE, SPARKLE, Particles, bricks, puff, sparkle
-from sprites import APPLE, CAULDRON, PIE, PUMPKIN, SPARK, WITCH_BB as WITCH
+from busybar.canvas import FPS, add, blit, ease_in_out, lerp, mix, new, phase, put, sec
+from busybar.font import draw_text
+from busybar.fx import FIRE, SPARKLE, Particles, bricks, puff, sparkle
+from cast import BLUE, CHEER, FLICK, STAND
+from sprites import APPLE, CAULDRON, PIE, PUMPKIN, SPARK
 
 NAME = "cauldron"
 TITLE = "Cauldron Bake-Off"
@@ -15,8 +16,9 @@ KEYFRAMES = [(1.0, "A young witch at the cauldron"), (2.6, "Wand flick: in goes 
              (9.4, "POOF!"), (12.5, "A fresh pumpkin pie!")]
 
 CX, CY = 34, 8          # cauldron top-left
-WITCH_X, WITCH_Y = 14, 4
-HAND = (WITCH_X + 9, WITCH_Y + 6)   # wand tip in the flick frame
+WITCH = BLUE.sprite
+WITCH_X, WITCH_Y = 14, 16 - WITCH.h
+HAND = (WITCH_X + 9, WITCH_Y + 6)   # wand tip in the FLICK frame (cast.py)
 MOUTH = (CX + 6, CY - 1)
 
 GREEN = (60, 220, 80)
@@ -75,10 +77,11 @@ def render():
                          colors=(mix(lc, (255, 255, 255), 0.35), lc))
         bubbles.step_draw(img)
 
-        # witch: wand-flick pose 0.3 s before each throw
+        # witch: wand-flick pose 0.3 s before each throw; cheers (arms up) while hopping at the end
         toss = any(t0 - 0.3 <= t < t0 + 0.2 for t0, _, _ in TOSSES)
         hop = -1 if (11.0 <= t < 15.5 and (f // 4) % 2 == 0) else 0
-        blit(img, WITCH.img(1 if toss else 0), WITCH_X, WITCH_Y + hop)
+        pose = FLICK if toss else (CHEER if 11.0 <= t < 15.5 else STAND)
+        blit(img, WITCH.img(pose), WITCH_X, WITCH_Y + hop)
 
         # ingredients arc from hand to the cauldron mouth
         for t0, spr, col in TOSSES:
