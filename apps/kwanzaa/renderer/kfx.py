@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import math
 
-from busybar.canvas import add, mix, put, rect
+from busybar.canvas import add, mix, put
 from busybar.party import hash01
 
 # --- palette (linear colors; the build's tone curve lifts them) ------------------------------------------------
@@ -105,8 +105,7 @@ class Kinara:
                 self.flame(img, i, f, grow * glow)
             else:  # an unlit wick: a lit, dim grey-brown pixel
                 x, y = self.wick(i)
-                put(img, round(x - 0.01), y + 0 if self.small else y, (96, 84, 72) if not self.small else (90, 80, 70),
-                    0.8)
+                put(img, round(x - 0.01), y, (96, 84, 72), 0.8)
 
     def _body(self, img) -> None:
         if self.small:
