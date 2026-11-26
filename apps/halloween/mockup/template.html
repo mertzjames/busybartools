@@ -1,23 +1,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Valentine's Day</title>
+<title>Halloween</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   /* One centered column: the simulated bar first, then the cards and the storyboards. Dark only, like the bar:
-     deep plum with rose and gold accents. */
+     deep violet night with pumpkin-orange and slime-green accents. */
   :root {
-    --ink: #14060f;
-    --panel: #220b1b;
-    --panel-2: #2c0f23;
-    --line: #4a1c3a;
-    --fg: #fbeef0;
-    --muted: #c9a3b4;
-    --gold: #f6c45e;
-    --rose: #ff6f98;
-    --bezel: #0b0308;
+    --ink: #0b0614;
+    --panel: #170c24;
+    --panel-2: #20112f;
+    --line: #3b2352;
+    --fg: #f5eefb;
+    --muted: #b8a5c9;
+    --gold: #ff9a2e;
+    --rose: #8cff3c;
+    --bezel: #07030c;
     --display: "Fraunces", "Iowan Old Style", Georgia, serif;
     --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -26,7 +26,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
-    background: radial-gradient(1100px 420px at 50% -140px, #5a1638 0%, #2a0a20 45%, transparent 75%), var(--ink);
+    background: radial-gradient(1100px 420px at 50% -140px, #3e1660 0%, #1c0a30 45%, transparent 75%), var(--ink);
   }
   .wrap {
     max-width: 1040px; margin: 0 auto;
@@ -45,8 +45,8 @@
 
   .stage { display: grid; gap: 14px; }
   .bezel {
-    background: linear-gradient(180deg, #2a0c20, var(--bezel) 40%);
-    border: 1px solid #4a1c3a; border-radius: 18px; padding: clamp(10px, 2.2vw, 22px);
+    background: linear-gradient(180deg, #1e0c30, var(--bezel) 40%);
+    border: 1px solid #3b2352; border-radius: 18px; padding: clamp(10px, 2.2vw, 22px);
     box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
   }
   #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 6px; background: #05060c; }
@@ -64,7 +64,7 @@
   }
   button:hover { border-color: var(--gold); }
   button:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-  button.primary { background: var(--gold); color: #1a1408; border-color: var(--gold); min-width: 92px; }
+  button.primary { background: var(--gold); color: #1a0c04; border-color: var(--gold); min-width: 92px; }
   button[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
   .toggle { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; margin-left: auto; cursor: pointer; }
   .toggle input { accent-color: var(--gold); width: 16px; height: 16px; }
@@ -76,7 +76,7 @@
   }
   .chip .n { font-family: var(--mono); font-size: 11px; }
   .chip.card { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
-  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f6c45e1c; }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #ff9a2e1c; }
 
   .section { display: grid; gap: 18px; }
   .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
@@ -119,12 +119,12 @@
 <main class="wrap">
   <header>
     <p class="eyebrow">A BUSY Bar app · busybartools</p>
-    <h1>Valentine's <span>Day</span></h1>
+    <h1>Hallo<span>ween</span></h1>
     <div class="horizon" aria-hidden="true"></div>
-    <p class="lede">A sweet Valentine's show for a 72 × 16 LED display: rising hearts, a little cherub with a bow, a
-      winged love letter, two lovebirds on a wire, a box of chocolates, a rose in bloom and a candy-heart finale with
-      heart fireworks. Between them come a clock and a countdown, and on the day itself a greeting and candy-heart
-      phrases. The simulator below plays the same frames the bar plays, with your current time on the cards.</p>
+    <p class="lede">A spooky-fun Halloween show for a 72 × 16 LED display: jack-o'-lanterns carved and lit, a haunted
+      house, trick-or-treaters, bats across the moon, a friendly ghost, a black cat on a fence, a witch on her broom and
+      a skeleton dance. Between them come a clock and a countdown in nights, and on the night itself a greeting and
+      spooky phrases. The simulator below plays the same frames the bar plays, with your current time on the cards.</p>
   </header>
 
   <section class="stage" aria-label="Simulated BUSY Bar">
@@ -147,28 +147,31 @@
   <section class="section" aria-labelledby="about">
     <h2 id="about">The show</h2>
     <div class="prose">
-      <p>Seven scenes, sweet and family-friendly. Hearts rise until a big one beats in the middle. A cherub draws its
-        bow, and the arrow bursts into a heart. A letter with little wings flutters in, opens, and says FOR YOU. Two
-        birds hop along a wire until their beaks meet under a heart. A box of chocolates is opened and emptied one
-        piece at a time. A rose grows and blooms. Candy hearts stack up for BE MINE, XOXO and heart fireworks.</p>
-      <p>The colors are reds, pinks and warm whites with gold accents, over deep plum so the pinks stay bright.</p>
-      <p>Between scenes, a <strong>clock card</strong> shows the time, then the date. A <strong>countdown card</strong>
-        shows the days to Valentine's Day (February 14). On the day it becomes <strong>HAPPY VALENTINE'S DAY</strong>
-        and candy-heart phrases. Press <strong>START</strong> (on the bar, or above) to preview the day on any date.</p>
+      <p>Eight scenes, spooky but family-friendly. Four pumpkins are carved one at a time, each with its own face,
+        and lit. A haunted house lights up window by window; a shadow passes the green window and the door creaks open.
+        Trick-or-treaters in a sheet ghost, a witch hat, a pumpkin suit and a cape collect candy. Bats stream across
+        the moon. A friendly ghost rises from a graveyard and says BOO! A black cat arches its back on a fence. A witch
+        flies past the moon on her broom. Three skeletons dance to the beat, and Halloween confetti closes the show.</p>
+      <p>The colors are glowing pumpkin orange, slime green and purple over a deep violet night. Black things (the
+        cat, the bats, the witch's dress) are lit violet-greys with a rim light, since black is an unlit LED.</p>
+      <p>Between scenes, a <strong>clock card</strong> shows the time, then the date, by candlelight under cobwebs.
+        A <strong>countdown card</strong> shows the nights to Halloween (October 31). On the night it becomes
+        <strong>HAPPY HALLOWEEN</strong> and phrases like TRICK OR TREAT! and BOO! Press <strong>START</strong> (on the
+        bar, or above) to preview the day on any date.</p>
     </div>
     <dl class="facts">
-      <div><dt>Scenes</dt><dd id="fScenes">7</dd></div>
+      <div><dt>Scenes</dt><dd id="fScenes">8</dd></div>
       <div><dt>Display</dt><dd>72 × 16</dd></div>
       <div><dt>Frame rate</dt><dd>15 fps</dd></div>
       <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
       <div><dt>Animation data</dt><dd id="fBytes">–</dd></div>
-      <div><dt>Next Feb 14</dt><dd id="fNext">–</dd></div>
+      <div><dt>Next Oct 31</dt><dd id="fNext">–</dd></div>
     </dl>
   </section>
 
   <section class="section" aria-labelledby="wordsH">
     <h2 id="wordsH">Every word on screen</h2>
-    <p>Short, generic and sweet: the greeting, the countdown and candy-heart phrases.</p>
+    <p>Short and spooky-fun: the greeting, the countdown in nights, and the phrases on the night.</p>
     <ul class="words" id="words"></ul>
   </section>
 
@@ -187,12 +190,12 @@
   <section class="section" aria-labelledby="decisions">
     <h2 id="decisions">Key decisions</h2>
     <ul class="decisions">
-      <li><span class="id">D2</span><span><strong>Sweet, not romantic-explicit.</strong> Hearts, a cherub, birds, chocolates, a rose: family-friendly.</span></li>
-      <li><span class="id">D3</span><span><strong>Seven scenes.</strong> Hearts Afloat opens; the candy-heart finale with heart fireworks closes.</span></li>
-      <li><span class="id">D5</span><span><strong>Original art.</strong> A generic winged cherub; lit colors for eyes and small features.</span></li>
-      <li><span class="id">D7</span><span><strong>Candy-heart cards.</strong> Two candy hearts frame the countdown and the phrases; the small line is gold.</span></li>
-      <li><span class="id">D8</span><span><strong>One source of truth.</strong> The app, mockup and tests share app/shared/valentine.ts.</span></li>
-      <li><span class="id">D9</span><span><strong>START previews the day.</strong> The cycle restarts on a card, so the change shows at once.</span></li>
+      <li><span class="id">D2</span><span><strong>Spooky-fun, never scary.</strong> Friendly faces, no gore; generic costumes and original characters.</span></li>
+      <li><span class="id">D3</span><span><strong>Eight scenes.</strong> Carving Night opens; the Skeleton Dance with confetti closes.</span></li>
+      <li><span class="id">D5</span><span><strong>Black is unlit.</strong> The cat, bats and witch's dress are lit violet-greys with rim light and lit eyes.</span></li>
+      <li><span class="id">D7</span><span><strong>Nights, not days.</strong> 30 NIGHTS / TO HALLOWEEN; cobwebs, a candle and little lanterns frame the cards.</span></li>
+      <li><span class="id">D8</span><span><strong>One source of truth.</strong> The app, mockup and tests share app/shared/halloween.ts.</span></li>
+      <li><span class="id">D9</span><span><strong>START previews the night.</strong> The cycle restarts on a card, so the change shows at once.</span></li>
     </ul>
   </section>
 
@@ -201,7 +204,7 @@
 
 <script>
 const SHOW = /*__SHOW_DATA__*/null;
-/*__VAL_LOGIC__*/
+/*__HW_LOGIC__*/
 (() => {
   const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps;
   const N = SHOW.scenes.length;
@@ -278,17 +281,17 @@ const SHOW = /*__SHOW_DATA__*/null;
   // the browser's clock stands in for the bar's
   const localNow = (d = new Date()) => ({ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
     hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() });
-  const later = (t, s) => VAL.addSeconds(t, s);
+  const later = (t, s) => HW.addSeconds(t, s);
   const bgFor = name => SHOW.bg[name === "clock" ? BG.clock : "count_bg"];
-  const cardMs = (name, t) => VAL.cardPages(name, t).reduce((a, p) => a + p.ms, 0);
+  const cardMs = (name, t) => HW.cardPages(name, t).reduce((a, p) => a + p.ms, 0);
   function cardFrame(name, ms, t0) {
     const bg = bgFor(name);
     const buf = new Uint8ClampedArray(frameAt(bgData[bg.name], Math.floor(ms * FPS / 1000) % bg.frames));
     let at = 0;
-    for (const [p, page] of VAL.cardPages(name, t0).entries()) {
+    for (const [p, page] of HW.cardPages(name, t0).entries()) {
       if (ms < at + page.ms) {
         const t = later(t0, Math.floor(ms / 1000));
-        const lines = VAL.cardPages(name, t)[p]?.lines ?? page.lines;
+        const lines = HW.cardPages(name, t)[p]?.lines ?? page.lines;
         for (const l of lines) drawText(buf, l.text, SHOW.layout[l.style], fadeStep(ms - at));
         break;
       }
@@ -296,7 +299,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
     return buf;
   }
-  const cardTitle = name => name === "clock" ? "Clock and date" : name === "count" ? "Countdown" : "On the day";
+  const cardTitle = name => name === "clock" ? "Clock and date" : name === "count" ? "Countdown" : "On the night";
 
   // ---------- show sequence (the app's own playlist logic) ----------
   let holiday = false;
@@ -315,7 +318,7 @@ const SHOW = /*__SHOW_DATA__*/null;
   const stepMs = s => s.kind === "scene" ? SHOW.scenes[s.scene].ms : cardMs(s.card, t0);
 
   function newCycle(fromCard) {
-    steps = VAL.playlist(N, localNow(), holiday, fromCard);
+    steps = HW.playlist(N, localNow(), holiday, fromCard);
     chips();
   }
   function chips() {
@@ -432,8 +435,8 @@ const SHOW = /*__SHOW_DATA__*/null;
     const now = localNow();
     const groups = [
       ["Clock and date", "Every other step, all year", ["clock"]],
-      ["Countdown", "Before and after Valentine's Day", ["count"]],
-      ["On the day", "February 14, or any day in holiday mode", VAL.DAY_CARD_NAMES],
+      ["Countdown", "Before and after Halloween", ["count"]],
+      ["On the night", "October 31, or any day in holiday mode", HW.DAY_CARD_NAMES],
     ];
     for (const [title, sub, names] of groups) {
       const card = document.createElement("article");
@@ -444,11 +447,11 @@ const SHOW = /*__SHOW_DATA__*/null;
       const thumbs = card.querySelector(".thumbs");
       for (const name of names) {
         let at = 0;
-        for (const page of VAL.cardPages(name, now)) {
+        for (const page of HW.cardPages(name, now)) {
           const ms = at + 600;
           const label = page.lines.map(l => l.text).join(" / ");
           thumbs.appendChild(thumb(cardFrame(name, ms, now), label, null, () => {
-            if (name.startsWith("day") !== VAL.isValentinesDay(localNow(), holiday)) setHoliday(!holiday);
+            if (name.startsWith("day") !== HW.isHalloween(localNow(), holiday)) setHoliday(!holiday);
             jumpTo(s => s.kind === "card" && s.card === name, ms, true);
           }));
           at += page.ms;
@@ -458,8 +461,8 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
   }
   function words() {
-    const list = ["FOR YOU", "BE MINE", "XOXO", "N DAYS / 1 DAY", VAL.COUNT_SUB];
-    for (const card of VAL.DAY_CARDS) for (const page of card) {
+    const list = ["RIP", "BOO!", "TRICK OR TREAT!", "N NIGHTS / 1 NIGHT", HW.HW_COUNT_SUB];
+    for (const card of HW.DAY_CARDS) for (const page of card) {
       const w = page.lines.map(l => l.text).join(" / ");
       if (!list.includes(w)) list.push(w);
     }
@@ -486,12 +489,12 @@ const SHOW = /*__SHOW_DATA__*/null;
     const now = localNow();
     const loopMs = steps.reduce((a, s) => a + stepMs(s), 0);
     const loopS = Math.round(loopMs / 1000);
-    const d = VAL.daysToValentines(now);
+    const d = HW.nightsToHalloween(now);
     document.getElementById("fScenes").textContent = N;
     document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
     document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
-    document.getElementById("fNext").textContent = d === 0 ? "Today" : VAL.daysLabel(d).toLowerCase();
-    document.getElementById("built").textContent = `${N} scenes · full show ≈ ${loopS} s per loop · busybartools · Valentine's Day`;
+    document.getElementById("fNext").textContent = d === 0 ? "Today" : HW.nightsLabel(d).toLowerCase();
+    document.getElementById("built").textContent = `${N} scenes · full show ≈ ${loopS} s per loop · busybartools · Halloween`;
     words();
     cardBoards();
     boards();

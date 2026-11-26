@@ -41,4 +41,4 @@ DAY_TEXT = [
 ]
 
 # Words baked into scenes (checked by tests/text_parity.py: every glyph exists and each fits its place).
-SCENE_TEXT = {"tombstone": ("RIP", "tiny"), "ghost": ("BOO!", "big"), "finale": ("BOO!", "big")}
+SCENE_TEXT = {"tombstone": ("RIP", "tiny"), "ghost": ("BOO!", "big"), "trick": ("TRICK OR TREAT!", "tiny")}

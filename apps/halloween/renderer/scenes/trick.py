@@ -8,6 +8,7 @@ from busybar.canvas import FPS, H, W, add, blit, mix, put, sec
 from busybar.font import draw_text, text_width
 from hfx import (NIGHT_MID, NIGHT_TOP, candy_corn, dim_rect, frame_t, glow, gradient, pumpkin, pumpkin_glow, quant,
                  stars)
+from scenes.text import SCENE_TEXT
 from sprites import GHOST_KID, HERO_KID, PUMPKIN_KID, WITCH_KID
 
 NAME = "trick"
@@ -16,7 +17,7 @@ SECONDS = 16
 KEYFRAMES = [(1.5, "Trick-or-treaters on the way"), (5.5, "Up to the door"), (6.8, "TRICK OR TREAT!"),
              (8.4, "Candy for everyone"), (9.6, "A hop for joy"), (12.5, "Off to the next house")]
 
-CAPTION = "TRICK OR TREAT!"
+CAPTION = SCENE_TEXT["trick"][0]
 GROUND = 15  # the sidewalk row (the kids stand on it)
 KIDS = [GHOST_KID, WITCH_KID, PUMPKIN_KID, HERO_KID]
 TARGETS = (39, 29, 19, 9)  # where each kid stops (sprite left edge)

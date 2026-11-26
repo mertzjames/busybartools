@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Live-text parity test: the on-bar app, the mockup and the renderer must draw identical card pixels.
 
-Runs the app's real TypeScript (the kit's xpmtext.ts via app/shared, app/shared/valentine.ts and the generated show.ts)
+Runs the app's real TypeScript (the kit's xpmtext.ts via app/shared, app/shared/halloween.ts and the generated show.ts)
 under Node 24, decodes the XPM bitmaps it produces for every card text style, and compares them pixel-for-pixel
 with the shared busybar.font drawing the same text with this app's tone-mapped LAYOUT (build.draw_live, which the
 review strips use). Also checks that the app's on-the-day cards match the renderer's review copy (DAY_TEXT), that
 the widest date fits, and that the generated scenes and backdrops match the renderer and exist on disk.
-See docs/DECISIONS.md D7 and D8.
+Every bitmap must also stay between the backdrops' corner art (TEXT_GAP), and the words baked into scenes
+(SCENE_TEXT) must have every glyph. See docs/DECISIONS.md D7 and D8.
 
     python3 tests/text_parity.py
 """
@@ -25,26 +26,27 @@ sys.path.insert(0, str(APP_DIR / "renderer"))
 sys.path.insert(0, str(REPO / "lib" / "python"))
 
 from busybar.canvas import new  # noqa: E402
+from busybar import font  # noqa: E402
 from busybar.font import text_width  # noqa: E402
 
 import build  # noqa: E402
 from scenes import CLOCK_BG, COUNT_BG, PLAYLIST  # noqa: E402
-from scenes.text import CANDY_MAX, DAY_TEXT  # noqa: E402
+from scenes.text import DAY_TEXT, SCENE_TEXT, TEXT_GAP  # noqa: E402
 
 TS = """
 import { textBitmap, type Font, type TextSpec } from "%(repo)s/lib/ts/busybar/xpmtext.ts";
 import { parseLocal } from "%(repo)s/lib/ts/busybar/walltime.ts";
-import { DAY_CARDS, cardPages } from "%(shared)s/valentine.ts";
+import { DAY_CARDS, cardPages, nightsLabel } from "%(shared)s/halloween.ts";
 import { FONTS, LAYOUT, SHOW } from "%(shared)s/generated/show.ts";
 const L = LAYOUT as unknown as Record<string, TextSpec>;
 const lines: [string, string][] = [];
-for (const iso of ["2026-11-26T18:05:00-05:00", "2027-02-14T00:00:00-05:00", "2027-02-15T23:59:00-05:00",
-                   "2027-02-13T07:41:00-05:00", "2028-02-15T12:00:00-05:00"]) {
+for (const iso of ["2026-11-26T18:05:00-05:00", "2027-10-31T00:00:00-04:00", "2027-11-01T23:59:00-04:00",
+                   "2027-10-30T07:41:00-04:00", "2028-11-01T12:00:00-04:00"]) {
   const t = parseLocal(iso)!;
-  for (const name of ["clock", "count", "day0", "day1", "day2"])
+  for (const name of ["clock", "count", "day0", "day1", "day2", "day3"])
     for (const page of cardPages(name, t)) for (const l of page.lines) lines.push([l.text, l.style]);
 }
-lines.push(["365 DAYS", "head"], ["WED 28 SEP", "date"], ["00:00", "time"]);
+lines.push([nightsLabel(365), "head"], ["WED 28 SEP", "date"], ["00:00", "time"], ["23:59", "time"]);
 const bitmaps = lines.map(([txt, style]) => {
   const b = textBitmap(txt, FONTS[L[style].font] as Font, L[style]);
   return { txt, style, data: b.data, x: b.x, y: b.y };
@@ -107,24 +109,26 @@ def main() -> int:
         if key in seen:
             continue
         seen.add(key)
-        ok = xpm_pixels(b["data"], b["x"], b["y"]) == renderer_pixels(b["txt"], b["style"])
-        failures += not ok
-        print(f"  {'ok  ' if ok else 'FAIL'} {b['style']:5} {b['txt']!r}")
+        px = xpm_pixels(b["data"], b["x"], b["y"])
+        ok = px == renderer_pixels(b["txt"], b["style"])
+        inside = all(TEXT_GAP[0] <= x <= TEXT_GAP[1] for x, _ in px)
+        failures += (not ok) + (not inside)
+        print(f"  {'ok  ' if ok else 'FAIL'} {b['style']:5} {b['txt']!r}" + ("" if inside else "  OUTSIDE TEXT_GAP"))
     date, width = widest_date()
     expected = [[m.NAME, int(m.SECONDS * 1000), f"animations/{m.NAME}.anim"] for m in PLAYLIST]
     day_text = [[[list(line) for line in page] for page in card] for card in DAY_TEXT]
     paths = [p for _, _, p in res["scenes"]] + list(res["backdrops"].values())
     checks = [
         (res["dayCards"] == day_text, "app DAY_CARDS match the renderer's DAY_TEXT"),
-        (width + 1 <= 72, f"widest date {date!r} fits ({width} px + shadow)"),
+        (width + 1 <= TEXT_GAP[1] - TEXT_GAP[0] + 1, f"widest date {date!r} fits the text gap ({width} px + shadow)"),
         (res["scenes"] == expected, "generated playlist matches renderer"),
         (sorted(res["backdrops"]) == sorted([CLOCK_BG.NAME, COUNT_BG.NAME]), "both card backdrops are exported"),
         (all((APP_DIR / "app" / "src" / p).is_file() for p in paths), "every .anim exists"),
-        (COUNT_BG.LEFT[0] + 9 <= (72 - CANDY_MAX) // 2 and COUNT_BG.RIGHT[0] >= (72 + CANDY_MAX) // 2,
-         f"count_bg's candy hearts leave the middle {CANDY_MAX} px clear"),
-        (all(text_width(t, build.layout()[st]["font"]) + 1 <= CANDY_MAX
-             for card in DAY_TEXT for page in card for t, st in page if st in ("candy", "head")),
-         "every big line on count_bg fits between the candy hearts"),
+        (all(text_width(t, build.layout()[st]["font"]) + 1 <= TEXT_GAP[1] - TEXT_GAP[0] + 1
+             for card in DAY_TEXT for page in card for t, st in page), "every day-card line fits the text gap"),
+        (all(all(ch in font.FONTS[fn][0] for ch in word) for word, fn in SCENE_TEXT.values()),
+         "every glyph of the scene captions exists"),
+        (all(text_width(word, fn) <= 72 for word, fn in SCENE_TEXT.values()), "every scene caption fits 72 px"),
     ]
     for ok, name in checks:
         failures += not ok
