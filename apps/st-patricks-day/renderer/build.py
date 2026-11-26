@@ -154,7 +154,8 @@ def mockup_logic() -> str:
         js = re.sub(r"\n{3,}", "\n\n", js)
         parts.append(f"// ---- {path.relative_to(REPO).as_posix()}\n{js.strip()}\n")
     assert not re.search(r"^\s*import\s", "".join(parts), flags=re.M), "leftover import"
-    return "const SPD = (() => {\n" + "\n".join(parts) + f"return {{ {', '.join(sorted(set(names)))} }};\n}})();"
+    body = "const SPD = (() => {\n" + "\n".join(parts) + f"return {{ {', '.join(sorted(set(names)))} }};\n}})();"
+    return "/*SPD_LOGIC_BEGIN*/\n" + body + "\n/*SPD_LOGIC_END*/"
 
 
 def write_mockup(show, metas, bg_metas) -> None:
