@@ -1,65 +1,75 @@
+// Hanukkah: a menorah that follows tonight's candle count, with dreidel, latkes, sufganiyot, gelt and window
+// scenes, a clock card and a countdown (or greeting) card between them.
+//
+// Scenes are full-screen .anim files the firmware plays by itself; the shared show runner (lib/ts/busybar/
+// showrunner.ts) plays them and draws the cards' live text, one request in flight at a time. What to play is
+// picked from the bar's date at the start of every cycle by the pure functions in @shared/hanukkah.
+//
+// Buttons: OK = next step, encoder = next/previous step, Back = quit,
+//          START = holiday mode: preview night 1, 2, ... 8 on any date, then back to following the date.
+
 import { device } from "@shared/device";
-import { column, render, type Node } from "@busy-app/busy-lib";
+import { countPages, nextPreview, playlist } from "@shared/hanukkah";
+import { createShow, formatDate, pad2, type Card, type LocalTime, type Step } from "@shared/kit";
+import { FONTS, SHOW } from "@shared/generated/show";
 import manifest from "./appmeta/manifest.json";
 
-/** The name the app draws under; the device clears elements by this id. */
-const APP = manifest.id;
+const LAYOUT = SHOW.layout;
+const INDEX: Record<string, number> = {};
+SHOW.scenes.forEach((s, i) => {
+  INDEX[s.name] = i;
+});
 
-/** How often the screen is redrawn. */
-const TICK_MS = 1000;
+let preview = 0; // holiday mode: 1-8 previews that night; 0 follows the bar's date
 
-const WHITE = "#FFFFFFFF";
-const SUBTLE_WHITE = "#FFFFFF80";
+const clock: Card = {
+  path: SHOW.cards.clock,
+  pages: () => [
+    { ms: LAYOUT.time_ms, lines: [{ spec: LAYOUT.time, text: (t: LocalTime) => pad2(t.hour) + ":" + pad2(t.minute) }] },
+    { ms: LAYOUT.date_ms, lines: [{ spec: LAYOUT.date, text: formatDate }] },
+  ],
+};
 
-/**
- * The frame drawn on every tick. The screen is 72×16, so two short lines are about all that fits.
- */
-function frame(ticks: number): Node {
-  return column({ justify: "center", align: "center" }, [
-    { type: "text", id: "title", text: "Hello", font: "bold", color: WHITE },
-    {
-      type: "text",
-      id: "ticks",
-      text: String(ticks),
-      font: "small",
-      color: SUBTLE_WHITE,
-    },
-  ]);
+const count: Card = {
+  path: SHOW.cards.count,
+  pages: (t) =>
+    countPages(t, preview).map(([head, sub]) => ({
+      ms: LAYOUT.count_ms,
+      lines: [{ spec: LAYOUT.head, text: () => head }, { spec: LAYOUT.sub, text: () => sub }],
+    })),
+};
+
+function steps(t: LocalTime): Step[] {
+  const out: Step[] = [];
+  for (const e of playlist(t, preview)) {
+    if (e.kind === "card") out.push({ kind: "card", card: e.card });
+    else if (e.name in INDEX) out.push({ kind: "scene", scene: INDEX[e.name] });
+  }
+  return out;
 }
 
-/** Sends one frame to the device. */
-async function draw(ticks: number): Promise<void> {
-  const elements = render(frame(ticks));
-  await device.DisplayDraw({ application_name: APP, priority: 50, elements });
-}
-
-/**
- * Entry point, called at the end of the file: the device runs this script from top to bottom and starts nothing by itself.
- */
 function main(): void {
-  let ticks = 0;
-  let stopped = false;
+  const show = createShow({
+    app: manifest.id,
+    device,
+    fonts: FONTS,
+    scenes: SHOW.scenes,
+    cards: { clock, count },
+    steps,
+  });
+  show.start();
 
-  const report = (err: unknown) =>
-    console.error(`${APP}: ${err instanceof Error ? err.message : String(err)}`);
-
-  void draw(ticks).catch(report);
-
-  // Tick errors are reported, not thrown: one failed request must not stop the loop.
-  const timer = setInterval(() => {
-    ticks += 1;
-    void draw(ticks).catch(report);
-  }, TICK_MS);
-
-  // Back leaves the app. Once the timer is cleared and the handler detached, nothing keeps it alive and the device takes the screen back.
   const unbind = listen("input", (event) => {
-    if (stopped || event.key !== "back" || event.action !== "short") return;
-
-    stopped = true;
-    clearInterval(timer);
-
-    // Not detached from inside the handler itself: with nothing else left the unbind stops the app on the spot, while this handler is still running.
-    setTimeout(unbind, 0);
+    const result = show.input(event);
+    if (result === "quit") {
+      // The listener is the last handle: unbind after this callback returns.
+      setTimeout(unbind, 0);
+      return;
+    }
+    if (result === "ignored" && event.key === "start" && event.action === "short") {
+      preview = nextPreview(preview);
+      show.start(); // a new cycle, picked for the previewed night
+    }
   });
 }
 
