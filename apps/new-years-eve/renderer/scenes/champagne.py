@@ -86,7 +86,7 @@ def render():
             u = (f - POP) / FPS
             if u < 2.2:
                 cx = NECK[0] + 30 * u
-                cy = BY - 3 - 9 * u + 6.0 * u * u
+                cy = BY - 3 - 4 * u + 2.4 * u * u  # a flat arc that stays on screen
                 blit(img, CORK.img((f // 2) % 2), cx, cy)
                 spark.emit(cx, cy + 1, 1, vx=(-0.3, 0.0), vy=(-0.1, 0.2), life=(4, 8), colors=(GOLD_LIGHT, WHITE),
                            glow=True)
