@@ -12,7 +12,7 @@ import math
 from busybar.canvas import FPS, clamp01, ease_in, ease_out, lerp, mix, phase, put, sec, vgradient
 from busybar.font import draw_text, text_width
 from busybar.party import glitter
-from hfx import (BLUE, BLUE_HI, BLUE_LO, GOLD_HI, LETTERS, SILVER, WHITE, coin, flat_coin, glow)
+from hfx import (BLUE, BLUE_HI, BLUE_LO, GOLD_HI, LETTERS, SILVER, WHITE, coin, flat_coin)
 
 NAME = "dreidel"
 TITLE = "Spin the Dreidel"
