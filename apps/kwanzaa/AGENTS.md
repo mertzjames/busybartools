@@ -32,7 +32,7 @@ python3 tests/text_parity.py                                # app TS vs renderer
   `SHOW.kinara`. `cycleSteps(day)` and the tests rely on this.
 - **One source for card text.** `renderer/scenes/text.py` (styles, timings, principles) is exported into `show.ts`.
   `count_pages` (Python) and `countPages` (`app/shared/kwanzaa.ts`) must agree; `tests/text_parity.py` checks this.
-  The mockup mirrors the same logic in its `<script>`.
+  The mockup runs `kwanzaa.ts` itself (D13).
 - **Dates come from the kit.** `nextOccurrence(t, HOLIDAYS.kwanzaa, 7)`; never hard-code a year. The day changes at
   local midnight (D4).
 - **15 fps, full screen, deterministic.** Seed every RNG; use `hash01` or the frame number for flicker.
@@ -59,6 +59,6 @@ python3 tests/text_parity.py                                # app TS vs renderer
 |---|---|---|
 | Add or replace a scene | `renderer/scenes/<name>.py` + `PLAYLIST` | `build.py`, review strips, README table, the playlist test |
 | Kinara art or timing | `Kinara` in `renderer/kfx.py`, `renderer/scenes/kinara.py` | review all eight variants |
-| Card text or timing | `renderer/scenes/text.py` and `app/shared/kwanzaa.ts` (and the mockup's mirror) | `tools/check.sh kwanzaa` |
+| Card text or timing | `renderer/scenes/text.py` and `app/shared/kwanzaa.ts` | `tools/check.sh kwanzaa` |
 | Buttons or holiday mode | `app/src/main.ts`, `nextPreview` in `app/shared/kwanzaa.ts` | README controls, D7 |
 | Release | bump `"version"` in `app/src/appmeta/manifest.json` in a PR to `dev` | maintainers release |

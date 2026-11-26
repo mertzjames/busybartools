@@ -204,10 +204,9 @@
 
 <script>
 const SHOW = /*__SHOW_DATA__*/null;
+/*__KW_LOGIC__*/
 (() => {
   const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, T = SHOW.timing, K = SHOW.kinara;
-  const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
   const COLORS = ["k", "r", "g", "r", "g", "r", "g"]; // candle color per day (D3)
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -277,34 +276,14 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
   }
 
-  // ---------- date logic (mirrors app/shared/kwanzaa.ts; tested there) ----------
-  const DAY_MS = 86400000;
-  function kwanzaaDay(d) {
-    const y = d.getFullYear(), m = d.getMonth() + 1, dd = d.getDate();
-    if (m === 12 && dd >= 26) return { day: dd - 25, days: 0 };
-    if (m === 1 && dd === 1) return { day: 7, days: 0 };
-    const today = Date.UTC(y, m - 1, dd);
-    return { day: 0, days: Math.round((Date.UTC(y, 11, 26) - today) / DAY_MS) };
-  }
-  const daysLabel = n => n + (n === 1 ? " DAY" : " DAYS");
-  function countPages(day, days) {
-    if (!day) return [
-      { ms: T.count, lines: [["head", daysLabel(days)], ["sub", "TO KWANZAA"]] },
-      { ms: T.dates, lines: [["head", "KWANZAA"], ["sub", "DEC 26 - JAN 1"]] },
-    ];
-    const p = SHOW.principles[day - 1];
-    const pages = [
-      { ms: T.greet, lines: [["head", SHOW.greeting[0]], ["sub", SHOW.greeting[1]]] },
-      { ms: T.principle, lines: [["head", p.word], ["sub", p.english[0]]] },
-    ];
-    p.english.slice(1).forEach(l => pages.push({ ms: T.principle2, lines: [["head", p.word], ["sub", l]] }));
-    pages.push(day === 6 ? { ms: T.day, lines: [["head", "KARAMU"], ["sub", "DAY 6: THE FEAST"]] }
-      : { ms: T.day, lines: [["head", "KWANZAA"], ["sub", `DAY ${day} OF 7`]] });
-    return pages;
-  }
-  const pad = n => String(n).padStart(2, "0");
-  const timeText = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  const dateText = d => `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  // ---------- date logic: the app's own app/shared/kwanzaa.ts and the kit's holidays.ts (KW, built in) ----------
+  const local = d => ({ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
+    hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() });
+  const kwanzaaDay = d => KW.kwanzaaDay(local(d));
+  const daysLabel = KW.daysLabel;
+  const countPages = (day, days) => KW.countPages(day, days).map(p => ({ ms: p.ms, lines: p.lines.map(l => [l.style, l.text]) }));
+  const timeText = d => `${KW.pad2(d.getHours())}:${KW.pad2(d.getMinutes())}`;
+  const dateText = d => KW.formatDate(local(d));
   function clockPages() {
     return [{ ms: T.time, lines: [["time", null]] }, { ms: T.date, lines: [["date", null]] }];
   }
@@ -315,13 +294,7 @@ const SHOW = /*__SHOW_DATA__*/null;
   let steps = [];
   function buildSteps() {
     const { day, days } = today();
-    const s = [{ kind: "scene", i: day }];
-    const others = SHOW.scenes.length - K;
-    for (let i = 0; i < others; i++) {
-      s.push({ kind: "card", card: i % 2 === 0 ? "clock" : "count" });
-      s.push({ kind: "scene", i: K + i });
-    }
-    s.push({ kind: "card", card: others % 2 === 0 ? "clock" : "count" });
+    const s = KW.cycleSteps(day).map(st => st.kind === "scene" ? { kind: "scene", i: st.scene } : { kind: "card", card: st.card });
     s.forEach(st => {
       if (st.kind === "scene") st.ms = SHOW.scenes[st.i].ms;
       else { st.pages = st.card === "clock" ? clockPages() : countPages(day, days); st.ms = st.pages.reduce((a, p) => a + p.ms, 0); }
@@ -504,7 +477,7 @@ const SHOW = /*__SHOW_DATA__*/null;
   els.play.addEventListener("click", () => setPaused(!paused));
   document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
   document.getElementById("next").addEventListener("click", () => go(step + 1, 0));
-  document.getElementById("start").addEventListener("click", () => { preview = preview >= 7 ? 0 : preview + 1; refresh(true); });
+  document.getElementById("start").addEventListener("click", () => { preview = KW.nextPreview(preview); refresh(true); });
   els.day.addEventListener("change", () => { preview = Number(els.day.value); refresh(true); });
   document.addEventListener("keydown", e => {
     if (e.target.closest("button, input, select")) return;

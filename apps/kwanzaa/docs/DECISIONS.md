@@ -201,3 +201,17 @@ every live-text color.
 
 **Why:** These are round-1 lessons: dim the art behind words, and don't let text cover the characters at their key
 moment.
+
+---
+
+## D13 — The mockup runs the app's own date logic
+*2026-11-26*
+
+**Decision:** `build.py` strips the TypeScript types from `lib/ts/busybar/walltime.ts`, `lib/ts/busybar/holidays.ts`
+and `app/shared/kwanzaa.ts` with Node 24's `stripTypeScriptTypes`, drops the imports, and inlines the result into
+the mockup as a `KW` object. The approach comes from New Year's Eve. The mockup's day of Kwanzaa, count pages,
+playlist and holiday-mode cycle all come from `KW`. `kwanzaa.ts` reads the global `SHOW`, which the mockup data
+defines with the same fields as `show.ts`.
+
+**Why:** It replaces a hand-written JavaScript mirror that could drift from the tested app code. The mockup now
+shows exactly what the bar would.

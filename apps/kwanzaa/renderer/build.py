@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -45,6 +47,10 @@ GEN_DIR = ROOT / "app" / "shared" / "generated"  # under shared/: bundled into m
 MOCKUP = ROOT / "mockup"
 PREVIEWS = ROOT / "previews"
 META = ROOT / "app" / "src" / "appmeta"
+REPO = HERE.parents[2]
+# The app's own date and card logic, run by the mockup (in dependency order; see docs/DECISIONS.md D13)
+MOCKUP_TS = [REPO / "lib" / "ts" / "busybar" / "walltime.ts", REPO / "lib" / "ts" / "busybar" / "holidays.ts",
+             ROOT / "app" / "shared" / "kwanzaa.ts"]
 
 
 def tone(img):
@@ -125,6 +131,40 @@ def write_ts(show: dict) -> None:
     ]))
 
 
+def node_cmd() -> list[str]:
+    try:
+        local = subprocess.run(["node", "-v"], capture_output=True, text=True).stdout.startswith("v24.")
+    except FileNotFoundError:
+        local = False
+    return ["node"] if local else ["npx", "-y", "-p", "node@24", "node"]
+
+
+STRIP_JS = """
+const { stripTypeScriptTypes } = require("node:module");
+const fs = require("node:fs");
+const out = process.argv.slice(1).map((p) => stripTypeScriptTypes(fs.readFileSync(p, "utf8")));
+process.stdout.write(JSON.stringify(out));
+"""
+
+
+def mockup_logic() -> str:
+    """The app's TS logic as one browser script (the approach of apps/new-years-eve): types stripped by Node 24,
+    imports dropped, exports collected into a KW object. kwanzaa.ts reads the global SHOW, which the mockup
+    defines with the same fields as show.ts."""
+    res = subprocess.run(node_cmd() + ["--no-warnings", "-e", STRIP_JS] + [str(p) for p in MOCKUP_TS],
+                         capture_output=True, text=True, check=True)
+    names, parts = [], []
+    for path, js in zip(MOCKUP_TS, json.loads(res.stdout)):
+        js = re.sub(r"^import [^\n]*;[ \t]*$", "", js, flags=re.M)
+        names += re.findall(r"^export (?:function|const) (\w+)", js, flags=re.M)
+        js = re.sub(r"^export ", "", js, flags=re.M)
+        js = "\n".join(ln.rstrip() for ln in js.splitlines())
+        js = re.sub(r"\n{3,}", "\n\n", js)
+        parts.append(f"// ---- {path.relative_to(REPO).as_posix()}\n{js.strip()}\n")
+    assert not re.search(r"^\s*import ", "".join(parts), flags=re.M), "leftover import"
+    return "const KW = (() => {\n" + "\n".join(parts) + f"return {{ {', '.join(sorted(set(names)))} }};\n}})();"
+
+
 def write_mockup(show: dict, kinara_metas, scene_metas, card_meta) -> None:
     def full(m):
         return {k: m[k] for k in ("name", "title", "ms", "frames", "keyframes", "sheet")}
@@ -135,7 +175,12 @@ def write_mockup(show: dict, kinara_metas, scene_metas, card_meta) -> None:
         "fonts": font.export_json(TEXT_FONTS),
         "anim_bytes": sum(m["bytes"] for m in kinara_metas + scene_metas) + card_meta["bytes"],
     }
-    fill_template(MOCKUP / "template.html", MOCKUP / "index.html", data)
+    tmp = MOCKUP / ".template.tmp"
+    tmp.write_text((MOCKUP / "template.html").read_text().replace("/*__KW_LOGIC__*/", mockup_logic()))
+    try:
+        fill_template(tmp, MOCKUP / "index.html", data)
+    finally:
+        tmp.unlink()
 
 
 def main() -> None:
