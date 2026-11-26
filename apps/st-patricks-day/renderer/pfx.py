@@ -272,10 +272,15 @@ def rainbow(img, cx: float, cy: float, rx: float, ry: float, reveal: float = 1.0
     """An elliptical seven-band rainbow arc centered on (cx, cy) (below the horizon), red outside.
 
     reveal 0..1 draws the arc from one foot (left, or right) over the top to the other.
+    A column within 1 px of cx is measured as if it were 1 px away, so the top of each band is level with its
+    neighbors instead of rising to a lone 1 px peak (D11).
     """
     for y in range(img.height):
         for x in range(img.width):
-            dx, dy = (x - cx) / rx, (y - cy) / ry
+            ox = x - cx
+            if abs(ox) < 1:
+                ox = 1.0
+            dx, dy = ox / rx, (y - cy) / ry
             r = math.hypot(dx, dy)
             k = (1 - r) * ry / band  # bands inward from the outer edge, ~1 px each at the top
             if not (0 <= k < 7) or y > cy:

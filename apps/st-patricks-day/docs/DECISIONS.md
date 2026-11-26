@@ -134,3 +134,16 @@ mockup's inlined logic with the app's on every day of 2026–2029.
 - **The four-leaf clover** is the 13 × 13 `size=2` shamrock: heart-shaped leaves with a lit rim and a darker cross
   between them. Without the rim and cross, the leaves merged into one blob.
 - **The rainbow** is an ellipse (`rx` 25, `ry` 16) whose right foot ends behind the pot, so it reads as landing in it.
+
+## D11 — A level top on the rainbow
+*2026-11-26*
+
+**Decision:** in `pfx.rainbow()`, a column within 1 px of the center is measured as if it were 1 px away, so the top
+of every band is a level run of pixels.
+
+**Why:** the center is a whole column (`cx` 29), so the ellipse's exact apex fell on one pixel and every band rose a
+single pixel above its neighbors there. On the panel that read as a pointed bump in the middle of the arc. Review
+feedback asked for the peak to sit level with its neighbors.
+
+**Alternatives:** moving the center to 29.5 also removes the peak, but shifts the whole arc half a pixel and moves
+its foot relative to the pot. The countdown backdrop's corner rainbow is unaffected (its center is off screen).
