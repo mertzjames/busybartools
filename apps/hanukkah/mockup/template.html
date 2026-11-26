@@ -1,0 +1,565 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hanukkah</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* One centered column: the simulated bar first, then the nights, the storyboards and the cards.
+     A single deliberate winter-night look (dark only): deep blue ink, silver text, candle-gold accents. */
+  :root {
+    --ink: #070b1f;
+    --panel: #0e1530;
+    --panel-2: #141d3e;
+    --line: #243262;
+    --fg: #eef1fa;
+    --muted: #a3afcf;
+    --blue: #5b8cff;
+    --silver: #d3daea;
+    --gold: #f2c14e;
+    --bezel: #04060f;
+    --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55;
+    background: radial-gradient(1200px 500px at 50% -120px, #16245a 0%, transparent 70%), var(--ink);
+  }
+  .wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 10px; }
+  .eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(36px, 6.5vw, 60px); line-height: 1.02; letter-spacing: -.01em; color: var(--silver); }
+  h1 .g { color: var(--gold); }
+  h2 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 28px; color: var(--fg); text-wrap: balance; }
+  .lede { margin: 0; max-width: 64ch; color: var(--muted); }
+  .flames { height: 22px; display: flex; gap: 14px; align-items: flex-end; }
+  .flames i { width: 6px; height: 12px; background: var(--silver); border-radius: 1px; position: relative; display: block; }
+  .flames i::before { content: ""; position: absolute; left: -1px; top: -9px; width: 8px; height: 8px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 50% 70%, #fff6c8, var(--gold) 60%, #ff8a1e); animation: fl 1.6s infinite ease-in-out; }
+  .flames i:nth-child(odd) { background: var(--blue); }
+  .flames i.sh { height: 18px; background: var(--silver); }
+  .flames i:nth-child(3n)::before { animation-delay: .5s; } .flames i:nth-child(3n+1)::before { animation-delay: 1s; }
+  @keyframes fl { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.8) translateY(1px); } }
+  @media (prefers-reduced-motion: reduce) { .flames i::before { animation: none; } }
+
+  /* --- the bar --- */
+  .stage { display: grid; gap: 14px; }
+  .bezel {
+    background: linear-gradient(180deg, #111832, var(--bezel) 40%);
+    border: 1px solid #1d2850; border-radius: 18px;
+    padding: clamp(10px, 2.2vw, 22px);
+    box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
+  }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; max-width: 100%; border-radius: 6px; background: #050711; }
+  .now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+  .now .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .now strong { font-family: var(--display); font-weight: 500; font-size: 26px; color: var(--fg); margin-left: 10px; }
+  .now .t { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--gold)); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--gold); }
+  button:focus-visible, .chip:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--blue); color: #fff; border-color: var(--blue); min-width: 92px; }
+  button.holiday[aria-pressed="true"] { background: #f2c14e22; border-color: var(--gold); color: var(--gold); }
+  .mode { font-size: 14px; color: var(--muted); margin-left: auto; }
+  .mode b { color: var(--gold); font-weight: 600; }
+
+  .playlist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer;
+  }
+  .chip.card { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f2c14e1c; }
+
+  /* --- sections --- */
+  .section { display: grid; gap: 18px; }
+  .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
+  .boards { display: grid; gap: 18px; }
+  .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+  .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--blue); letter-spacing: .06em; }
+  .board-head h3 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 22px; }
+  .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; border-radius: 6px; }
+  .thumb canvas { width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #050711; display: block; max-width: 100%; }
+  .thumb span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .thumb b { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--gold); margin-right: 6px; }
+
+  .prose { display: grid; gap: 12px; max-width: 68ch; }
+  .prose p { margin: 0; color: var(--muted); }
+  .prose p strong { color: var(--fg); font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; margin: 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .facts div { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--fg); }
+
+  .decisions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px 24px; }
+  .decisions li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: baseline; }
+  .decisions .id { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+  .decisions li span:last-child { color: var(--muted); font-size: 14px; }
+  .decisions li strong { color: var(--fg); font-weight: 600; }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) {
+    .mode { margin-left: 0; width: 100%; }
+    .now strong { display: block; margin: 2px 0 0; }
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">A BUSY Bar app · busybartools</p>
+    <h1>Happy <span class="g">Hanukkah</span></h1>
+    <div class="flames" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="sh"></i><i></i><i></i><i></i><i></i></div>
+    <p class="lede">A menorah for a 72 × 16 LED display that follows tonight's candle count, with a dreidel, latkes,
+      sufganiyot, gelt, a snowy window and a blue-and-silver finale. Between scenes a clock card and a countdown card
+      appear; during Hanukkah the countdown becomes the night's greeting. The simulator plays the same frames the bar
+      plays, at 15 frames per second, picked for your current date and time.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now">
+      <div><span class="label" id="stepLabel">Step 1</span><strong id="title">…</strong></div>
+      <span class="t" id="time">0.0 s</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="controls">
+      <button id="prev" type="button">Previous</button>
+      <button id="play" type="button" class="primary">Pause</button>
+      <button id="next" type="button">Next</button>
+      <button id="holiday" type="button" class="holiday" aria-pressed="false">START: holiday mode</button>
+      <span class="mode" id="mode" aria-live="polite"></span>
+    </div>
+    <ol class="playlist" id="playlist" aria-label="This cycle's order"></ol>
+  </section>
+
+  <section class="section" aria-labelledby="about">
+    <h2 id="about">The show</h2>
+    <div class="prose">
+      <p>The heart of the show is <strong>tonight's menorah</strong>. Candles are placed from right to left, one more
+        each night, and lit from left to right, newest first. The shamash, raised in the middle, is lit first and then
+        lights the others. The bar has no sunset table, so 17:00 stands in for sundown: on the first evening the first
+        candle appears at 17:00, each later evening adds one, and all eight stay lit through the last day. Outside
+        Hanukkah the menorah rests, unlit.</p>
+      <p>The <strong>count card</strong> says <code>18 DAYS</code> / <code>TO HANUKKAH</code> before,
+        <code>TOMORROW</code> and then <code>TONIGHT</code> / <code>HANUKKAH BEGINS</code>, and during Hanukkah
+        <code>NIGHT 3</code> / <code>HAPPY HANUKKAH</code>, then <code>CHAG SAMEACH</code>. The
+        <strong>clock card</strong> shows the time, then the date.</p>
+      <p><strong>Holiday mode</strong> previews Hanukkah on any date: each press of START shows the next night, 1 to 8,
+        and a ninth press goes back to today's show.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Scenes</dt><dd>7</dd></div>
+      <div><dt>Menorah variants</dt><dd>9</dd></div>
+      <div><dt>Frame rate</dt><dd>15 fps</dd></div>
+      <div><dt>Cycle tonight</dt><dd id="fLoop">–</dd></div>
+      <div><dt>Animation data</dt><dd id="fBytes">–</dd></div>
+    </dl>
+  </section>
+
+  <section class="section">
+    <h2>Eight nights</h2>
+    <p>The end of the menorah scene for each night, and the resting menorah. Click one to preview that night.</p>
+    <div class="thumbs" id="nights"></div>
+  </section>
+
+  <section class="section">
+    <h2>Scene by scene</h2>
+    <p>Key moments from each scene. Click any frame to jump the simulator to that moment.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="section">
+    <h2>The cards</h2>
+    <p>Live text drawn by the app over looping backdrops, with the same fonts and colors as the bar.</p>
+    <div class="thumbs" id="cards"></div>
+  </section>
+
+  <section class="section" aria-labelledby="decisions">
+    <h2 id="decisions">Key decisions</h2>
+    <ul class="decisions">
+      <li><span class="id">D2</span><span><strong>Nine pre-rendered menorahs.</strong> The menorah and the window come in 0 to 8 candles, and the app picks tonight's.</span></li>
+      <li><span class="id">D3</span><span><strong>17:00 is sundown.</strong> A fixed hour stands in for a sunset table the bar doesn't have.</span></li>
+      <li><span class="id">D3</span><span><strong>Right to left, then left to right.</strong> Candles are placed from the right and lit newest first, by the shamash.</span></li>
+      <li><span class="id">D5</span><span><strong>Blue, silver and gold.</strong> Lit flames, no black details, warm and celebratory.</span></li>
+      <li><span class="id">D7</span><span><strong>START previews the nights.</strong> Night 1 to 8, then back to today.</span></li>
+      <li><span class="id">D9</span><span><strong>The finale only during Hanukkah.</strong> Outside it the show is a calm countdown.</span></li>
+    </ul>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+/* <logic> — a mirror of app/shared/hanukkah.ts and lib/ts/busybar (holidays, walltime, xpmtext drawing order);
+   tests/logic.test.mts checks that it agrees with the app on every day of several years. */
+const LOGIC = (() => {
+  const DAY_MS = 86400000;
+  const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const daysUntil = (t, y, m, d) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(t.year, t.month - 1, t.day)) / DAY_MS);
+  const elapsed = (y) => {
+    const months = Math.floor((235 * y - 234) / 19);
+    const parts = 12084 + 13753 * months;
+    const days = 29 * months + Math.floor(parts / 25920);
+    return (3 * (days + 1)) % 7 < 3 ? days + 1 : days;
+  };
+  const newYear = (y) => {
+    const ny0 = elapsed(y - 1), ny1 = elapsed(y), ny2 = elapsed(y + 1);
+    return -1373427 + ny1 + (ny2 - ny1 === 356 ? 2 : ny1 - ny0 === 382 ? 1 : 0);
+  };
+  function firstNight(year) {
+    const hy = year + 3761;
+    const len = newYear(hy + 1) - newYear(hy);
+    const kislev25 = newYear(hy) + 30 + (len === 355 || len === 385 ? 30 : 29) + 24;
+    const d = new Date((kislev25 - 1 - 719163) * DAY_MS);
+    return [d.getUTCMonth() + 1, d.getUTCDate()];
+  }
+  function occurrence(t) {
+    for (const year of [t.year - 1, t.year, t.year + 1]) {
+      const [m, d] = firstNight(year);
+      const days = daysUntil(t, year, m, d);
+      if (days > 0 || days > -9) return { days, dayOf: days > 0 ? 0 : 1 - days };
+    }
+    return null;
+  }
+  const candles = (t) => {
+    const o = occurrence(t);
+    if (!o || o.dayOf === 0) return 0;
+    return Math.min(8, o.dayOf - 1 + (t.hour >= 17 ? 1 : 0));
+  };
+  const night = (t, p) => (p > 0 ? p : candles(t));
+  const daysLabel = (n) => n + (n === 1 ? " DAY" : " DAYS");
+  function countPages(t, p) {
+    const n = night(t, p);
+    if (n > 0) return [["NIGHT " + n, "HAPPY HANUKKAH"], ["NIGHT " + n, "CHAG SAMEACH"]];
+    const days = occurrence(t).days;
+    if (days === 0) return [["TONIGHT", "HANUKKAH BEGINS"]];
+    if (days === 1) return [["TOMORROW", "HANUKKAH BEGINS"]];
+    return [[daysLabel(days), "TO HANUKKAH"]];
+  }
+  function playlist(t, p) {
+    const n = night(t, p);
+    const scenes = ["menorah_" + n, "dreidel", "latkes", "sufganiyot", "gelt", "window_" + n];
+    if (n > 0) scenes.push("finale");
+    const out = [{ kind: "card", card: "count" }];
+    scenes.forEach((name, i) => {
+      out.push({ kind: "scene", name });
+      if (i < scenes.length - 1) out.push({ kind: "card", card: i % 2 ? "count" : "clock" });
+    });
+    out.push({ kind: "card", card: "clock" });
+    return out;
+  }
+  const nextPreview = (p) => (p >= 8 ? 0 : p + 1);
+  const weekday = (t) => new Date(Date.UTC(t.year, t.month - 1, t.day)).getUTCDay();
+  const formatDate = (t) => DAYS[weekday(t)] + " " + t.day + " " + MONTHS[t.month - 1];
+  return { candles, countPages, playlist, nextPreview, formatDate };
+})();
+/* </logic> */
+
+const SHOW = /*__SHOW_DATA__*/null;
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps, LAY = SHOW.layout;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const BYNAME = Object.fromEntries(SHOW.scenes.map((s, i) => [s.name, i]));
+
+  // ---------- frame data ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const frameAt = (data, i) => data.subarray(i * W * H * 4, (i + 1) * W * H * 4);
+
+  // ---------- LED renderer ----------
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#050711";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    ctx.globalAlpha = 0.22; // soft bloom for lit LEDs
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#10141f" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // ---------- live text (same layout and drawing order as the bar app) ----------
+  const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+  function textWidth(text, font) {
+    const ws = [...text].map(c => font.glyphs[c]).filter(Boolean).map(g => g[0].length);
+    return ws.reduce((s, w) => s + w, 0) + font.gap * Math.max(0, ws.length - 1);
+  }
+  function blend(buf, x, y, c, a) {
+    if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) buf[i + k] = Math.round(buf[i + k] + (c[k] - buf[i + k]) * a);
+  }
+  function drawText(buf, text, spec, alpha) {
+    const font = SHOW.fonts[spec.font];
+    let cx = Math.floor((W - textWidth(text, font)) / 2);
+    for (const ch of text) {
+      const g = font.glyphs[ch];
+      if (!g) continue;
+      g.forEach((row, gy) => {
+        const c = mix(spec.top, spec.bottom, gy / Math.max(1, font.height - 1));
+        [...row].forEach((bit, gx) => {
+          if (bit !== "#") return;
+          blend(buf, cx + gx + 1, spec.y + gy + 1, spec.shadow, alpha);
+          blend(buf, cx + gx, spec.y + gy, c, alpha);
+        });
+      });
+      cx += g[0].length + font.gap;
+    }
+  }
+  const pad = n => String(n).padStart(2, "0");
+  const local = d => ({ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() });
+  const fadeStep = ms => Math.min(1, (Math.floor(ms / 150) + 1) / 3); // the app fades text in 3 steps, 150 ms apart
+
+  // a card's pages: [{ms, lines: [[style, text]]}], fixed when the card starts (the clock text follows the time)
+  function cardPages(card, t) {
+    if (card === "clock") {
+      return [{ ms: LAY.time_ms, lines: [["time", `${pad(t.hour)}:${pad(t.minute)}`]] },
+              { ms: LAY.date_ms, lines: [["date", LOGIC.formatDate(t)]] }];
+    }
+    return LOGIC.countPages(t, preview).map(([head, sub]) => ({ ms: LAY.count_ms, lines: [["head", head], ["sub", sub]] }));
+  }
+  function cardFrame(card, pages, ms, t) {
+    const bg = cardsData[card];
+    const buf = new Uint8ClampedArray(frameAt(bg, Math.floor(ms * FPS / 1000) % SHOW.cards[card].frames));
+    let at = 0;
+    for (const p of pages) {
+      if (ms < at + p.ms) {
+        const lines = card === "clock" ? cardPages("clock", t)[pages.indexOf(p)].lines : p.lines;
+        for (const [style, text] of lines) drawText(buf, text, LAY[style], fadeStep(ms - at));
+        return buf;
+      }
+      at += p.ms;
+    }
+    return buf;
+  }
+
+  // ---------- the show: a cycle is picked from the date when it starts, like on the bar ----------
+  const led = document.getElementById("led").getContext("2d");
+  const els = {
+    title: document.getElementById("title"), label: document.getElementById("stepLabel"),
+    time: document.getElementById("time"), bar: document.getElementById("bar"),
+    play: document.getElementById("play"), playlist: document.getElementById("playlist"),
+    holiday: document.getElementById("holiday"), mode: document.getElementById("mode"),
+  };
+  let data = [], cardsData = {};
+  let preview = 0;
+  let steps = [], step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
+
+  function newCycle() {
+    const t = local(new Date());
+    steps = LOGIC.playlist(t, preview).map(e => {
+      if (e.kind === "scene") return { kind: "scene", i: BYNAME[e.name], ms: SHOW.scenes[BYNAME[e.name]].ms };
+      const pages = cardPages(e.card, t);
+      return { kind: "card", card: e.card, pages, ms: pages.reduce((s, p) => s + p.ms, 0) };
+    });
+    chips();
+    const loopS = Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000);
+    document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
+    const n = LOGIC.candles(t);
+    els.mode.innerHTML = preview ? `Holiday mode: <b>night ${preview}</b>` :
+      (n ? `Tonight: <b>night ${n}</b>` : `Today: <b>${LOGIC.countPages(t, 0)[0].join(" ").toLowerCase()}</b>`);
+    els.holiday.setAttribute("aria-pressed", String(preview > 0));
+    els.holiday.textContent = preview ? (preview < 8 ? `START: night ${preview + 1}` : "START: back to today") : "START: holiday mode";
+    go(0, 0);
+  }
+  function chips() {
+    els.playlist.replaceChildren();
+    steps.forEach((s, k) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      if (s.kind === "scene") { b.className = "chip"; b.textContent = SHOW.scenes[s.i].title; }
+      else { b.className = "chip card"; b.textContent = s.card; }
+      b.addEventListener("click", () => go(k, 0));
+      li.appendChild(b);
+      els.playlist.appendChild(li);
+    });
+  }
+  function elapsed() { return paused ? pausedMs : performance.now() - startedAt; }
+  function go(k, ms) {
+    step = (k + steps.length) % steps.length;
+    startedAt = performance.now() - ms;
+    pausedMs = ms;
+    lastKey = "";
+    [...els.playlist.querySelectorAll(".chip")].forEach((c, j) => c.setAttribute("aria-current", String(j === step)));
+  }
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) pausedMs = elapsed(); else startedAt = performance.now() - pausedMs;
+    paused = p;
+    els.play.textContent = p ? "Play" : "Pause";
+  }
+  function playScene(name, ms) {
+    const k = steps.findIndex(s => s.kind === "scene" && SHOW.scenes[s.i].name === name);
+    if (k >= 0) { go(k, ms); return true; }
+    return false;
+  }
+
+  function tick() {
+    let ms = elapsed();
+    if (ms >= steps[step].ms) {
+      if (step + 1 >= steps.length) newCycle(); else go(step + 1, 0);
+      ms = 0;
+    }
+    const cur = steps[step];
+    const t = local(new Date());
+    if (cur.kind === "scene") {
+      const sc = SHOW.scenes[cur.i];
+      const f = Math.min(sc.frames - 1, Math.floor(ms * FPS / 1000));
+      const key = `s${cur.i}:${f}`;
+      if (key !== lastKey) { drawLED(led, frameAt(data[cur.i], f), 12); lastKey = key; }
+      els.title.textContent = sc.title;
+    } else {
+      const f = Math.floor(ms * FPS / 1000);
+      const key = `c${step}:${f}:${t.minute}`;
+      if (key !== lastKey) { drawLED(led, cardFrame(cur.card, cur.pages, ms, t), 12); lastKey = key; }
+      els.title.textContent = cur.card === "clock" ? "Clock and date" : "Count card";
+    }
+    els.label.textContent = `Step ${step + 1} of ${steps.length}`;
+    els.time.textContent = `${(ms / 1000).toFixed(1)} s / ${(cur.ms / 1000).toFixed(1)} s`;
+    els.bar.style.width = `${Math.min(100, (ms / cur.ms) * 100)}%`;
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- storyboards ----------
+  function thumb(px, label, seconds, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "thumb";
+    const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+    drawLED(c.getContext("2d"), px, 5);
+    const cap = document.createElement("span");
+    if (seconds !== null) cap.innerHTML = `<b>${seconds.toFixed(1)}s</b>`;
+    cap.append(label);
+    b.append(c, cap);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+  function scrollStage() {
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  function setPreview(p) { preview = p; newCycle(); }
+  function nights() {
+    const host = document.getElementById("nights");
+    for (let n = 0; n <= 8; n++) {
+      const i = BYNAME["menorah_" + n], sc = SHOW.scenes[i];
+      host.appendChild(thumb(frameAt(data[i], sc.frames - 8), n ? `Night ${n}` : "Resting (outside Hanukkah)", null, () => {
+        setPreview(n);
+        playScene("menorah_" + n, 0);
+        setPaused(false);
+        scrollStage();
+      }));
+    }
+  }
+  function boards() {
+    const host = document.getElementById("boards");
+    const shown = ["menorah_8", "menorah_0", "dreidel", "latkes", "sufganiyot", "gelt", "window_8", "finale"];
+    shown.forEach((name, k) => {
+      const i = BYNAME[name], sc = SHOW.scenes[i];
+      const night = /_(\d)$/.exec(name);
+      const card = document.createElement("article");
+      card.className = "board";
+      card.innerHTML = `<div class="board-head"><span class="num">SCENE ${k + 1}</span><h3></h3>
+        <span class="dur">${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames</span>
+        <button type="button">Play scene</button></div><div class="thumbs"></div>`;
+      card.querySelector("h3").textContent = sc.title;
+      const open = (ms, pause) => {
+        if (night) setPreview(Number(night[1])); else if (name === "finale" && !preview) setPreview(8);
+        playScene(name, ms); setPaused(pause); scrollStage();
+      };
+      card.querySelector("button").addEventListener("click", () => open(0, false));
+      const thumbs = card.querySelector(".thumbs");
+      sc.keyframes.forEach(kf => {
+        const f = Math.min(sc.frames - 1, Math.round(kf.s * FPS));
+        thumbs.appendChild(thumb(frameAt(data[i], f), kf.caption, kf.s, () => open(kf.s * 1000, true)));
+      });
+      host.appendChild(card);
+    });
+  }
+  function cardThumbs() {
+    const host = document.getElementById("cards");
+    const t = local(new Date());
+    const samples = [
+      ["clock", [["time", `${pad(t.hour)}:${pad(t.minute)}`]], "Clock: the time"],
+      ["clock", [["date", LOGIC.formatDate(t)]], "Clock: then the date"],
+      ["count", [["head", "18 DAYS"], ["sub", "TO HANUKKAH"]], "Before"],
+      ["count", [["head", "TOMORROW"], ["sub", "HANUKKAH BEGINS"]], "The day before"],
+      ["count", [["head", "TONIGHT"], ["sub", "HANUKKAH BEGINS"]], "The first evening, before 17:00"],
+      ["count", [["head", "NIGHT 3"], ["sub", "HAPPY HANUKKAH"]], "During: the night's greeting"],
+      ["count", [["head", "NIGHT 3"], ["sub", "CHAG SAMEACH"]], "During: its second page"],
+    ];
+    for (const [card, lines, label] of samples) {
+      const buf = new Uint8ClampedArray(frameAt(cardsData[card], 20));
+      for (const [style, text] of lines) drawText(buf, text, LAY[style], 1);
+      host.appendChild(thumb(buf, label, null, () => {}));
+    }
+  }
+
+  els.play.addEventListener("click", () => setPaused(!paused));
+  els.holiday.addEventListener("click", () => setPreview(LOGIC.nextPreview(preview)));
+  document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
+  document.getElementById("next").addEventListener("click", () => (step + 1 >= steps.length ? newCycle() : go(step + 1, 0)));
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
+    if (e.key === "ArrowRight") go(step + 1, 0);
+    if (e.key === "ArrowLeft") go(step - 1, 0);
+  });
+  document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
+  document.getElementById("built").textContent =
+    `${SHOW.scenes.length} animations (7 scenes, the menorah and window in 9 variants each) · busybartools · Hanukkah`;
+
+  Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), decode(SHOW.cards.clock.sheet), decode(SHOW.cards.count.sheet)])
+    .then(all => {
+      cardsData = { count: all.pop(), clock: all.pop() };
+      data = all;
+      nights();
+      boards();
+      cardThumbs();
+      newCycle();
+      els.play.textContent = paused ? "Play" : "Pause";
+      requestAnimationFrame(tick);
+    });
+})();
+</script>
