@@ -9,7 +9,7 @@ from busybar.party import hash01
 
 import vfx
 from vfx import (BRICK, BRICK_HI, CREAM, NAVY, RED, SAGE, SIDEWALK, SLATE, STREET, WHITE, blend_stops,
-                 draw_flag, lamppost, leaf, person, quant, sky, storefront)
+                 draw_flag, lamppost, leaf, quant, sky, storefront)
 
 NAME = "main_street"
 TITLE = "Flags on Main Street"

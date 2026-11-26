@@ -1,13 +1,14 @@
-"""Scene: a thank-you. An older veteran in a plain cap rests on a bench in front of a warmly lit café window. A child
-walks up and holds out a handmade card; the veteran takes it, opens it to a red heart, and the two wave. THANK YOU
-appears in small letters (docs/DECISIONS.md D3, D10)."""
+"""Scene: a thank-you. An older veteran in a plain cap rests on a bench in front of a warmly lit café window, and a
+flag flies from the wall beside it. A child walks up and holds out a handmade card; the veteran takes it, opens it
+to a red heart, and the two wave. THANK YOU appears in small letters (docs/DECISIONS.md D3, D10)."""
 
 import math
 
 from busybar.canvas import W, ease_out, mix, new, phase, put, sec
 
 from scenes.text import SCENE_CAPTIONS
-from vfx import HAIR_BROWN, HAIR_SILVER, RED, SKIN, U_DARK, WHITE, caption, fill, glow, person
+from scenes.main_street import mini_flag
+from vfx import HAIR_BROWN, HAIR_SILVER, RED, SKIN, U_DARK, WHITE, caption, draw_flag, fill, glow, person
 
 NAME = "thank_you"
 TITLE = "A Thank You"
@@ -45,8 +46,10 @@ def backdrop():
     glow(img, 15, 6, 14, (255, 200, 120), 0.25)
     for x in range(5, 26):  # a striped awning lip along the top of the window
         put(img, x, 1, RED if (x // 2) % 2 else WHITE)
-    fill(img, 52, 3, 60, 9, FRAME)  # a second, smaller window down the street
-    fill(img, 53, 4, 59, 8, mix(WINDOW, WALL, 0.35))
+    fill(img, 56, 3, 64, 9, FRAME)  # a second, smaller window down the street
+    fill(img, 57, 4, 63, 8, mix(WINDOW, WALL, 0.35))
+    for x in range(38, 43):  # a bracket on the wall for the flag
+        put(img, x, 7 + (42 - x) // 2, (200, 180, 140))
     for x in range(W):
         put(img, x, 14, PAVE)
         put(img, x, 15, mix(PAVE, (0, 0, 0), 0.3))
@@ -86,6 +89,7 @@ def render():
     frames = []
     for f in range(n):
         img = bg.copy()
+        draw_flag(img, 43, 7, 9, 5, f / 26, amp=0.8, wavelength=10, color=mini_flag, shade_levels=2)
         # the child walks in from the right
         p = ease_out(phase(f, *WALK))
         cx = int(74 - (74 - CHILD_STOP) * p + 0.5)
