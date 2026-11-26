@@ -399,7 +399,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
     const n = LOGIC.candles(t);
     els.mode.innerHTML = preview ? `Holiday mode: <b>night ${preview}</b>` :
-      (n ? `Tonight: <b>night ${n}</b>` : `Today: <b>${LOGIC.countPages(t, 0)[0].join(" ").toLowerCase()}</b>`);
+      (n ? `Tonight: <b>night ${n}</b>` : `Today: <b>${LOGIC.countPages(t, 0)[0].join(" ").toLowerCase().replace("hanukkah", "Hanukkah")}</b>`);
     els.holiday.setAttribute("aria-pressed", String(preview > 0));
     els.holiday.textContent = preview ? (preview < 8 ? `START: night ${preview + 1}` : "START: back to today") : "START: holiday mode";
     go(0, 0);

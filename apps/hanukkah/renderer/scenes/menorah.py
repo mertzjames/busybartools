@@ -77,7 +77,7 @@ def shamash_at(path, t):
     for t0, t1, a, b in path:
         if t0 <= t < t1:
             u = ease_in_out((t - t0) / (t1 - t0))
-            hop = 2.0 * math.sin(math.pi * u) if a != b else 0.0
+            hop = 1.5 * math.sin(math.pi * u) if a != b else 0.0
             return lerp(a[0], b[0], u), lerp(a[1], b[1], u) - hop
     return None
 
