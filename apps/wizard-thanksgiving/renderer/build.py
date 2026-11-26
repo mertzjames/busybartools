@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render every scene and write all outputs.
 
-    python3 renderer/build.py [--no-gif] [--only owl_post,...]
+    python3 renderer/build.py [--no-gif] [--only owl_post,...]     (run from apps/wizard-thanksgiving/)
 
 Outputs
   app/src/animations/<scene>.anim      firmware-played animations (+ clock_bg.anim)
@@ -25,13 +25,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[2] / "lib" / "python"))  # shared busybar package
 
 from PIL import Image  # noqa: E402
 
 import font  # noqa: E402
-from anim_writer import image_to_bgra, read_anim, write_anim  # noqa: E402
+from busybar.anim import image_to_bgra, read_anim, write_anim  # noqa: E402
 from canvas import FPS, H, W, flatten  # noqa: E402
-from preview import led  # noqa: E402
+from busybar.preview import led  # noqa: E402
 from scenes import CLOCK_BG, PLAYLIST  # noqa: E402
 
 APP_ID = "wizard.thanksgiving"

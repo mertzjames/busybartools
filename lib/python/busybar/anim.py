@@ -2,12 +2,13 @@
 
 Adapted from devrsw/busybar-skill templates/make_anim.py
 (https://github.com/devrsw/busybar-skill), MIT License, Copyright (c) 2026 devrsw.
-The reader (`read_anim`) and the Pillow helpers are additions in this repo.
+The reader (`read_anim`) and the Pillow helper (`image_to_bgra`) are additions in this repo.
 
 The format is defined in the firmware repo busy-app/busybar-firmware:
 lib/anim_file/anim_file_format.h. Encoding used here: BGRA8888 raw pixels, the
 first frame of each section whole, and later frames as only the changed pixels
-with a per-pixel bitmap mask (MSB first). See docs/DECISIONS.md D4.
+with a per-pixel bitmap mask (MSB first). See apps/wizard-thanksgiving/docs/DECISIONS.md D4
+and docs/DEVELOPMENT.md#making-animations-anim.
 """
 
 from __future__ import annotations
