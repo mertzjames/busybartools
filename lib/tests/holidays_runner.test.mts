@@ -157,3 +157,37 @@ test("show runner: scene, card pages, minute rollover, playlist re-pick, quit", 
     mock.timers.reset();
   }
 });
+
+test("show runner: unchanged lines don't fade again on the next page; start(from)", async () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    const { device, log } = fakeDevice(() => "2026-12-26T10:00:00-05:00");
+    const show = createShow({
+      app: "test", device, fonts: { f: FONT }, report: (e) => { throw e; },
+      scenes: [{ path: "animations/a.anim", ms: 1000 }],
+      cards: {
+        count: {
+          path: "animations/bg.anim",
+          pages: () => [
+            { ms: 2000, lines: [{ spec: SPEC, text: () => "UMOJA" }, { spec: SPEC, text: () => "UNITY" }] },
+            { ms: 2000, lines: [{ spec: SPEC, text: () => "UMOJA" }, { spec: SPEC, text: () => "DAY 1" }] },
+          ],
+        },
+      },
+      steps: () => [{ kind: "scene", scene: 0 }, { kind: "card", card: "count" }],
+    });
+    show.start(1); // straight to the card
+    for (let i = 0; i < 4; i++) await flush(0);
+    await flush(150);
+    await flush(150);
+    assert.equal(show.index, 1);
+    assert.deepEqual(log.splice(0).filter((l) => l.startsWith("text")),
+      ["text text0 op=34", "text text1 op=34", "text text0 op=67", "text text1 op=67", "text text0 op=100", "text text1 op=100"]);
+    await flush(1700); // page 2: only the second line changes
+    await flush(150);
+    await flush(150);
+    assert.deepEqual(log.splice(0).filter((l) => l.startsWith("text")), ["text text1 op=34", "text text1 op=67", "text text1 op=100"]);
+  } finally {
+    mock.timers.reset();
+  }
+});

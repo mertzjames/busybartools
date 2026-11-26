@@ -9,7 +9,8 @@
 //   const unbind = listen("input", (e) => { if (show.input(e) === "quit") setTimeout(unbind, 0); });
 //
 // A card's pages are computed from the bar's time when the card starts; each line's text is recomputed at the start
-// of its page and again whenever the minute rolls over during it (only changed lines are redrawn). `steps(t)` picks
+// of its page and again whenever the minute rolls over during it. Only changed lines are redrawn: a line that
+// keeps its text and style from one page to the next stays on screen without fading again. `steps(t)` picks
 // the playlist again at the start of every cycle, so a show can change with the date (Hanukkah's candles, a
 // countdown that becomes a greeting on the day).
 //
@@ -79,7 +80,8 @@ export interface ShowOptions {
 }
 
 export interface Show {
-  start(): void;
+  /** Starts (or restarts) a cycle: re-picks the playlist from the bar's date, then plays from step `from`. */
+  start(from?: number): void;
   /** Handles a device input event: "quit" after Back (the app should unbind), "ignored" for keys it doesn't use. */
   input(event: ShowInput): "handled" | "ignored" | "quit";
   /** Jumps to step `index` of the current cycle. */
@@ -111,7 +113,7 @@ export function createShow(opts: ShowOptions): Show {
   let token = 0; // bumps on every step change so stale timers and responses do nothing
   let timers: ReturnType<typeof setTimeout>[] = [];
   let drawn: string[] = []; // text element ids on screen
-  const shown: string[] = []; // text per line slot, to skip redraws that change nothing
+  const shown: string[] = []; // what each line slot shows (text + style), to skip redraws that change nothing
 
   const queue = createDrawQueue(report);
   const draw = (slot: string, elements: ShowElement[]) =>
@@ -152,11 +154,13 @@ export function createShow(opts: ShowOptions): Show {
     clearIds(drawn.filter((id) => Number(id.slice(4)) >= keep));
   }
 
+  // fadeIn: a new page. A line that already shows the same text in the same style stays put (no fade).
   function drawLine(slot: number, line: Line, t: LocalTime, fadeIn: boolean): void {
     const text = line.text(t);
     const id = "text" + slot;
-    if (!fadeIn && text === shown[slot]) return;
-    shown[slot] = text;
+    const key = text ? [text, line.x ?? "c", JSON.stringify(line.spec)].join("|") : "";
+    if (key === (shown[slot] ?? "")) return;
+    shown[slot] = key;
     if (!text) {
       clearIds([id]);
       return;
@@ -228,11 +232,11 @@ export function createShow(opts: ShowOptions): Show {
       go(index + 1);
       return;
     }
-    newCycle();
+    newCycle(0);
   }
 
-  // re-pick the playlist from the bar's date, then start it from the top
-  function newCycle(): void {
+  // re-pick the playlist from the bar's date, then start it at step `from` (default: the top)
+  function newCycle(from = 0): void {
     token++;
     clearTimers();
     const mine = token;
@@ -245,7 +249,7 @@ export function createShow(opts: ShowOptions): Show {
       } catch (err) {
         report(err); // keep the previous playlist; never stop the show over one failed request
       }
-      if (mine === token && !stopped) go(0);
+      if (mine === token && !stopped) go(from);
     });
   }
 
@@ -259,7 +263,7 @@ export function createShow(opts: ShowOptions): Show {
   }
 
   return {
-    start: newCycle,
+    start: (from?: number) => newCycle(from ?? 0),
     go,
     stop,
     input(event: ShowInput) {
