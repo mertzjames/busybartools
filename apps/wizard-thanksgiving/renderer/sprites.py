@@ -337,7 +337,7 @@ YWY
 .Y.
 """)
 
-# Plain pumpkin pie (cauldron scene)
+# Plain pumpkin pie (cauldron and feast scenes)
 PIE = Sprite("pie", {"o": "#E8B062", "O": "#F07B1A", "b": "#A8702E", "c": "#FFF3D6"}, """
 ...c...
 .ooooo.
@@ -345,10 +345,36 @@ oOOOOOo
 .bbbbb.
 """)
 
+# Feast dishes (scene "The Feast Appears"): a pumpkin pie on a silver cake stand (so it stands out from the wooden
+# table), mashed potatoes with a butter pat, and a gold goblet of cider
+PIE_STAND = Sprite("pie_stand", {"o": "#E8B062", "O": "#F07B1A", "b": "#A8702E", "c": "#FFF3D6", "P": "#D4D8E4",
+                                 "p": "#9AA0B4"}, """
+...c...
+.ooooo.
+oOOOOOo
+.bbbbb.
+PPPPPPP
+...p...
+..ppp..
+""")
+POTATOES = Sprite("potatoes", {"W": "#F6EED8", "w": "#D8CCAA", "Y": "#FFD84A", "B": "#7F94C8", "b": "#56689A"}, """
+..Y...
+.WWWW.
+WWwWWW
+BBBBBB
+.bbbb.
+""")
+GOBLET = Sprite("goblet", {"Y": "#F2B515", "y": "#B07A10", "c": "#E07A2A"}, """
+YcY
+YYY
+.y.
+YYY
+""")
+
 # The four students (2 wizards + 2 witches) live in cast.py (docs/DECISIONS.md D28).
 from cast import CAST_SPRITES  # noqa: E402
 
 # Patronus turkey: same silhouette as TURKEY, recolored at runtime (see canvas.tint)
 ALL = [OWL, LETTER, *CAST_SPRITES, GOLDEN_PIE, TURKEY, ROAST, RAW_TURKEY, HAT, CANDLE, LOCO, CAR, GRAVY_BOAT, PUMPKIN,
-       CAULDRON, APPLE, DRAGON_HEAD, DRAGON_WING, SPIT, SPARK, PIE]
+       CAULDRON, APPLE, DRAGON_HEAD, DRAGON_WING, SPIT, SPARK, PIE, PIE_STAND, POTATOES, GOBLET]
 
