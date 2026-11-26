@@ -1,7 +1,7 @@
 {
-  "name": "christmas-day",
+  "name": "app",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Christmas scenes with a festive clock and date between them",
   "author": "busybartools contributors",
   "type": "module",
