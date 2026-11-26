@@ -1,0 +1,438 @@
+<title>New Year's Eve</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* One centered column: the simulated bar first, then how the night runs, then storyboards.
+     Party look (dark only): champagne gold and silver on midnight ink, with neon pink and cyan accents. */
+  :root {
+    --ink: #0a0913;
+    --panel: #13111e;
+    --panel-2: #1b1829;
+    --line: #2c2742;
+    --fg: #f1eee6;
+    --muted: #a7a3bb;
+    --gold: #f2c84b;
+    --silver: #cdd5ea;
+    --pink: #ff4fb8;
+    --cyan: #3fd8ff;
+    --bezel: #07060c;
+    --display: "Limelight", "Didot", Georgia, serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ink); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+  .wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 10px; }
+  .eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(38px, 7vw, 64px); line-height: 1.02;
+    background: linear-gradient(180deg, #fff3c4, var(--gold) 55%, #c8901e); -webkit-background-clip: text; background-clip: text; color: transparent; text-wrap: balance; }
+  h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; color: var(--silver); text-wrap: balance; }
+  .lede { margin: 0; max-width: 66ch; color: var(--muted); }
+
+  /* --- the bar --- */
+  .stage { display: grid; gap: 14px; }
+  .bezel { background: linear-gradient(180deg, #17141f, var(--bezel) 40%); border: 1px solid #262033; border-radius: 18px;
+    padding: clamp(10px, 2.2vw, 22px); box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10; }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 6px; background: #06050a; }
+  .now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+  .now .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .now strong { font-family: var(--display); font-weight: 400; font-size: 26px; color: var(--fg); margin-left: 10px; }
+  .clock { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .clock b { color: var(--silver); font-weight: 500; }
+  .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.demo { border-color: var(--pink); color: var(--pink); }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--gold), var(--pink)); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .controls .sep { width: 1px; height: 26px; background: var(--line); margin: 0 4px; }
+  button { font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+  button:hover { border-color: var(--gold); }
+  button:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--gold); color: #1a1204; border-color: var(--gold); min-width: 86px; }
+  button.device { border-color: #4a3d6a; }
+  button.device b { font-family: var(--mono); font-size: 11px; color: var(--cyan); margin-right: 6px; font-weight: 500; }
+  .hint { margin: 0; font-size: 13px; color: var(--muted); }
+
+  /* --- sections --- */
+  .section { display: grid; gap: 18px; }
+  .section > p { margin: 0; max-width: 66ch; color: var(--muted); }
+  .phases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .phases li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+  .phases .when { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
+  .phases h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .phases p { margin: 0; color: var(--muted); font-size: 14px; }
+  .boards { display: grid; gap: 18px; }
+  .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+  .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--gold); letter-spacing: .06em; }
+  .board-head .num.live { color: var(--cyan); }
+  .board-head h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 22px; }
+  .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; border-radius: 6px; }
+  .thumb canvas { width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #06050a; display: block; }
+  .thumb span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .thumb b { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--gold); margin-right: 6px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; margin: 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .facts div { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--fg); }
+  .prose { display: grid; gap: 12px; max-width: 68ch; }
+  .prose p { margin: 0; color: var(--muted); }
+  .prose strong { color: var(--fg); font-weight: 600; }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) {
+    .now strong { display: block; margin: 2px 0 0; }
+    .controls .sep { display: none; }
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">A BUSY Bar party screen</p>
+    <h1>New Year's Eve</h1>
+    <p class="lede">Party scenes and a countdown to midnight on a 72 × 16 LED display, then huge digits for the last ten
+      seconds and fireworks with <em>HAPPY NEW YEAR</em> and the year. The simulator below runs the app's own phase
+      logic and draws the same frames and live text the bar does, at 15 frames per second. Jump the clock to watch the
+      countdown and the celebration.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now">
+      <div><span class="label" id="phase">Party</span><strong id="title">Countdown card</strong></div>
+      <div class="clock"><span>bar time <b id="barTime">--</b></span><span class="tag" id="demoTag" hidden>DEMO</span></div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="controls" aria-label="Jump the bar's clock">
+      <button type="button" data-jump="-180">T−3 min</button>
+      <button type="button" data-jump="-90">T−90 s</button>
+      <button type="button" data-jump="-30">T−30 s</button>
+      <button type="button" data-jump="-12">T−12 s</button>
+      <button type="button" data-jump="61">After midnight</button>
+      <button type="button" id="today">Today</button>
+    </div>
+    <div class="controls" aria-label="Bar buttons and playback">
+      <button type="button" class="device" id="btnStart"><b>START</b>Demo</button>
+      <button type="button" class="device" id="btnOk"><b>OK</b>Skip</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" class="primary" id="play">Pause</button>
+    </div>
+    <p class="hint">START on the bar does the same as here: it moves the app's clock to 15 seconds before the next new
+      year, and real time comes back after the celebration. OK skips a scene or card. Back quits.</p>
+  </section>
+
+  <section class="section" aria-labelledby="night">
+    <h2 id="night">How the night runs</h2>
+    <p>Everything follows the bar's own local clock, so the countdown hits zero exactly when the bar's clock reaches
+      midnight. The year is read from the bar's date.</p>
+    <ol class="phases">
+      <li><span class="when">Dec 31 · until T−60 s</span><h3>Party</h3><p>Eight scenes, each followed by a countdown card with the time left and the year. A scene only starts if it finishes before the final minute.</p></li>
+      <li><span class="when">T−60 … T−11 s</span><h3>Final minute</h3><p>The seconds count down over chasing lights while a bar fills. The lights speed up for the last 30 seconds.</p></li>
+      <li><span class="when">T−10 … T−1 s</span><h3>Final ten</h3><p>One huge digit per second on the bar's tick, each in a new color, with a flash on every beat.</p></li>
+      <li><span class="when">00:00:00 · 60 s</span><h3>Midnight</h3><p>A huge 0, a burst, then <em>HAPPY NEW YEAR</em> and the year over a fireworks loop.</p></li>
+      <li><span class="when">Jan 1 · until 06:00</span><h3>After midnight</h3><p>The party carries on with a clock card that says <em>HAPPY</em> and the new year.</p></li>
+      <li><span class="when">Any other day</span><h3>Off-season</h3><p>The same party loop, with a clock card counting the days to the new year.</p></li>
+    </ol>
+    <dl class="facts" id="facts"></dl>
+  </section>
+
+  <section class="section">
+    <h2>Scene by scene</h2>
+    <p>Key moments from each party scene. Click a frame to jump the simulator there.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="section">
+    <h2>Live screens</h2>
+    <p>Everything that depends on the time is drawn live by the app over a looping backdrop: the countdown card, the
+      final minute, the final ten and the celebration. Click a frame to jump the bar's clock to that moment.</p>
+    <div class="boards" id="liveBoards"></div>
+  </section>
+
+  <section class="section" aria-labelledby="how">
+    <h2 id="how">How it's built</h2>
+    <div class="prose">
+      <p>A Python renderer draws every scene and backdrop as pixel art and bakes them into the bar's <code>.anim</code>
+        format, which the firmware plays smoothly with no network traffic. A small TypeScript app on the bar picks
+        what to show from its local time and draws the live text as pixel-font bitmaps, one draw per second at most.</p>
+      <p>The phase logic, the countdown text and the screen layouts are plain functions shared by the bar app, its unit
+        tests and this page. A parity test checks the app's live text against the renderer, pixel for pixel.</p>
+    </div>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+const SHOW = /*__SHOW_DATA__*/null;
+/*__NYE_LOGIC__*/
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps;
+  const L = SHOW.layout, F = SHOW.fonts;
+  const SCENE_MS = SHOW.show.scenes.map(s => s.ms);
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const YEAR = new Date().getFullYear();
+  const NYE_MIDNIGHT = { year: YEAR + 1, month: 1, day: 1, hour: 0, minute: 0, second: 0 };
+  const at = (s) => NYE.addSeconds(NYE_MIDNIGHT, s); // s seconds from the coming midnight
+
+  // ---------- frame data ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const frameAt = (data, i) => data.subarray(i * W * H * 4, (i + 1) * W * H * 4);
+
+  // ---------- LED renderer ----------
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#06050a";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    ctx.globalAlpha = 0.22;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#17141f" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+  /** A backdrop frame with the app's live text painted on top (the same layers -> pixels the bar app sends). */
+  function compose(frame, layers) {
+    const buf = new Uint8ClampedArray(frame);
+    if (!layers || !layers.length) return buf;
+    const px = NYE.paintLayers(layers, F);
+    for (let k = 0; k < px.length; k++) {
+      const c = px[k];
+      if (!c) continue;
+      buf[k * 4] = parseInt(c.slice(1, 3), 16);
+      buf[k * 4 + 1] = parseInt(c.slice(3, 5), 16);
+      buf[k * 4 + 2] = parseInt(c.slice(5, 7), 16);
+    }
+    return buf;
+  }
+
+  let sheets = { scenes: [], bg: {} };
+
+  // ---------- the simulated app (the same loop as app/src/main.ts) ----------
+  let simBase = 0, realStart = performance.now(), paused = reduce;
+  const simMs = () => paused ? simBase : simBase + (performance.now() - realStart);
+  let anchor = { local: at(-180), ms: 0 };
+  let offset = 0, cursor = { next: 0, cardDue: false }, step = null, stage = null;
+  const eff = () => NYE.effectiveAt(anchor, simMs(), offset);
+
+  function plan() {
+    let n = eff();
+    const settled = NYE.settleDemo(offset, n.t);
+    if (settled !== offset) { offset = settled; n = eff(); }
+    const r = NYE.planStep(n.t, n.frac, cursor, SCENE_MS);
+    cursor = r.cursor;
+    const s = simMs();
+    step = { ...r.step, startMs: s, endMs: s + r.step.ms, startedAt: NYE.secondsSinceMidnight(n.t) };
+    stage = null;
+  }
+  function screen(sim) {
+    if (!step || sim >= step.endMs) { plan(); sim = simMs(); }
+    const n = eff();
+    if (step.kind === "scene") {
+      const sc = SHOW.scenes[step.index];
+      const f = Math.min(sc.frames - 1, Math.floor((sim - step.startMs) * FPS / 1000));
+      const ov = SHOW.show.scenes[step.index].overlay;
+      return { frame: frameAt(sheets.scenes[step.index], f), layers: ov ? NYE.overlayAt(ov, sim - step.startMs, n.t, L, F) : null, n };
+    }
+    const s = NYE.screenAt(step.kind, n.t, step.startedAt, L, F);
+    if (!stage || stage.key !== s.stage) stage = { key: s.stage, startMs: sim, loop: s.loop };
+    const bg = SHOW.bg[s.stage];
+    let f = Math.floor((sim - stage.startMs) * FPS / 1000);
+    f = stage.loop ? f % bg.frames : Math.min(bg.frames - 1, f);
+    return { frame: frameAt(sheets.bg[s.stage], f), layers: s.layers, n };
+  }
+
+  const PHASE = { party: "Party · counting down", final: "Final minute", final10: "Final ten", celebrate: "Midnight!",
+    after: "After midnight", off: "Off-season" };
+  const STEP = { card: "Countdown card", final: "Final minute", final10: "Final ten", celebrate: "Happy New Year" };
+  const pad = n => String(n).padStart(2, "0");
+  const fmt = t => `${t.year}-${pad(t.month)}-${pad(t.day)} ${pad(t.hour)}:${pad(t.minute)}:${pad(t.second)}`;
+
+  const led = document.getElementById("led").getContext("2d");
+  const els = { phase: document.getElementById("phase"), title: document.getElementById("title"),
+    barTime: document.getElementById("barTime"), demo: document.getElementById("demoTag"),
+    bar: document.getElementById("bar"), play: document.getElementById("play") };
+  let lastKey = "";
+
+  function tick() {
+    const sim = simMs();
+    const sc = screen(sim);
+    const ms = simMs() - step.startMs;
+    const key = `${step.kind}:${step.index}:${Math.floor(ms * FPS / 1000)}:${fmt(sc.n.t)}`;
+    if (key !== lastKey) { drawLED(led, compose(sc.frame, sc.layers), 12); lastKey = key; }
+    const ph = NYE.phaseAt(sc.n.t);
+    els.phase.textContent = PHASE[ph];
+    els.title.textContent = step.kind === "scene" ? SHOW.scenes[step.index].title
+      : step.kind === "card" ? (ph === "party" ? "Countdown card" : "Clock card") : STEP[step.kind];
+    els.barTime.textContent = fmt(sc.n.t);
+    els.demo.hidden = offset === 0;
+    els.demo.className = "tag demo";
+    els.bar.style.width = `${Math.min(100, (ms / step.ms) * 100)}%`;
+    requestAnimationFrame(tick);
+  }
+
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) simBase = simMs(); else realStart = performance.now();
+    paused = p;
+    els.play.textContent = p ? "Play" : "Pause";
+  }
+  function jumpTo(local) {
+    anchor = { local, ms: simMs() };
+    offset = 0; step = null; stage = null; lastKey = "";
+  }
+  function browserNow() {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() };
+  }
+
+  document.querySelectorAll("[data-jump]").forEach(b => b.addEventListener("click", () => {
+    jumpTo(at(Number(b.dataset.jump))); setPaused(false);
+  }));
+  document.getElementById("today").addEventListener("click", () => { jumpTo(browserNow()); setPaused(false); });
+  document.getElementById("btnStart").addEventListener("click", () => {
+    offset = NYE.demoOffset(NYE.effectiveAt(anchor, simMs(), 0).t); step = null; lastKey = ""; setPaused(false);
+  });
+  document.getElementById("btnOk").addEventListener("click", () => {
+    if (step && (step.kind === "scene" || step.kind === "card")) { step = null; lastKey = ""; }
+  });
+  els.play.addEventListener("click", () => setPaused(!paused));
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
+  });
+
+  // ---------- storyboards ----------
+  function thumb(host, px, label, time, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "thumb";
+    const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+    drawLED(c.getContext("2d"), px, 5);
+    const cap = document.createElement("span");
+    cap.innerHTML = `<b>${time}</b>`;
+    cap.append(label);
+    b.append(c, cap);
+    b.addEventListener("click", onClick);
+    host.appendChild(b);
+  }
+  function board(host, num, title, dur, live) {
+    const card = document.createElement("article");
+    card.className = "board";
+    card.innerHTML = `<div class="board-head"><span class="num${live ? " live" : ""}">${num}</span><h3>${title}</h3>
+      <span class="dur">${dur}</span></div><div class="thumbs"></div>`;
+    host.appendChild(card);
+    return card.querySelector(".thumbs");
+  }
+  function scrollStage() {
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+  /** Play scene i from `ms` in the simulator (party time, two hours before midnight). */
+  function playScene(i, ms) {
+    jumpTo(at(-7200));
+    const s = simMs();
+    step = { kind: "scene", index: i, ms: SCENE_MS[i], startMs: s - ms, endMs: s - ms + SCENE_MS[i], startedAt: 0 };
+    cursor = { next: (i + 1) % SCENE_MS.length, cardDue: true };
+  }
+
+  function boards() {
+    const host = document.getElementById("boards");
+    const partyT = at(-7200);
+    SHOW.scenes.forEach((sc, i) => {
+      const thumbs = board(host, `SCENE ${i + 1}`, sc.title, `${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames`);
+      const ov = SHOW.show.scenes[i].overlay;
+      sc.keyframes.forEach(k => {
+        const f = Math.min(sc.frames - 1, Math.round(k.s * FPS));
+        const layers = ov ? NYE.overlayAt(ov, k.s * 1000, partyT, L, F) : null;
+        thumb(thumbs, compose(frameAt(sheets.scenes[i], f), layers), k.caption, `${k.s.toFixed(1)}s`, () => {
+          playScene(i, k.s * 1000); setPaused(true); lastKey = ""; scrollStage();
+        });
+      });
+    });
+
+    const live = document.getElementById("liveBoards");
+    const groups = [
+      ["BETWEEN SCENES", "Countdown and clock card", "6 s · ticks every second", [
+        ["card", -8088, "Dec 31: time left to the new year"], ["card", -1075, "The last hour: MM:SS"],
+        ["card", 2520, "Jan 1: the clock and HAPPY + year"], ["card", null, "Off-season: days to go"]]],
+      ["T−60 … T−11", "Final minute", "1 draw per second", [
+        ["final", -68, "No scene fits: the minute starts early"], ["final", -45, "45 seconds; the bar fills"],
+        ["final", -20, "Last 30 s: the lights speed up"], ["final", -11, "11"]]],
+      ["T−10 … T−1", "Final ten", "on the bar's tick", [
+        ["final10", -10, "10"], ["final10", -7, "7"], ["final10", -3, "3"], ["final10", -1, "1"]]],
+      ["00:00:00", "Midnight and the celebration", "60 s, then the party goes on", [
+        ["celebrate", 0, "0: the stroke of midnight"], ["celebrate", 1.5, "The burst"],
+        ["celebrate", 4, "HAPPY NEW YEAR and the year"], ["celebrate", 8, "The year, huge"]]],
+    ];
+    for (const [num, title, dur, shots] of groups) {
+      const thumbs = board(live, num, title, dur, true);
+      for (const [kind, s, label] of shots) {
+        const t = s === null ? { year: YEAR, month: 11, day: 25, hour: 20, minute: 15, second: 0 } : at(Math.floor(s));
+        const scr = NYE.screenAt(kind, t, 0, L, F);
+        const bg = SHOW.bg[scr.stage];
+        const f = scr.stage === "burst" ? Math.round((s % 1) * FPS + FPS) : scr.stage === "final10" ? 3 : 7;
+        const px = compose(frameAt(sheets.bg[scr.stage], Math.min(bg.frames - 1, f)), scr.layers);
+        const time = s === null ? "Nov 25" : s < 0 ? `T${s} s` : `+${Math.floor(s)} s`;
+        thumb(thumbs, px, label, time, () => {
+          jumpTo(s === null ? t : at(Math.floor(s) - (kind === "celebrate" ? 0 : 1)));
+          setPaused(false); scrollStage();
+        });
+      }
+    }
+  }
+
+  function facts() {
+    const loop = SCENE_MS.reduce((a, b) => a + b, 0) + SCENE_MS.length * NYE.CARD_MS;
+    const rows = [["Scenes", SHOW.scenes.length], ["Display", "72 × 16"], ["Frame rate", `${FPS} fps`],
+      ["Party loop", `${Math.floor(loop / 60000)} m ${Math.round(loop / 1000) % 60} s`],
+      ["Animation data", `${(SHOW.anim_kib / 1024).toFixed(1)} MB`], ["Demo", "START"]];
+    document.getElementById("facts").innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+    document.getElementById("built").textContent =
+      `${SHOW.scenes.length} scenes · ${Object.keys(SHOW.bg).length} live-screen backdrops · the simulator runs the app's own phase logic`;
+  }
+
+  Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), ...Object.keys(SHOW.bg).map(k => decode(SHOW.bg[k].sheet))]).then(all => {
+    sheets.scenes = all.slice(0, SHOW.scenes.length);
+    Object.keys(SHOW.bg).forEach((k, i) => { sheets.bg[k] = all[SHOW.scenes.length + i]; });
+    facts();
+    boards();
+    els.play.textContent = paused ? "Play" : "Pause";
+    requestAnimationFrame(tick);
+  });
+})();
+</script>
