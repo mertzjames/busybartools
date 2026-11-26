@@ -40,7 +40,7 @@ def shells():
               (4, 6, None, "willow"), (28, 5, (FW_RED,), "ring"), (42, 6, (FW_BLUE,), "ring"),
               (14, 3, (FW_WHITE, FW_RED), "palm"), (56, 3, (FW_WHITE, FW_BLUE), "palm"), (36, 5, (FW_GOLD,), "peony")]
     for i, (x, y, cols, kind) in enumerate(volley):
-        s.append(Firework(40 + i, FINALE + (i * 31) % 40 + i // 3, x, y, cols, kind, n=24, rise=8))
+        s.append(Firework(40 + i, FINALE + (i * 31) % 40 + i // 3, x, y, cols, kind, n=26, rise=8, speed=1.15))
     return s
 
 

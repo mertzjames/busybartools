@@ -1,7 +1,7 @@
 """Live-text styles for the cards, shared with the app (generated show.ts) and the mockup (docs/DECISIONS.md D6).
 
     time  clock font  y=2   rows 2-14   "18:05"
-    date  big         y=4   rows 4-11   "SAT 4 JUL"
+    date  big         y=4   rows 4-11   "SUN 4 JUL"
     head  big         y=0   rows 0-7    "220 DAYS", "HAPPY"                 gold
     sub   big         y=8   rows 8-15   "TO JULY 4TH", "4TH OF JULY"        red-white
     lead  big         y=0   rows 0-7    "FIREWORKS IN", "ENJOY THE"         blue-white

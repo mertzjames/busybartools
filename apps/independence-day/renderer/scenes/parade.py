@@ -125,11 +125,11 @@ def storefronts(img):
              (55, 17, (96, 104, 126))]
     for x0, w, c in shops:
         for x in range(x0, x0 + w):
-            for y in range(1, 7):
+            for y in range(3, 7):
                 put(img, x, y, c)
-            put(img, x, 1, mix(c, (255, 255, 255), 0.25))
+            put(img, x, 3, mix(c, (255, 255, 255), 0.25))
         for wx in range(x0 + 2, x0 + w - 2, 4):  # windows, warm-lit
-            for dy in (3, 4):
+            for dy in (4, 5):
                 put(img, wx, dy, (186, 160, 112))
                 put(img, wx + 1, dy, (170, 144, 100))
     for x in range(W):
@@ -142,7 +142,7 @@ def storefronts(img):
             put(img, x, 15, (150, 130, 60))
     for x in range(W):  # a string of tiny pennants along the rooftops
         if x % 2 == 0:
-            put(img, x, 1, (jfx.RED, jfx.WHITE, jfx.BLUE)[(x // 2) % 3], 0.85)
+            put(img, x, 3, (jfx.RED, jfx.WHITE, jfx.BLUE)[(x // 2) % 3], 0.85)
 
 
 def parade_float(img, x0, f):
@@ -167,7 +167,7 @@ def parade_float(img, x0, f):
             put(img, wx + dx, 15, (120, 122, 134))
         put(img, wx + 1, 15, (200, 200, 210) if (f // 2) % 2 else (150, 150, 160))
     # a big gold star on a post at the back of the deck
-    sx, sy = x0 + 6, 1
+    sx, sy = x0 + 6, 0
     star = ("..Y..", "..Y..", "YYYYY", ".YYY.", ".Y.Y.")
     for v, row in enumerate(star):
         for u, ch in enumerate(row):
@@ -185,7 +185,7 @@ CROWD = [(3, (90, 200, 255), 0, 0), (16, (255, 220, 80), 3, 2), (31, (120, 220, 
 
 
 def render():
-    base = jfx.sky([(0, (90, 150, 230)), (8, (150, 190, 240))])
+    base = jfx.sky([(0, (70, 136, 226)), (3, (130, 180, 240))])
     storefronts(base)
     frames = []
     for f in range(sec(SECONDS)):
