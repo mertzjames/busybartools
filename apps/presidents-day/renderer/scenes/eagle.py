@@ -93,7 +93,7 @@ def render():
         elif f < sec(10.5):  # a lazy loop, banking into the turns
             a = 2 * math.pi * (t - 3) / 7.5
             x, y = 24 + 14 * math.sin(a), 1 + 1.0 * (1 - math.cos(a))
-            bank = 2.2 * math.cos(a)
+            bank = 2.2 * math.sin(a)  # level at the start and end of the loop, steepest in the turns
         else:  # climb away toward the sun
             p = ease_in(phase(f, sec(10.5), sec(SECONDS)))
             x, y = 24 + 44 * p, 1 - 10 * p

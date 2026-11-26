@@ -7,7 +7,7 @@ import random
 
 from PIL import Image
 
-from busybar.canvas import H, W, add, mix, phase, put, sec
+from busybar.canvas import H, W, mix, phase, put, sec
 
 import pfx
 

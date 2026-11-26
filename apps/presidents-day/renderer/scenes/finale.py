@@ -3,7 +3,7 @@ patriotic bunting drops in along the top, the greeting appears and confetti fall
 
 import math
 
-from busybar.canvas import H, W, ease_out, mix, phase, put, sec
+from busybar.canvas import H, W, ease_out, phase, put, sec
 from busybar.font import draw_text, text_width
 from busybar.party import Confetti, Firework
 

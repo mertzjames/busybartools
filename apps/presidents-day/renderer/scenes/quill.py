@@ -4,7 +4,7 @@ U.S. Constitution, a public-domain text that belongs to everyone, which suits a 
 
 import math
 
-from busybar.canvas import H, W, add, ease_in_out, ease_out, mix, phase, put, sec
+from busybar.canvas import ease_in_out, ease_out, mix, phase, put, sec
 from busybar.font import draw_text, text_width
 
 import pfx
@@ -16,7 +16,7 @@ KEYFRAMES = [(0.8, "A quill in the inkwell, by candlelight"), (4.0, "Writing on 
              (8.6, "WE THE PEOPLE"), (10.2, "A flourish beneath"), (12.8, "Sealed in red wax")]
 
 TEXT = "WE THE PEOPLE"
-TX, TY = 0, 4  # TX is set from the text width below
+TY = 4  # the words sit on rows 4-8; TX (below) centers them on the parchment
 INK = (70, 38, 24)
 PARCH = (226, 204, 156)
 PARCH_EDGE = (190, 160, 108)
