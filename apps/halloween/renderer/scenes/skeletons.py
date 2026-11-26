@@ -1,19 +1,19 @@
 """Scene: Skeleton Dance (the finale). The spotlights come up on a little stage and three skeletons dance to a beat
 (two a second): arm pumps, then a can-can kick that ripples down the line, then the middle one's skull hops up off
-its neck and lands back on, while the dance floor flashes. They jump together, and Halloween confetti rains down."""
+its neck and lands back on, while the dance floor flashes. They jump together, and Halloween confetti and candy corn rain down."""
 
 import math
 
 from busybar.canvas import FPS, H, W, add, mix, put, sec
 from busybar.party import Confetti
-from hfx import BONE, frame_t, glow, gradient, quant
+from hfx import BONE, candy_corn, frame_t, glow, gradient, quant
 
 NAME = "skeletons"
 TITLE = "Skeleton Dance"
 SECONDS = 15
 KEYFRAMES = [(0.6, "A dark stage"), (1.4, "Spotlights up"), (3.2, "Arm pumps to the beat"),
              (7.0, "A can-can kick down the line"), (9.9, "The middle skull hops up"),
-             (12.6, "Jump!"), (13.8, "Halloween confetti")]
+             (12.6, "Jump!"), (13.8, "Confetti and candy corn")]
 
 BEAT = 0.5  # seconds per beat (120 bpm)
 XS = (16, 36, 56)
@@ -27,6 +27,7 @@ CONFETTI_AT = 12.6
 SOCKET = (70, 230, 90)  # lit green eye sockets (black would be an unlit hole)
 FLOOR = ((255, 120, 20), (150, 60, 220), (110, 230, 60))
 CURTAIN = (110, 24, 60)
+CANDY = ((8, 0.0, 9.0), (25, 0.5, 7.5), (45, 0.2, 8.5), (62, 0.7, 7.0), (31, 1.1, 9.5), (52, 1.3, 8.0))  # (x, delay s, rows/s)
 
 
 def line(img, x0, y0, x1, y1, c) -> None:
@@ -148,6 +149,10 @@ def render():
             skeleton(img, x, pose_at(i, t))
         if t >= CONFETTI_AT:
             confetti.draw(img, f)
+            for j, (cx, t0, v) in enumerate(CANDY):  # candy corn tumbles down with the confetti
+                age = t - CONFETTI_AT - t0
+                if age >= 0:
+                    candy_corn(img, cx + math.floor(0.8 * math.sin(age * 3 + j) + 0.5), math.floor(-3 + age * v + 0.5))
         frames.append(img)
     return frames
 
