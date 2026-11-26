@@ -479,6 +479,9 @@ For example, nobody combines red hair with freckles, and nobody has slicked-back
 **Updates:** D19 (scene 8's caster is now a witch; the houses are unchanged) and D17 (the cauldron witch's
 headband and lit eyes).
 
+**Superseded in part by D31:** after review, the Great Hall student became the witch and the Patronus caster went
+back to being a wizard, both redesigned.
+
 ---
 
 ## D29 — New finale: "The Feast Appears"
@@ -512,6 +515,10 @@ How it's staged:
 - That's a natural ensemble ending, and the caption reads like a send-off before Owl Post starts again.
 - The alternative was right after the Great Hall Feast (#6). That would put two Great Hall backdrops back to back,
   and the turkey would appear right after it had just been levitated.
+- **Confirmed by you in review:** the feast stays the finale.
+
+**Superseded in part by D32:** after review, a very old wizard casts the feast instead of the students, and his
+spoken words replace the DIG IN! caption. The staging, table, dishes and playlist position above still apply.
 
 **Effect on the loop:**
 - 9 scenes: 148 s of animation plus 9 clock cards of 8 s each. One loop now takes about **3 minutes 40 seconds**
@@ -525,3 +532,88 @@ How it's staged:
 
 **Decision:** The manifest goes to `1.1.0`. It's a minor version: a new scene and redrawn characters, with no
 change to the controls, the clock or the install requirements.
+
+---
+
+## D31 — Review round: the Great Hall student is the witch, the Patronus caster a wizard
+*2026-11-25 · from your review of 1.1*
+
+**Decision:** You swapped which students are witches. The houses stay as in D19, and both students were redesigned
+so all four stay distinct:
+
+| Student | Scenes | House | Look |
+|---|---|---|---|
+| Wizard | 3 Broom Chase, 9 | scarlet and gold | unchanged: messy dark-brown hair, round glasses, light skin, medium build |
+| Witch | 4 Cauldron Bake-Off, 9 | blue and bronze | unchanged: big curly chestnut hair, blue headband, tan skin; the shortest |
+| **Witch** (was a wizard) | 5 Great Hall Feast, 9 | yellow and black | deep brown skin, two round hair puffs at the sides, and the striped bobble hat with a pom-pom from D28; medium build, the tallest student |
+| **Wizard** (was a witch) | 8 Pumpkin Patronus, 9 | green and silver | warm olive skin, short dark hair, a tall pointed hat in house green with a silver band; stocky |
+
+How they stay distinct:
+- **Silhouettes:** messy hair with glasses, a wide curly mop, a hat with a pom-pom and side puffs, a pointed hat.
+- **Skin tones:** light peach, tan, deep brown and olive.
+- **Heights and builds:** 14, 12, 15 and 15 px tall; medium, short, medium and stocky.
+
+The braided blonde witch from D28 is gone. The witch keeps the playful bobble hat, and a pointed hat is fine on a
+wizard (D17's objection was to a witch's Halloween look). Nobody has red hair with freckles or slicked platinum hair.
+
+Other changes:
+- **Fix:** the cheer frame's open mouth had overwritten an eye pixel on the yellow-and-black and green-and-silver
+  students. The mouth is now a separate overlay placed under the eyes for each student.
+- **New frame:** `SURPRISE` (standing with an open mouth) for every student, used when the feast appears. The
+  cauldron witch's `FLICK` moved to frame 7.
+- The Great Hall and Patronus scenes read each student's height and wand tip from `cast.py`, so nothing else moved.
+
+---
+
+## D32 — Review round: a very old wizard speaks the words and conjures the feast
+*2026-11-25 · from your review of 1.1*
+
+**Decision:** The students no longer cast in the finale. A new character, a very old wizard (`ELDER` in
+`renderer/cast.py`), rises in the middle of the table, speaks your line one word per beat, and conjures the dishes
+with his staff. The students watch, gasp, then cheer.
+
+**The old wizard** (13 × 16 px, taller and grander than any student):
+- a generic old-wizard archetype: a tall pointed hat with a bent tip, silver stars and a gold brim;
+- a long white beard that tapers to a point, with grey strands;
+- rich purple robes with a gold hem, and a wooden staff topped with a glowing pale-blue orb;
+- lit face details: blue eyes and a rosy nose, never black (D18);
+- frames: standing, both arms up with the staff raised, free hand flung out to the side, and the staff raised to cast.
+
+He's kept generic on purpose: no spectacles, no grey robes, and no other signature details of a famous wizard.
+
+**New timeline (still 18 s):**
+
+| Time | What happens |
+|---|---|
+| 0–0.8 s | Empty table under floating candles |
+| 0.8–3.6 s | The four students walk in, two from each side, leaving the middle free |
+| 4.0–5.0 s | The old wizard stands up behind the middle of the table; a glint on his staff |
+| 5.4 s | The hall dims to 45 % for the speech |
+| 5.8 s | **NITWIT!** (both arms up), in scarlet and gold |
+| 6.9 s | **BLUBBER!** (hand flung out), in blue |
+| 8.0 s | **ODDMENT!** (both arms up), in yellow |
+| 9.1–10.6 s | **TWEAK!** (hand flung out), in green and silver, held a little longer |
+| 10.6 s | The hall brightens; he raises the staff and the orb charges |
+| 11.2–14.8 s | Every 0.9 s a sparkle stream from the orb lands a dish: turkey, pie on its stand, potatoes, gravy boat, five goblets (one each). The students gasp and hop with each dish, and their mouths stay open |
+| 15.4–18 s | **Closing beat:** the students cheer with arms up and hop, he raises both arms, and confetti in house colors falls. No caption |
+
+How the words are shown:
+- Each word is centered in the `big` font, low on the screen (rows 9–15) over the still-empty table. His hat and
+  face are drawn again at full brightness above the dimmed hall, so it's clear who's speaking.
+- Each word pops in 1 px high and settles, flashes from white into its house colors (one house per word, in the
+  order scarlet, blue, yellow, green), and throws a sparkle burst from both ends. His staff orb or free hand sparkles
+  too.
+- About 1.1 s per word, with 1.5 s on TWEAK! before the casting starts.
+
+**Closing beat: cheer and confetti, no caption.** The words already gave the scene its text. Ending on a cheer with
+the old wizard's arms up keeps the last moment about the feast and the characters.
+
+**Layout:** the students stand two on each side (x 0, 9 | 50, 62), with the old wizard in the middle (x 30). The
+turkey sits between the left pair and him, the pie stand to his right, the potatoes in front of the right pair, and
+the gravy boat in front of the left pair.
+
+**Effect on the loop:** unchanged at about **3 minutes 40 seconds** (the scene stays 18 s). The `.anim` data is now
+1,293,264 bytes (about 1.29 MB).
+
+**Alternatives:** the words as a caption at the end (the first version of this review); the old wizard appearing in
+a puff instead of standing up. Standing up behind the table reads as "he was seated at the head of the table".

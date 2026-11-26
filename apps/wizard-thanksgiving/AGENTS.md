@@ -1,7 +1,7 @@
 # AGENTS.md — Wizarding Thanksgiving
 
 App-specific rules. The repo-wide rules in [/AGENTS.md](../../AGENTS.md) still apply. Background on every choice is in
-[docs/DECISIONS.md](docs/DECISIONS.md) (D1–D30): read the relevant entries before changing something deliberate.
+[docs/DECISIONS.md](docs/DECISIONS.md) (D1–D32): read the relevant entries before changing something deliberate.
 
 ## How this app is built
 
@@ -19,7 +19,7 @@ Commands, run from this folder (the repo-level `tools/check.sh wizard-thanksgivi
 python3 renderer/build.py                               # render everything (~2 s); verifies every .anim round-trips
 python3 renderer/review.py scene <scene> <out_dir> 1.5  # LED-style keyframe strip; LOOK at it before committing
 python3 renderer/review.py sprites <out.png>            # contact sheet of all sprites
-python3 renderer/review.py cast <out.png>               # the four students: every frame + a lineup
+python3 renderer/review.py cast <out.png>               # students + old wizard: every frame + a lineup
 python3 tests/clock_parity.py                           # app TS vs renderer: identical clock pixels
 ```
 
@@ -54,10 +54,12 @@ python3 tests/clock_parity.py                           # app TS vs renderer: id
 - **Sprites are text grids** in `renderer/sprites.py`: `.` is transparent, and every other character maps to a
   palette entry. Sprites face right; use `img(i, flip=True)` for left. Change colors with `Sprite.recolor()` instead
   of copying a sprite.
-- **The four students live in `renderer/cast.py`** (D28): 2 wizards and 2 witches, each with their own look and house
-  (D19). Every student sprite has the same frames (`STAND`, `STEP_A`, `STAND_2`, `STEP_B`, `WAND`, `CHEER`; plus
-  `FLICK` for the cauldron witch), built from one standing grid plus overlay grids. Use the frame constants and
-  `Student.tip` (wand tip) instead of hard-coded indexes and offsets. A scene that shows a student must use that
+- **The four students live in `renderer/cast.py`** (D28, D31): 2 wizards and 2 witches, each with their own look and
+  house (D19). Every student sprite has the same frames (`STAND`, `STEP_A`, `STAND_2`, `STEP_B`, `WAND`, `CHEER`,
+  `SURPRISE`; plus `FLICK` for the cauldron witch), built from one standing grid plus overlay grids (the open mouth
+  is its own overlay, so it never lands on an eye). The old wizard who conjures the feast is `ELDER` there too (D32),
+  with frames `E_STAND`, `E_ARMS`, `E_POINT`, `E_CAST` and his staff orb per frame in `ELDER_ORB`. Use the frame
+  constants, `Student.tip` (wand tip) and `ELDER_ORB` instead of hard-coded indexes and offsets. A scene that shows a student must use that
   student's sprite. Scarves use palette keys `R` and `Y`. Keep the students distinct and original: no look-alikes of
   well-known characters.
 - **Original art only.** Keep the theme to genre references. No official characters, names, logos or fonts.
@@ -69,7 +71,7 @@ python3 tests/clock_parity.py                           # app TS vs renderer: id
 | Change | Where | Then |
 |---|---|---|
 | Add or replace a scene | new `renderer/scenes/<name>.py` + `PLAYLIST` | `build.py`, review the strip, update `README.md`'s scene table |
-| A student's look | `renderer/cast.py` | `review.py cast`, then strips of their solo scene and `feast` |
+| A student's or the old wizard's look | `renderer/cast.py` | `review.py cast`, then strips of their solo scene and `feast` |
 | Scene length | `SECONDS` in the scene (and its timeline) | `build.py` (durations flow into `show.ts` and the mockup) |
 | Clock timing or colors | `LAYOUT` in `renderer/scenes/clock_bg.py` | `build.py` + `tests/clock_parity.py` |
 | Overall brightness | `GAMMA` in `renderer/build.py` | `build.py`, check on the real panel if possible |
