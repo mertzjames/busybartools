@@ -4,7 +4,7 @@ import math
 
 from busybar.canvas import FPS, add, phase, put, rect, sec, vgradient
 
-from common import LIGHTS, PINE, PINE_DARK, Snow, glow
+from common import PINE_DARK, Snow, glow
 
 NAME = "day12"
 TITLE = "Wreath"
@@ -13,6 +13,7 @@ KEYFRAMES = [(0.5, "A wreath on the front door"), (2.0, "Its lights switch on"),
              (7.0, "Everything twinkles")]
 
 CX, CY = 36, 7
+BULBS = ((255, 246, 210), (255, 200, 50), (255, 60, 60))  # warm colors: cool ones vanish into the green
 
 
 def ring():
@@ -79,12 +80,14 @@ def render():
             if t < 3.0:
                 a = on
             elif t < 6.2:
-                a = 1.0 if (i - int((t - 3.0) * 8)) % 4 == 0 else 0.35  # chase
+                a = 1.0 if (i - int((t - 3.0) * 8)) % 4 == 0 else 0.7  # chase
             else:
-                a = 0.5 + 0.5 * math.sin(f * 0.6 + i * 2.1)
-            put(img, x, y, LIGHTS[i % len(LIGHTS)], max(0.3, a))
-            if a > 0.8:
-                add(img, x, y, (255, 255, 255), 0.25)
+                a = 0.7 + 0.3 * math.sin(f * 0.6 + i * 2.1)
+            # dim by scaling the bulb's own color (blending it into the green washes it out)
+            k = 0.55 + 0.45 * max(0.0, min(1.0, a))
+            put(img, x, y, tuple(int(v * k) for v in BULBS[i % len(BULBS)]))
+            if a > 0.9:
+                add(img, x, y, (255, 255, 255), 0.35)
         snow.draw(img, f)
         frames.append(img)
     return frames

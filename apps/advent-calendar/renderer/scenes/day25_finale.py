@@ -67,7 +67,7 @@ def render():
             blit(img, STAR.img(), CX - 2, TOP - 4)
             w = text_width(txt)
             reveal = int((w + 1) * phase(f, sec(6.6), sec(7.4)))
-            tx = 24 + (46 - w) // 2
+            tx = 71 - (w + 4)  # right-aligned with a 1 px margin; words get 2 extra px of spacing
             bounce = [round(-1.0 * max(0.0, math.sin((t - 7.4) * 6 - i))) if t > 7.4 else 0 for i in range(3)]
             # draw word by word so each HO bounces in turn
             x0 = tx

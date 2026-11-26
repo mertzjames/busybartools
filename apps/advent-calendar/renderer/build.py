@@ -41,8 +41,8 @@ LUT = tone_lut(GAMMA)
 
 
 def tone(img):
-    """Tone-map one frame (used by tests and review helpers)."""
-    return apply_tone(img, LUT)
+    """Tone-map one frame (used by review helpers). Flattens first: apply_tone needs an RGB image."""
+    return apply_tone(img.convert("RGB"), LUT)
 
 
 def text_styles() -> dict:
