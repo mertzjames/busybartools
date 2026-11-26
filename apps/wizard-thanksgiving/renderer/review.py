@@ -40,24 +40,25 @@ def sheet(path: Path) -> None:
 
 
 def cast_sheet(path: Path) -> None:
-    """The four students side by side, one row per student (every frame), plus a lineup at true relative height."""
+    """Every frame of each student and of the old wizard (one row each), plus a lineup at true relative height."""
     from busybar.canvas import new
     import cast
 
     bg = (14, 12, 34)  # a typical night-sky backdrop, so dark colors are judged in context
     rows = []
-    for st in cast.CAST:
+    for spr in [st.sprite for st in cast.CAST] + [cast.ELDER]:
         tiles = []
-        for i in range(len(st.sprite)):
-            im = new(bg).crop((0, 0, st.sprite.w + 2, 17))
-            im.alpha_composite(st.sprite.img(i), (1, 17 - st.sprite.h))
+        for i in range(len(spr)):
+            im = new(bg).crop((0, 0, spr.w + 2, 17))
+            im.alpha_composite(spr.img(i), (1, 17 - spr.h))
             tiles.append(led(im, cell=10))
         rows.append(tiles)
-    lineup = new(bg)
-    x = 3
-    for st in cast.CAST:
-        lineup.alpha_composite(st.sprite.img(cast.STAND), (x, 16 - st.sprite.h))
-        x += st.sprite.w + 6
+    lineup_sprites = [st.sprite for st in cast.CAST[:2]] + [cast.ELDER] + [st.sprite for st in cast.CAST[2:]]
+    lineup = Image.new("RGBA", (sum(s.w + 4 for s in lineup_sprites) + cast.SCARLET_BROOM.w + 4, 16), bg + (255,))
+    x = 2
+    for spr in lineup_sprites:
+        lineup.alpha_composite(spr.img(0), (x, 16 - spr.h))
+        x += spr.w + 4
     lineup.alpha_composite(cast.SCARLET_BROOM.img(0), (x, 3))
     pad = 10
     width = max(sum(t.width + pad for t in r) for r in rows) + pad

@@ -1,4 +1,4 @@
-"""Scene 3 (playlist #5): Great Hall Feast. Floating candles; the yellow-and-black wizard levitates the turkey."""
+"""Scene 3 (playlist #5): Great Hall Feast. Floating candles; the yellow-and-black witch levitates the turkey."""
 
 import math
 
@@ -11,15 +11,15 @@ from sprites import CANDLE, ROAST
 NAME = "great_hall"
 TITLE = "Great Hall Feast"
 SECONDS = 18
-KEYFRAMES = [(1.0, "Candles float over the feast"), (3.5, "A wizard walks in"), (7.0, "Wand up, sparkles fly"),
+KEYFRAMES = [(1.0, "Candles float over the feast"), (3.5, "A witch walks in"), (7.0, "Wand up, sparkles fly"),
              (10.5, "LEVIOSA! The turkey floats"), (16.5, "...and lands safely")]
 
 CANDLES = [(4, 0.0), (15, 1.3), (27, 2.1), (39, 0.7), (50, 1.9), (62, 2.8), (69, 0.4)]
 TABLE_Y = 13
-WIZ_STOP = 5
+CASTER_STOP = 5
 TURKEY_X, TURKEY_Y = 54, 5
-WIZARD = YELLOW.sprite
-WIZ_Y = 16 - WIZARD.h
+CASTER = YELLOW.sprite
+CASTER_Y = 16 - CASTER.h
 
 
 def table(img):
@@ -71,14 +71,14 @@ def render():
         if lifted and f % 3 == 0:
             sp.emit(TURKEY_X + (f * 7) % 10, ty + 8, 1, vy=(0.1, 0.3), life=(6, 10), colors=SPARKLE, glow=True)
 
-        # wizard walks in, raises the wand 6-16s
+        # the witch walks in, raises the wand 6-16s
         if t < 5.0:
-            wx = lerp(-10, WIZ_STOP, phase(f, sec(0.8), sec(5.0)))
+            wx = lerp(-10, CASTER_STOP, phase(f, sec(0.8), sec(5.0)))
             wf = WALK[(f // 3) % 4] if t > 0.8 else WALK[0]
         else:
-            wx, wf = WIZ_STOP, (WAND if 6.0 <= t < 16.2 else WALK[0])
-        blit(img, WIZARD.img(wf), wx, WIZ_Y)
-        tip = (WIZ_STOP + YELLOW.tip[0], WIZ_Y + YELLOW.tip[1])
+            wx, wf = CASTER_STOP, (WAND if 6.0 <= t < 16.2 else WALK[0])
+        blit(img, CASTER.img(wf), wx, CASTER_Y)
+        tip = (CASTER_STOP + YELLOW.tip[0], CASTER_Y + YELLOW.tip[1])
         if 6.2 <= t < 8.0:
             # sparkle stream along an arc from wand tip to the turkey
             k = phase(f, sec(6.2), sec(8.0))

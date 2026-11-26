@@ -1,4 +1,4 @@
-"""Scene 5 (playlist #8): Pumpkin Patronus. A glowing silver turkey bursts from the green-and-silver witch's wand."""
+"""Scene 5 (playlist #8): Pumpkin Patronus. A glowing silver turkey bursts from the green-and-silver wizard's wand."""
 
 import math
 import random
