@@ -160,3 +160,36 @@ art, fonts and live text consistent and avoids four copies drifting apart.
 **Why:** Exclusive path ownership meant no two branches ever touched the same file, so the PRs can merge in any
 order. Relaying findings spread lessons quickly, for example dark skin tones needing lighter values for the eyes,
 contrast traps, captions over a dimmed frame, and fine time-window reviews.
+
+---
+
+## R10 — Holiday date rules, a shared show runner and party effects in the kit
+*2026-11-26 · before the second round of holiday apps*
+
+**Decision:** Three additions to the shared kit, ahead of sixteen more holiday apps:
+- **`lib/ts/busybar/holidays.ts`:** date rules for every holiday the apps celebrate.
+  - Fixed dates, and the nth or last weekday of a month.
+  - Western Easter, by the Gregorian computus.
+  - Hanukkah, from the arithmetic Hebrew calendar (Dershowitz & Reingold).
+  - Lunar New Year, from a table (2025–2036) checked against several published calendars, plus the zodiac.
+  - `nextOccurrence(t, rule, spanDays)` finds the occurrence the bar's date is in, or the next one.
+- **`lib/ts/busybar/showrunner.ts`:** the scene-and-card playback loop that each app had its own copy of.
+  - It plays scenes, and cards made of pages of live text.
+  - It redraws text when the minute rolls over and keeps one request in flight.
+  - It handles the buttons.
+  - It can re-pick the playlist each cycle from the date.
+- **`lib/python/busybar/party.py`:** fireworks, confetti, snowfall and glitter, copied from New Year's Eve.
+
+**Why:**
+- Sixteen apps need countdowns to dates that move: floating Mondays, Easter, Hanukkah and Lunar New Year. One tested
+  implementation beats sixteen guesses.
+  - Computing Hanukkah means it never needs a table update.
+  - Lunar New Year depends on astronomical new moons, so a table is the honest option.
+- The runner lets each new app's `main.ts` shrink to configuration, and its correctness is tested once with fake
+  timers. Several apps need fireworks or confetti (Independence Day, Lunar New Year, St. Patrick's Day).
+
+**Alternatives:**
+- Migrating the four released apps onto the runner and the kit effects now. Rejected: it would change released
+  apps for no visible gain. New Year's Eve keeps its own `party.py`, and a kit test checks that the two copies draw
+  identical pixels.
+- A Lunar New Year algorithm. Rejected: it needs a lunar ephemeris, which is too much code for a 12-row table.
