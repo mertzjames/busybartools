@@ -1,8 +1,8 @@
 # Wizarding Thanksgiving
 
-A wizard-themed Thanksgiving show for the BUSY Bar's 72×16 LED front display. Eight short animated scenes loop all
-evening: owls, broomsticks, a talking hat, a winged serpent dragon and plenty of turkey. A gold 24-hour clock and the
-date appear between scenes.
+A wizard-themed Thanksgiving show for the BUSY Bar's 72×16 LED front display. Nine short animated scenes loop all
+evening: owls, broomsticks, a talking hat, a winged serpent dragon, four students, a very old wizard and plenty of turkey. A gold 24-hour
+clock and the date appear between scenes.
 
 <p>
   <img src="docs/media/dragon_roast.gif" alt="A winged serpent dragon torches a turkey on a spit" width="49%">
@@ -13,15 +13,16 @@ date appear between scenes.
 |---|---|---|
 | 1 | **Owl Post:** a snowy owl delivers HAPPY / THANKSGIVING | 18 s |
 | 2 | **The Gravy Express:** a steam train hauls the feast | 14 s |
-| 3 | **Broom Chase:** a young wizard chases a winged golden pie | 16 s |
-| 4 | **Cauldron Bake-Off:** a young witch brews a pumpkin pie | 16 s |
-| 5 | **Great Hall Feast:** floating candles, and the turkey levitates | 18 s |
+| 3 | **Broom Chase:** the scarlet-and-gold wizard chases a winged golden pie | 16 s |
+| 4 | **Cauldron Bake-Off:** the blue-and-bronze witch brews a pumpkin pie | 16 s |
+| 5 | **Great Hall Feast:** floating candles, and the yellow-and-black witch levitates the turkey | 18 s |
 | 6 | **Sorting the Turkey:** the talking hat decides… GOBBLEDOR! | 17 s |
 | 7 | **Dragon Roast:** a winged serpent torches the turkey. WELL DONE! | 16 s |
-| 8 | **Pumpkin Patronus:** EXPECTO PIE! | 15 s |
+| 8 | **Pumpkin Patronus:** the green-and-silver wizard casts a silver turkey. EXPECTO PIE! | 15 s |
+| 9 | **The Feast Appears:** the four students gather, and a very old wizard says NITWIT! BLUBBER! ODDMENT! TWEAK! and conjures the feast, dish by dish | 18 s |
 
 After each scene, a clock card shows the time (`HH:MM`, 24-hour) for 4.5 s, then the date (`THU 26 NOV`) for 3.5 s.
-The time comes from the bar's own clock. One full loop takes about 3 minutes 14 seconds.
+The time comes from the bar's own clock. One full loop takes about 3 minutes 40 seconds.
 
 To preview everything in a browser, download and open [`mockup/index.html`](mockup/index.html), a self-contained
 LED simulator with storyboards.
@@ -68,6 +69,7 @@ From this folder:
 python3 renderer/build.py                                # ~2 s: .anim files, generated show.ts, icons, mockup, GIF previews
 python3 renderer/review.py scene dragon_roast /tmp 1.5   # LED-style keyframe strip of one scene
 python3 renderer/review.py sprites /tmp/sprites.png      # contact sheet of every sprite
+python3 renderer/review.py cast /tmp/cast.png            # the students and the old wizard: every frame + a lineup
 python3 tests/clock_parity.py                            # app vs renderer clock pixels, timestamp parsing
 ```
 
@@ -76,6 +78,7 @@ python3 tests/clock_parity.py                            # app vs renderer clock
 | Path | What |
 |---|---|
 | `renderer/sprites.py` | Original pixel-art sprites as text grids, one letter per pixel, with a palette |
+| `renderer/cast.py` | The four students (2 wizards, 2 witches: look, house, frames, wand tip) and the old wizard |
 | `renderer/scenes/` | One file per scene (`SECONDS`, `KEYFRAMES`, `render()`); `PLAYLIST` order in `__init__.py` |
 | `renderer/scenes/clock_bg.py` | Clock backdrop, plus `LAYOUT` (clock and date colors and timing) |
 | `lib/python/busybar/` (repo root) | Shared render kit: fonts, 72×16 canvas, effects, `Sprite` and the build pipeline (`showbuild`) |
@@ -86,7 +89,7 @@ python3 tests/clock_parity.py                            # app vs renderer clock
 | `app/src/animations/` | Generated `.anim` files (committed) |
 | `mockup/` | `template.html` → generated `index.html` |
 | `prebuild.sh`, `tests/check.sh` | Hooks used by `tools/check.sh`, `deploy.sh` and `release.sh` |
-| `docs/DECISIONS.md` | Why everything is the way it is (D1–D26) |
+| `docs/DECISIONS.md` | Why everything is the way it is (D1–D32) |
 | `docs/PLAN.md` | The original plan |
 
 ## How it works

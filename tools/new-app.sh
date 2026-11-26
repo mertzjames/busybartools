@@ -33,10 +33,13 @@ dest="$REPO_ROOT/apps/$folder"
 mkdir -p "$dest/docs"
 
 echo "==> Scaffolding $id into apps/$folder/app (Node 24)"
-(cd "$dest" && npx -y -p node@24 -p @busy-app/create-app@0.5.0 -c "busy-create-app app --id '$id' --name '$name' \
-   --description '$desc' --author '$author' --api-version 27.12.0 --no-git --no-install" </dev/null)
+# Run the scaffolder directly with real arguments (no shell string), so names like "New Year's Eve" work.
+(cd "$dest" && npx -y -p node@24 -p @busy-app/create-app@0.5.0 busy-create-app app --id "$id" --name "$name" \
+   --description "$desc" --author "$author" --api-version 27.12.0 --no-git --no-install </dev/null)
 rm -f "$dest/app/.gitignore" "$dest/app/AGENTS.md"   # the repo-level .gitignore and AGENTS.md cover these
 rm -rf "$dest/app/.github"                           # CI/release workflows live at the repo level, not per app
+rm -f "$dest/app/README.md"                          # the app README lives at apps/<folder>/README.md
+rm -f "$dest/app/shared/datetime.ts"                 # uses JS Date local time; use lib/ts/busybar/walltime.ts instead
 (cd "$dest/app" && node24 "npm install --no-fund --no-audit")
 
 cat > "$dest/README.md" <<EOF
