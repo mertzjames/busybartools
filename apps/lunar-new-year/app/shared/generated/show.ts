@@ -147,8 +147,6 @@ export const SHOW = {
       "dumplings",
       "count",
       "firecrackers",
-      "clock",
-      "finale",
       "count"
     ],
     "festival": [

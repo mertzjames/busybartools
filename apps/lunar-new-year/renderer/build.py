@@ -80,6 +80,9 @@ CARD_SAMPLES = [
     [("small", "YEAR OF THE"), ("name", "ROOSTER")],
     [("top", "HAPPY"), ("bot", "NEW YEAR")],
     [("top", "GONG XI"), ("bot", "FA CAI")],
+    [("top", "GUNG HEI"), ("bot", "FAT CHOI")],
+    [("top", "CHUC MUNG"), ("bot", "NAM MOI")],
+    [("head", "SAEHAE BOK"), ("sub", "MANI BADEUSEYO")],
     [("top", "LANTERN"), ("bot", "FESTIVAL")],
 ]
 

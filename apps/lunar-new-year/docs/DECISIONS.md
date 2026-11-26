@@ -200,7 +200,8 @@ Feb 2027, day 15 (Feb 20, 2027), the day after, and 2036–2037.
 - **People:** simple figures. A head is a hair pixel over a skin pixel, with no drawn faces. Clothing color tells
   them apart: the dancers' matching gold and red uniforms, the grandparent's jade jacket and silver bun, the
   child's gold jacket.
-- **Greeting:** the romanized greeting is `GONG XI FA CAI` (恭喜发财, Mandarin pinyin without tone marks:
+- **Greeting** (superseded by D15, which makes it a setting with this as the default): the romanized greeting
+  is `GONG XI FA CAI` (恭喜发财, Mandarin pinyin without tone marks:
   "wishing you prosperity"), split `GONG XI` / `FA CAI` over two big lines.
 - **Tone:** respectful and warm, with no caricature. The Nian is a folklore beast drawn as a round, friendly monster.
 
@@ -248,3 +249,59 @@ holiday-mode button that works like START.
 
 **Alternatives:** New Year's Eve strips TypeScript types to share the exact source. That's more machinery for this
 small amount of logic.
+
+---
+
+## D15 — The greeting language is an app setting
+*2026-11-26*
+
+**Decision:** `app/src/appmeta/settings.json` (format 1, version 1) has one enum field, `greeting`, labeled
+"Greeting". It's editable on the bar under Apps → Lunar New Year → Setup and defaults to `mandarin`. The options
+set the festival's wish page:
+
+| Value | Page | Notes |
+|---|---|---|
+| `mandarin` | `GONG XI` / `FA CAI` | 恭喜发财, pinyin without tone marks |
+| `cantonese` | `GUNG HEI` / `FAT CHOI` | 恭喜發財, the common Hong Kong spelling |
+| `vietnamese` | `CHUC MUNG` / `NAM MOI` | Chúc mừng năm mới, written without diacritics |
+| `korean` | `SAEHAE BOK` (big) / `MANI BADEUSEYO` (tiny) | 새해 복 많이 받으세요, Revised Romanization |
+| `none` | no wish page | the card shows only `YEAR OF THE` / animal and `HAPPY` / `NEW YEAR` |
+
+- **Loading:** `main.ts` reads the setting once at start with the kit's `loadSettings`, before the show's first
+  draw, so only one request is in flight. A failed request, an old settings version or an unknown value falls back
+  to Mandarin (`enumValue`).
+- **Mockup:** it has a matching selector. The tests check that `settings.json` matches `GREETINGS` and
+  `SETTINGS_VERSION`, cover every greeting's text, glyphs and width, check the mockup mirror for every greeting,
+  and check pixel parity for every greeting line.
+
+**Why:**
+- **Who celebrates:** Lunar New Year is celebrated in many languages, so the user asked for a choice instead of one
+  fixed greeting. This supersedes D12's single greeting.
+- **No diacritics:** the bar's fonts are ASCII, so Vietnamese loses its diacritics. A plain transliteration reads
+  better than invented accent glyphs.
+- **Korean layout:** `MANI BADEUSEYO` is 83 px in big. The countdown's layout fits it on one page: the first half
+  in big (59 px) over the second in tiny (55 px). `SAEHAE BOK` just meets the inner edge of the corner lanterns,
+  and it stays legible in the review strip.
+
+**Alternatives:**
+- Splitting the Korean phrase over two pages breaks it mid-phrase.
+- A per-language `HAPPY NEW YEAR` page as well: the English line stays because it's what everyone can read.
+
+---
+
+## D16 — The fireworks finale is a festival-only treat
+*2026-11-26*
+
+**Decision:** The Fireworks Finale, with its baked `HAPPY` / `NEW YEAR`, plays only in the festival playlist (New
+Year's Day through day 15, and in holiday mode). It's removed from the countdown playlist, which is now 14 steps:
+Lanterns, clock, zodiac, count, Dragon, clock, Envelopes, count, Lion, clock, Dumplings, count, Firecrackers,
+count. The countdown loop is about 2 m 15 s, and the festival loop is still 16 steps, about 2 m 55 s.
+
+**Why:**
+- The user asked for the finale as an "Easter egg" for the fifteen days. A baked `HAPPY NEW YEAR` in November also
+  read early.
+- **Card balance:** with seven scenes, the cards can't alternate all the way around the loop. Scenes and cards
+  still alternate, and the zodiac scene is still followed by the countdown. The one repeated card is a second
+  count after Firecrackers: four counts and three clocks, which suits a countdown.
+
+**Alternatives:** Ending the countdown on a clock card (four clocks, three counts), which shows the countdown less.

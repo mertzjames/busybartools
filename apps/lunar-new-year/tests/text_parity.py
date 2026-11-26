@@ -33,7 +33,8 @@ SAMPLES = [
     ("72 DAYS", "head"), ("1 DAY", "head"), ("339 DAYS", "head"),
     ("TO LUNAR NEW YEAR", "sub"), ("YEAR OF THE", "small"),
     ("HAPPY", "top"), ("NEW YEAR", "bot"), ("GONG XI", "top"), ("FA CAI", "bot"), ("LANTERN", "top"),
-    ("FESTIVAL", "bot"),
+    ("FESTIVAL", "bot"), ("GUNG HEI", "top"), ("FAT CHOI", "bot"), ("CHUC MUNG", "top"), ("NAM MOI", "bot"),
+    ("SAEHAE BOK", "head"), ("MANI BADEUSEYO", "sub"),
 ] + [(a, "name") for a in ANIMALS]
 
 TS = """

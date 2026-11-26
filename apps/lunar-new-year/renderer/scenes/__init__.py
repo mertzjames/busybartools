@@ -15,11 +15,12 @@ ZODIAC_SCENES = zodiac.SCENES
 CARD_BG = card_bg
 ALL_SCENES = PLAYLIST + ZODIAC_SCENES + [CARD_BG]
 
-# The two playlists the app picks from (D6). "ZODIAC" is the scene of the current or upcoming animal; "clock" and
+# The two playlists the app picks from (D6, D16). "ZODIAC" is the scene of the current or upcoming animal; "clock" and
 # "count" are cards. The app reads these from the generated show.ts, and so does the mockup.
 PLAYLISTS = {
+    # no finale before the holiday: its fireworks and HAPPY NEW YEAR are the festival's treat (D16)
     "countdown": ["lanterns", "clock", "ZODIAC", "count", "dragon_dance", "clock", "red_envelopes", "count",
-                  "lion_dance", "clock", "dumplings", "count", "firecrackers", "clock", "finale", "count"],
+                  "lion_dance", "clock", "dumplings", "count", "firecrackers", "count"],
     "festival": ["ZODIAC", "count", "dragon_dance", "clock", "lion_dance", "count", "red_envelopes", "clock",
                  "dumplings", "count", "firecrackers", "clock", "lanterns", "count", "finale", "clock"],
 }

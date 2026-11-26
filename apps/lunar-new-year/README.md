@@ -3,7 +3,8 @@
 Festival scenes for the BUSY Bar: red lanterns, a dragon dance, a lion dance, red envelopes, dumplings,
 firecrackers and fireworks, plus the zodiac animal of the year. A clock card and a countdown card play between
 scenes. Before the new year, the countdown card counts the days. From New Year's Day through the Lantern Festival
-(the 15th day), it shows `YEAR OF THE` / `GOAT` and the greetings.
+(the 15th day), it shows `YEAR OF THE` / `GOAT` and the greetings, and the fireworks finale joins the loop as a
+festival-only treat.
 
 Open [`mockup/index.html`](mockup/index.html) in a browser to watch the show in an LED simulator. You can pick any
 date there and try holiday mode.
@@ -18,7 +19,7 @@ date there and try holiday mode.
 | 4 | Red Envelopes | 12 s | A child bows to a grandparent and gets a red envelope, jumps for joy, and envelopes and gold coins shower down. |
 | 5 | Dumplings Steaming | 12 s | The steamer lid lifts in a cloud of steam. Chopsticks dip a dumpling in sauce, then lift another, and out pops the lucky coin. |
 | 6 | Firecrackers | 12 s | The Nian sneaks up the street and flees when the fuse is lit. The string pops end to end, leaving a carpet of red paper. The Nian peeks back in and ducks away. |
-| 7 | Fireworks Finale | 15 s | Red and gold fireworks over a pagoda and rooftops build to a volley. Then `HAPPY` / `NEW YEAR` shines in gold. |
+| 7 | Fireworks Finale | 15 s | Red and gold fireworks over a pagoda and rooftops build to a volley. Then `HAPPY` / `NEW YEAR` shines in gold. **Plays only during the festival** (and in holiday mode). |
 | Z | Year of the … | 6 s | One per zodiac animal: Rat, Ox, Tiger, Rabbit, Dragon, Snake, Horse, Goat, Monkey, Rooster, Dog, Pig. The animal arrives and does its own move, and `YEAR OF THE` / `<ANIMAL>` wipes in. The app plays the animal of the current or upcoming lunar year. |
 
 ## Cards
@@ -28,8 +29,8 @@ Each card plays live text over a looping backdrop: a wine-red wall with two glow
 | When | Count card |
 |---|---|
 | Before New Year's Day | `72 DAYS` / `TO LUNAR NEW YEAR` (`1 DAY` the day before) |
-| New Year's Day to day 14 | `YEAR OF THE` / `GOAT`, then `HAPPY` / `NEW YEAR`, then `GONG XI` / `FA CAI` |
-| Day 15 (the Lantern Festival) | `YEAR OF THE` / `GOAT`, then `LANTERN` / `FESTIVAL`, then `GONG XI` / `FA CAI` |
+| New Year's Day to day 14 | `YEAR OF THE` / `GOAT`, then `HAPPY` / `NEW YEAR`, then the wish in the chosen language (see Settings) |
+| Day 15 (the Lantern Festival) | `YEAR OF THE` / `GOAT`, then `LANTERN` / `FESTIVAL`, then the wish |
 | Outside the date table (2036 onward) | `HAPPY` / `NEW YEAR` only, with no countdown |
 
 The **clock card** shows the bar's local time (24-hour `HH:MM`), then the date (`SAT 6 FEB`).
@@ -37,9 +38,22 @@ The **clock card** shows the bar's local time (24-hour `HH:MM`), then the date (
 The animal comes from the kit's zodiac (`2027 = GOAT`). In January, before the new year, it's the upcoming
 year's animal. Dates come from the shared kit's Lunar New Year table (`lib/ts/busybar/holidays.ts`, 2025–2036).
 
-**Playlists.** Before the holiday: Lanterns, clock, the zodiac scene, count, then the other scenes alternating with
-the clock and count cards, ending on the finale and count. During the festival, the zodiac scene and the greeting
-card open the loop. One loop is about 2 m 40 s before the holiday and 3 m during it.
+**Playlists.**
+- **Before the holiday** (and outside the date table): Lanterns, clock, the zodiac scene, count, Dragon Dance,
+  clock, Red Envelopes, count, Lion Dance, clock, Dumplings, count, Firecrackers, count. About 2 m 15 s; no finale.
+- **During the festival:** the zodiac scene and the greeting card open the loop, then all seven scenes, the
+  Fireworks Finale included, alternating with the clock and count cards. About 2 m 55 s.
+
+## Settings
+
+On the bar: **Apps → Lunar New Year → Setup**. Changes apply the next time the app starts.
+
+| Setting | Options | Default |
+|---|---|---|
+| Greeting | the festival's wish page: **Mandarin** `GONG XI` / `FA CAI`, **Cantonese** `GUNG HEI` / `FAT CHOI`, **Vietnamese** `CHUC MUNG` / `NAM MOI`, **Korean** `SAEHAE BOK` / `MANI BADEUSEYO`, or **None** (no wish page) | Mandarin |
+
+The romanizations are written without diacritics because the bar's fonts are ASCII. If the settings can't be read,
+the app uses the default.
 
 ## Controls
 
@@ -68,7 +82,8 @@ bash tests/check.sh                                          # logic tests and l
 | A zodiac animal | its sprite in `renderer/sprites.py`, its move in `renderer/scenes/zodiac.py` |
 | Playlist order | `PLAYLISTS` in `renderer/scenes/__init__.py` |
 | Card colors, positions and page lengths | `renderer/textstyle.py` |
-| Card texts and date rules | `app/shared/lny.ts`, and the mirror in `mockup/template.html` (a test checks they agree) |
+| Card texts, greetings and date rules | `app/shared/lny.ts`, and the mirror in `mockup/template.html` (a test checks they agree) |
+| Settings fields | `app/src/appmeta/settings.json` and `SETTINGS_VERSION` in `app/shared/lny.ts` (bump both together) |
 | Buttons | `app/src/main.ts` |
 
 Design notes and decisions are in [docs/DECISIONS.md](docs/DECISIONS.md).

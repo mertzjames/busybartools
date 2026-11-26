@@ -74,22 +74,48 @@ export interface CardPage {
 
 const T = SHOW.timing;
 
+/** The "version" of app/src/appmeta/settings.json (bump both together when the fields change). */
+export const SETTINGS_VERSION = 1;
+
+/** The greeting language setting (app/src/appmeta/settings.json, D15). */
+export const GREETINGS = ["mandarin", "cantonese", "vietnamese", "korean", "none"] as const;
+export type Greeting = (typeof GREETINGS)[number];
+export const DEFAULT_GREETING: Greeting = "mandarin";
+
+/** The festival's wish page in the chosen language (ASCII romanizations: the fonts have no diacritics), or none. */
+export function wishLines(g: Greeting): TextLine[] | null {
+  switch (g) {
+    case "mandarin":
+      return [{ style: "top", text: "GONG XI" }, { style: "bot", text: "FA CAI" }];
+    case "cantonese":
+      return [{ style: "top", text: "GUNG HEI" }, { style: "bot", text: "FAT CHOI" }];
+    case "vietnamese":
+      return [{ style: "top", text: "CHUC MUNG" }, { style: "bot", text: "NAM MOI" }];
+    case "korean": // "MANI BADEUSEYO" is too wide for big: the countdown's big-over-tiny layout
+      return [{ style: "head", text: "SAEHAE BOK" }, { style: "sub", text: "MANI BADEUSEYO" }];
+    default:
+      return null;
+  }
+}
+
 /** The "count" card: the countdown, the festival greetings, or the generic greeting outside the date table. */
-export function countPages(s: Season): CardPage[] {
+export function countPages(s: Season, greeting: Greeting = DEFAULT_GREETING): CardPage[] {
   if (s.kind === "countdown") {
     return [{ ms: T.count, lines: [{ style: "head", text: daysLabel(s.days) }, { style: "sub", text: "TO LUNAR NEW YEAR" }] }];
   }
   if (s.kind === "unknown") {
     return [{ ms: T.fallback, lines: [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }] }];
   }
-  const greeting: TextLine[] = s.dayOf === SPAN_DAYS
+  const happy: TextLine[] = s.dayOf === SPAN_DAYS
     ? [{ style: "top", text: "LANTERN" }, { style: "bot", text: "FESTIVAL" }]
     : [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }];
-  return [
+  const pages: CardPage[] = [
     { ms: T.animal, lines: [{ style: "small", text: "YEAR OF THE" }, { style: "name", text: s.animal }] },
-    { ms: T.greeting, lines: greeting },
-    { ms: T.wish, lines: [{ style: "top", text: "GONG XI" }, { style: "bot", text: "FA CAI" }] },
+    { ms: T.greeting, lines: happy },
   ];
+  const wish = wishLines(greeting);
+  if (wish) pages.push({ ms: T.wish, lines: wish });
+  return pages;
 }
 
 /** The clock card: the 24-hour time, then the date. */

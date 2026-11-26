@@ -11,10 +11,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { mock, test } from "node:test";
 
 import {
-  animalWithoutTable, countPages, effectiveSeason, playlist, pressStart, previewAnimal, season, zodiacScene,
-  type Preview, type Season,
+  DEFAULT_GREETING, GREETINGS, SETTINGS_VERSION, animalWithoutTable, countPages, effectiveSeason, playlist, pressStart,
+  previewAnimal, season, zodiacScene, type Greeting, type Preview, type Season,
 } from "../app/shared/lny.ts";
-import { ZODIAC, createShow, parseLocal, textWidth, type Font, type LocalTime, type ShowDevice } from "../app/shared/kit.ts";
+import {
+  ZODIAC, createShow, enumValue, loadSettings, parseLocal, textWidth, type Font, type LocalTime, type ShowDevice,
+} from "../app/shared/kit.ts";
 import { FONTS, SHOW } from "../app/shared/generated/show.ts";
 
 const APP = new URL("..", import.meta.url);
@@ -25,7 +27,7 @@ const t = (iso: string): LocalTime => {
   return v;
 };
 const at = (date: string) => season(t(`${date}T12:00:00+00:00`));
-const texts = (s: Season) => countPages(s).map((p) => p.lines.map((l) => l.text).join(" / "));
+const texts = (s: Season, g?: Greeting) => countPages(s, g).map((p) => p.lines.map((l) => l.text).join(" / "));
 
 test("countdown: the upcoming animal, even in January before the new year", () => {
   assert.deepEqual(at("2026-11-26"), { kind: "countdown", days: 72, animal: "GOAT" });
@@ -65,7 +67,45 @@ test("card texts", () => {
   assert.deepEqual(countPages(at("2027-02-06")).map((p) => p.ms), [4500, 3500, 3000]);
 });
 
-test("playlists: the zodiac scene of the season's animal; the festival opens with it", () => {
+test("the greeting setting picks the wish page", () => {
+  const ny = at("2027-02-06");
+  const wish = (g: Greeting) => texts(ny, g).slice(2);
+  assert.deepEqual(wish("mandarin"), ["GONG XI / FA CAI"]);
+  assert.deepEqual(wish("cantonese"), ["GUNG HEI / FAT CHOI"]);
+  assert.deepEqual(wish("vietnamese"), ["CHUC MUNG / NAM MOI"]);
+  assert.deepEqual(wish("korean"), ["SAEHAE BOK / MANI BADEUSEYO"]);
+  assert.deepEqual(countPages(ny, "korean")[2].lines.map((l) => l.style), ["head", "sub"]);
+  assert.deepEqual(texts(ny, "none"), ["YEAR OF THE / GOAT", "HAPPY / NEW YEAR"]);
+  assert.deepEqual(texts(at("2027-02-20"), "none"), ["YEAR OF THE / GOAT", "LANTERN / FESTIVAL"]);
+  // the countdown and the fallback don't change with the setting
+  for (const g of GREETINGS) {
+    assert.deepEqual(texts(at("2026-11-26"), g), ["72 DAYS / TO LUNAR NEW YEAR"]);
+    assert.deepEqual(texts(at("2037-06-01"), g), ["HAPPY / NEW YEAR"]);
+  }
+});
+
+test("settings.json matches the app, and bad or missing settings fall back to Mandarin", async () => {
+  const doc = JSON.parse(readFileSync(new URL("app/src/appmeta/settings.json", APP), "utf8"));
+  assert.equal(doc.format_version, 1);
+  assert.equal(doc.version, SETTINGS_VERSION);
+  const field = doc.fields.greeting;
+  assert.equal(field.type, "enum");
+  assert.equal(field.default, DEFAULT_GREETING);
+  assert.deepEqual(field.options.map((o: { value: string }) => o.value), [...GREETINGS]);
+  const read = async (get: () => Promise<{ version: number; values: Record<string, unknown> }>) => {
+    const s = await loadSettings({ AppsSettingsGet: get }, "x", SETTINGS_VERSION, { greeting: DEFAULT_GREETING as string });
+    return enumValue(s.greeting, GREETINGS, DEFAULT_GREETING);
+  };
+  assert.equal(await read(async () => ({ version: 1, values: { greeting: "korean" } })), "korean");
+  assert.equal(await read(async () => ({ version: 1, values: { greeting: "none" } })), "none");
+  assert.equal(await read(async () => ({ version: 1, values: { greeting: "klingon" } })), "mandarin");
+  assert.equal(await read(async () => ({ version: 1, values: { greeting: 3 } })), "mandarin");
+  assert.equal(await read(async () => ({ version: 1, values: {} })), "mandarin");
+  assert.equal(await read(async () => ({ version: 2, values: { greeting: "korean" } })), "mandarin"); // old version
+  assert.equal(await read(async () => { throw new Error("offline"); }), "mandarin");
+});
+
+test("playlists: the zodiac scene of the season's animal; the festival opens with it; finale only then", () => {
   const goat = zodiacScene("GOAT");
   assert.equal(SHOW.scenes[goat].name, "zodiac_goat");
   const before = playlist(at("2027-01-15"));
@@ -75,14 +115,28 @@ test("playlists: the zodiac scene of the season's animal; the festival opens wit
   assert.deepEqual(during[1], { kind: "card", card: "count" });
   assert.ok(before.some((s) => s.kind === "scene" && s.scene === goat));
   assert.ok(unknown.some((s) => s.kind === "scene" && s.scene === zodiacScene("SNAKE"))); // Jun 2037
-  for (const steps of [before, during, unknown]) {
-    assert.equal(steps.length, 16);
-    assert.equal(steps.filter((s) => s.kind === "card").length, 8);
-    // every festival scene plays once per cycle, plus one zodiac scene
-    const scenes = steps.filter((s) => s.kind === "scene").map((s) => SHOW.scenes[(s as { scene: number }).scene].name);
-    assert.equal(new Set(scenes).size, 8, scenes.join());
-    assert.equal(scenes.filter((n) => n.startsWith("zodiac_")).length, 1);
+  const names = (steps: typeof before) =>
+    steps.filter((s) => s.kind === "scene").map((s) => SHOW.scenes[(s as { scene: number }).scene].name);
+  const cards = (steps: typeof before) => steps.filter((s) => s.kind === "card").map((s) => (s as { card: string }).card);
+  // the festival: every scene once, the finale included, cards alternating clock and count
+  assert.equal(during.length, 16);
+  assert.equal(new Set(names(during)).size, 8);
+  assert.ok(names(during).includes("finale"));
+  assert.deepEqual(cards(during), ["count", "clock", "count", "clock", "count", "clock", "count", "clock"]);
+  // before the holiday (and outside the table): no finale, and a count card after the zodiac scene
+  for (const steps of [before, unknown]) {
+    assert.equal(steps.length, 14);
+    assert.equal(new Set(names(steps)).size, 7);
+    assert.ok(!names(steps).includes("finale"));
+    assert.deepEqual(cards(steps), ["clock", "count", "clock", "count", "clock", "count", "count"]);
+    for (let i = 0; i < steps.length; i++) assert.notEqual(steps[i].kind, steps[(i + 1) % steps.length].kind);
   }
+  for (const steps of [before, during, unknown]) {
+    assert.equal(names(steps).filter((n) => n.startsWith("zodiac_")).length, 1);
+  }
+  // holiday mode plays the festival playlist, finale included, on any date
+  const p = pressStart(null, "GOAT");
+  assert.ok(names(playlist(effectiveSeason(t("2026-11-26T12:00:00+00:00"), p))).includes("finale"));
 });
 
 test("holiday mode: START steps through all twelve animals from the season's, then exits", () => {
@@ -112,7 +166,7 @@ function mockupLogic() {
   const make = new Function("SHOW", m[1] + "\nreturn { season, countPages, playlist, pressStart, previewAnimal };");
   return make(SHOW) as {
     season: (t: LocalTime) => Season;
-    countPages: (s: Season) => { ms: number; lines: { style: string; text: string }[] }[];
+    countPages: (s: Season, g: Greeting) => { ms: number; lines: { style: string; text: string }[] }[];
     playlist: (s: Season) => unknown[];
     pressStart: (p: Preview | null, a: string) => Preview | null;
     previewAnimal: (p: Preview) => string;
@@ -128,7 +182,7 @@ test("the mockup's logic mirrors the app for every day, 2024 through 2038", () =
     const lt: LocalTime = { year: u.getUTCFullYear(), month: u.getUTCMonth() + 1, day: u.getUTCDate(), hour: 9, minute: 30, second: 0 };
     const s = season(lt);
     assert.deepEqual(js.season(lt), s, JSON.stringify(lt));
-    assert.deepEqual(js.countPages(s), countPages(s));
+    for (const g of GREETINGS) assert.deepEqual(js.countPages(s, g), countPages(s, g));
     assert.deepEqual(js.playlist(s), playlist(s));
   }
   let a: Preview | null = null;
@@ -151,7 +205,7 @@ test("every scene and the card backdrop exist; every card text fits and has its 
   for (const animal of ZODIAC) for (const dayOf of [1, 15]) seasons.push({ kind: "festival", dayOf, animal });
   seasons.push({ kind: "unknown", animal: "RAT" });
   for (const s of seasons) {
-    for (const page of countPages(s)) {
+    for (const page of GREETINGS.flatMap((g) => countPages(s, g))) {
       for (const l of page.lines) {
         const spec = SHOW.styles[l.style];
         const font = FONTS[spec.font] as Font;

@@ -11,8 +11,9 @@ renderer/ (Python)  ──build.py──►  app/src/animations/*.anim     7 fes
                                     app/shared/generated/show.ts  scenes, playlists, text styles + timing, fonts
                                     app/src/appmeta/icon_*.png    menu icons
                                     mockup/index.html             browser simulator (from mockup/template.html)
-app/shared/lny.ts (TS)   the date logic: season, zodiac animal, card texts, playlist, holiday mode
-app/src/main.ts (TS)     configuration for the kit's show runner (createShow)
+app/shared/lny.ts (TS)   the date logic: season, zodiac animal, card texts, greetings, playlist, holiday mode
+app/src/main.ts (TS)     loads the settings once, then configures the kit's show runner (createShow)
+app/src/appmeta/settings.json   the Greeting setting (enum), editable on the bar under Setup
 ```
 
 Commands, run from this folder (the repo-level `tools/check.sh lunar-new-year` runs all of it):
@@ -44,6 +45,9 @@ bash tests/check.sh                                          # logic tests, mock
   - time: rows 2–14, x 19–53;
   - `TO LUNAR NEW YEAR`: rows 10–15, x 4–68;
   - two big lines: rows 0–15, x 12–60.
+- **Settings:** `settings.json` "version" equals `SETTINGS_VERSION` in `lny.ts`, and its greeting options equal
+  `GREETINGS`; the tests check both. Load settings once at start with the kit's `loadSettings` (never throws).
+- **The finale is festival-only** (D16): keep it out of the countdown playlist.
 - **Generated files are outputs.** Never hand-edit `.anim`, `show.ts`, the icons or `mockup/index.html`.
 - **One script.** The build output must say `scripts: main.js` only.
 - **Size.** Total `.anim` data is about 1.1 MB. Keep it under about 3 MB.

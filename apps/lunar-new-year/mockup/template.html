@@ -67,11 +67,11 @@
   .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
   .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--red), var(--gold)); }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  button, input[type="date"] {
+  button, input[type="date"], select {
     font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
     border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer;
   }
-  input[type="date"] { padding: 8px 10px; font-family: var(--mono); font-size: 13px; }
+  input[type="date"], select { padding: 8px 10px; font-family: var(--mono); font-size: 13px; }
   button:hover { border-color: var(--gold); }
   button:focus-visible, input:focus-visible, .chip:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   button.primary { background: var(--red); color: #fff; border-color: var(--red); min-width: 92px; }
@@ -166,6 +166,14 @@
       <label for="date">Bar date</label>
       <input type="date" id="date">
       <button id="start" type="button" aria-pressed="false">Holiday mode (START)</button>
+      <label for="greeting">Greeting</label>
+      <select id="greeting">
+        <option value="mandarin">Mandarin</option>
+        <option value="cantonese">Cantonese</option>
+        <option value="vietnamese">Vietnamese</option>
+        <option value="korean">Korean</option>
+        <option value="none">None</option>
+      </select>
       <span class="state" id="seasonState">…</span>
     </div>
     <ol class="playlist" id="playlist" aria-label="Show order"></ol>
@@ -182,7 +190,9 @@
         picked from the bar's date. Before the new year, the <strong>count card</strong> shows <code>N DAYS</code> /
         <code>TO LUNAR NEW YEAR</code>. From New Year's Day through the Lantern Festival (day 15), it shows
         <code>YEAR OF THE</code> / <code>GOAT</code>, <code>HAPPY</code> / <code>NEW YEAR</code> (on day 15,
-        <code>LANTERN</code> / <code>FESTIVAL</code>) and <code>GONG XI</code> / <code>FA CAI</code>. The
+        <code>LANTERN</code> / <code>FESTIVAL</code>) and a wish in the language chosen in the app's settings:
+        <code>GONG XI</code> / <code>FA CAI</code> by default. The fireworks finale is a treat saved for the
+        festival's fifteen days. The
         <strong>clock card</strong> shows the time and then the date.</p>
       <p><strong>Holiday mode:</strong> START on the bar (or the button above) previews the festival on any date.
         Each further press steps to the next of the twelve animals. After all twelve, it returns to the real date.</p>
@@ -221,6 +231,8 @@
       <li><span class="id">D10</span><span><strong>START walks the zodiac.</strong> Thirteen presses review all twelve animals and return.</span></li>
       <li><span class="id">D11</span><span><strong>Beyond the date table.</strong> A generic greeting and no countdown.</span></li>
       <li><span class="id">D12</span><span><strong>Respectful figures.</strong> Simple shapes, no faces, no caricature.</span></li>
+      <li><span class="id">D15</span><span><strong>Greeting as a setting.</strong> Mandarin, Cantonese, Vietnamese, Korean or none, set on the bar.</span></li>
+      <li><span class="id">D16</span><span><strong>Fireworks for the festival.</strong> The finale plays only during the fifteen days.</span></li>
     </ul>
   </section>
 
@@ -265,20 +277,32 @@ function pressStart(p, current) {
 const previewAnimal = (p) => ZODIAC[(p.start + p.shown) % ZODIAC.length];
 const effectiveSeason = (t, p) => (p ? { kind: "festival", dayOf: 1, animal: previewAnimal(p) } : season(t));
 const daysLabel = (n) => n + (n === 1 ? " DAY" : " DAYS");
-function countPages(s) {
+const GREETINGS = ["mandarin", "cantonese", "vietnamese", "korean", "none"];
+function wishLines(g) {
+  switch (g) {
+    case "mandarin": return [{ style: "top", text: "GONG XI" }, { style: "bot", text: "FA CAI" }];
+    case "cantonese": return [{ style: "top", text: "GUNG HEI" }, { style: "bot", text: "FAT CHOI" }];
+    case "vietnamese": return [{ style: "top", text: "CHUC MUNG" }, { style: "bot", text: "NAM MOI" }];
+    case "korean": return [{ style: "head", text: "SAEHAE BOK" }, { style: "sub", text: "MANI BADEUSEYO" }];
+    default: return null;
+  }
+}
+function countPages(s, greeting = "mandarin") {
   const T = SHOW.timing;
   if (s.kind === "countdown") {
     return [{ ms: T.count, lines: [{ style: "head", text: daysLabel(s.days) }, { style: "sub", text: "TO LUNAR NEW YEAR" }] }];
   }
   if (s.kind === "unknown") return [{ ms: T.fallback, lines: [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }] }];
-  const greeting = s.dayOf === SPAN_DAYS
+  const happy = s.dayOf === SPAN_DAYS
     ? [{ style: "top", text: "LANTERN" }, { style: "bot", text: "FESTIVAL" }]
     : [{ style: "top", text: "HAPPY" }, { style: "bot", text: "NEW YEAR" }];
-  return [
+  const pages = [
     { ms: T.animal, lines: [{ style: "small", text: "YEAR OF THE" }, { style: "name", text: s.animal }] },
-    { ms: T.greeting, lines: greeting },
-    { ms: T.wish, lines: [{ style: "top", text: "GONG XI" }, { style: "bot", text: "FA CAI" }] },
+    { ms: T.greeting, lines: happy },
   ];
+  const wish = wishLines(greeting);
+  if (wish) pages.push({ ms: T.wish, lines: wish });
+  return pages;
 }
 function sceneIndex(name) {
   const i = SHOW.scenes.findIndex((s) => s.name === name);
@@ -377,6 +401,7 @@ function playlist(s) {
     play: document.getElementById("play"), loop: document.getElementById("loopOne"),
     playlist: document.getElementById("playlist"), date: document.getElementById("date"),
     start: document.getElementById("start"), state: document.getElementById("seasonState"),
+    greeting: document.getElementById("greeting"),
   };
   const today = new Date();
   els.date.value = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
@@ -415,7 +440,7 @@ function playlist(s) {
     if (card === "clock") {
       return [{ ms: T.time, lines: [{ style: "time", text: null }] }, { ms: T.date, lines: [{ style: "date", text: null }] }];
     }
-    return countPages(effectiveSeason(barTime(), preview));
+    return countPages(effectiveSeason(barTime(), preview), els.greeting.value);
   }
   function liveText(line, now) {
     if (line.style === "time") return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
@@ -571,7 +596,8 @@ function playlist(s) {
     const samples = [
       ["Clock", [{ style: "time", text: "18:05" }]], ["Date", [{ style: "date", text: "SAT 6 FEB" }]],
       ["Before: the countdown", countPages({ kind: "countdown", days: 72, animal: "GOAT" })[0].lines],
-      ...countPages({ kind: "festival", dayOf: 1, animal: "GOAT" }).map((p, k) => [`New Year, page ${k + 1}`, p.lines]),
+      ...countPages({ kind: "festival", dayOf: 1, animal: "GOAT" }).slice(0, 2).map((p, k) => [`New Year, page ${k + 1}`, p.lines]),
+      ...GREETINGS.filter(g => g !== "none").map(g => [`Greeting setting: ${g}`, wishLines(g)]),
       ["Day 15", countPages({ kind: "festival", dayOf: 15, animal: "GOAT" })[1].lines],
       ["Outside the date table", countPages({ kind: "unknown", animal: "RAT" })[0].lines],
     ];
@@ -596,6 +622,7 @@ function playlist(s) {
   document.getElementById("next").addEventListener("click", () => advance());
   els.start.addEventListener("click", () => { preview = pressStart(preview, season(barTime()).animal); newCycle(); setPaused(false); });
   els.date.addEventListener("change", () => newCycle());
+  els.greeting.addEventListener("change", () => newCycle());
   document.addEventListener("keydown", e => {
     if (e.target.closest("button, input")) return;
     if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
