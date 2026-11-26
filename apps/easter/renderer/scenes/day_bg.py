@@ -15,13 +15,14 @@ TITLE = "Holiday backdrop"
 SECONDS = 4
 LOOP = sec(SECONDS)
 KEYFRAMES = [(0.0, "Holiday backdrop")]
+TEXT_GAP = (11, 60)  # text (and its shadow) stays inside these columns, clear of the confetti bands
 
 
 def render():
     bg = vgradient((22, 10, 44), (40, 18, 62))
     rng = random.Random(14)
     bits = []
-    for band in ((0, 11), (61, 72)):  # outside the widest greeting (SPRING IS, x 12-59)
+    for band in ((0, TEXT_GAP[0]), (TEXT_GAP[1] + 1, 72)):  # outside the widest greeting (SPRING IS, x 12-59)
         for _ in range(9):
             bits.append((rng.uniform(band[0], band[1] - 1), rng.uniform(0, H), rng.choice((1, 2)),
                          rng.uniform(0, 6.28), rng.choice(efx.PASTELS)))
@@ -33,7 +34,7 @@ def render():
             x = x0 + 0.8 * math.sin(2 * math.pi * f / LOOP + ph)
             bright = (f // 4 + int(ph * 3)) % 2 == 0
             put(img, x, y, c if bright else tuple(int(v * 0.6) for v in c))
-        glitter(img, 3, f, n=6, period=LOOP, area=(0, 0, 11, H), strength=0.7)
-        glitter(img, 4, f, n=6, period=LOOP, area=(61, 0, 72, H), strength=0.7)
+        glitter(img, 3, f, n=6, period=LOOP, area=(0, 0, TEXT_GAP[0], H), strength=0.7)
+        glitter(img, 4, f, n=6, period=LOOP, area=(TEXT_GAP[1] + 1, 0, 72, H), strength=0.7)
         frames.append(img)
     return frames

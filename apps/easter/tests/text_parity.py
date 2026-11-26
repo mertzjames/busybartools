@@ -44,7 +44,7 @@ for (const iso of ["2026-11-26T18:05:00-05:00", "2027-03-28T00:00:00-04:00", "20
   for (const name of ["clock", "count", "day0", "day1", "day2"])
     for (const page of cardPages(name, t)) for (const l of page.lines) lines.push([l.text, l.style]);
 }
-lines.push(["364 DAYS", "head"], ["1 DAY", "head"], ["WED 28 SEP", "date"], ["00:00", "time"]);
+lines.push(["399 DAYS", "head"], ["1 DAY", "head"], ["WED 28 SEP", "date"], ["SUN 20 JAN", "date"], ["00:00", "time"]);
 const bitmaps = lines.map(([txt, style]) => {
   const b = textBitmap(txt, FONTS[L[style].font] as Font, L[style]);
   return { txt, style, data: b.data, x: b.x, y: b.y };
@@ -89,6 +89,12 @@ def renderer_pixels(txt: str, style: str):
             if img.getpixel((x, y))[:3] != (0, 0, 0)}
 
 
+def in_gap(b, gap) -> bool:
+    """Every lit pixel of a bitmap (text and shadow) lies inside the backdrop's free columns."""
+    xs = [x for (x, _y) in xpm_pixels(b["data"], b["x"], b["y"])]
+    return min(xs) >= gap[0] and max(xs) <= gap[1]
+
+
 def widest_date() -> tuple[str, int]:
     days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
     months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
@@ -110,6 +116,20 @@ def main() -> int:
         ok = xpm_pixels(b["data"], b["x"], b["y"]) == renderer_pixels(b["txt"], b["style"])
         failures += not ok
         print(f"  {'ok  ' if ok else 'FAIL'} {b['style']:5} {b['txt']!r}")
+    # text never runs into a backdrop's edge art (eggs, confetti bands, corner tulips)
+    backdrop = {"time": CLOCK_BG, "date": CLOCK_BG, "head": COUNT_BG, "sub": COUNT_BG, "top": DAY_BG, "bot": DAY_BG}
+    day_texts = {(t, st) for card in DAY_TEXT for page in card for t, st in page}
+    before = failures
+    for b in res["bitmaps"]:
+        mods = [backdrop[b["style"]]]
+        if (b["txt"], b["style"]) in day_texts:
+            mods.append(DAY_BG)
+        for m in mods:
+            if not in_gap(b, m.TEXT_GAP):
+                failures += 1
+                print(f"  FAIL {b['txt']!r} ({b['style']}) runs past {m.NAME}'s free columns {m.TEXT_GAP}")
+    if failures == before:
+        print("  ok   every text clears the backdrops' edge art")
     date, width = widest_date()
     expected = [[m.NAME, int(m.SECONDS * 1000), f"animations/{m.NAME}.anim"] for m in PLAYLIST]
     day_text = [[[list(line) for line in page] for page in card] for card in DAY_TEXT]

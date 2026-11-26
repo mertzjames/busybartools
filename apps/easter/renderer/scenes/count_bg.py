@@ -13,6 +13,7 @@ LOOP = sec(SECONDS)
 KEYFRAMES = [(0.0, "Countdown backdrop")]
 
 EGGS = [(1, 3, efx.PINK, "zigzag"), (64, 3, efx.BLUE, "stripes")]
+TEXT_GAP = (9, 62)  # text (and its shadow) must stay inside these columns, clear of the eggs
 
 
 def render():

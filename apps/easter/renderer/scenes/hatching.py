@@ -13,13 +13,13 @@ from sprites import CHICK
 NAME = "hatching"
 TITLE = "Chicks Hatching"
 SECONDS = 15
-KEYFRAMES = [(0.5, "Three eggs in a nest"), (1.6, "The first one wobbles"), (2.4, "Crack!"),
+KEYFRAMES = [(0.5, "Three eggs in a nest"), (1.6, "The first one wobbles"), (2.1, "Crack!"),
              (3.2, "Hello, chick"), (6.6, "The second hatches"), (10.3, "And the third"),
              (13.6, "Three chicks cheeping")]
 
 EW, EH = 7, 9  # egg size
 EY = 5  # egg top row (bottoms on row 13, behind the nest's rim)
-EGGS = [(22, efx.BLUE, 15), (32, (255, 236, 200), 70), (42, efx.PINK, 125)]  # (x, color, hatch start frame)
+EGGS = [(22, efx.BLUE, 15), (32, efx.MINT, 70), (42, efx.PINK, 125)]  # (x, color, hatch start frame)
 CUT = 4  # the crack runs across egg row 4; the top 4 rows pop off
 
 

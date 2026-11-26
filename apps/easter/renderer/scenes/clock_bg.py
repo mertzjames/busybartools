@@ -12,6 +12,7 @@ TITLE = "Clock backdrop"
 SECONDS = 4
 LOOP = sec(SECONDS)
 KEYFRAMES = [(0.0, "Clock backdrop")]
+TEXT_GAP = (6, 64)  # the time and date stay inside these columns, clear of the corner eggs and tulips
 
 
 def render():
