@@ -82,7 +82,7 @@ def render():
             add(bg, x, y, (150, 60, 30), 0.5 * (y - 8) / 4)
         for y in range(GROUND, 16):
             put(bg, x, y, (96, 44, 28) if (x * 3 + y) % 5 else (78, 36, 24))
-    baobab(bg, 55)
+    baobab(bg, 57)
     for sx, sy in ((5, 1), (14, 3), (27, 0), (40, 2), (50, 1), (66, 2), (70, 0)):  # a few early stars
         put(bg, sx, sy, (200, 200, 230), 0.6)
     confetti = Confetti(seed=44, t0=sec(T_LEAP + 0.4), x=36, y=6, n=72, vx=(-2.2, 2.2), vy=(-2.4, -0.8),
