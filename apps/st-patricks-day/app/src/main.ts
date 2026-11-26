@@ -1,65 +1,66 @@
+// St. Patrick's Day: festive folklore scenes play in turn with live-text cards between them: the clock, and a
+// countdown to March 17 (on the day, HAPPY ST. PATRICK'S DAY and ERIN GO BRAGH). Playback is the shared show runner
+// (lib/ts/busybar).
+//
+// Buttons: OK = next step, encoder = next/previous step, START = holiday mode (preview the day's cards and playlist
+// on any date; press again to go back), Back = quit.
+
 import { device } from "@shared/device";
-import { column, render, type Node } from "@busy-app/busy-lib";
+import { createShow, type Card, type LocalTime, type Step, type TextSpec } from "@shared/kit";
+import { DAY_CARD_NAMES, cardPages, playlist, type Style } from "@shared/stpatricks";
 import manifest from "./appmeta/manifest.json";
+import { FONTS, LAYOUT, SHOW } from "@shared/generated/show";
 
-/** The name the app draws under; the device clears elements by this id. */
-const APP = manifest.id;
+const SPECS = LAYOUT as unknown as Record<Style, TextSpec>;
 
-/** How often the screen is redrawn. */
-const TICK_MS = 1000;
-
-const WHITE = "#FFFFFFFF";
-const SUBTLE_WHITE = "#FFFFFF80";
-
-/**
- * The frame drawn on every tick. The screen is 72×16, so two short lines are about all that fits.
- */
-function frame(ticks: number): Node {
-  return column({ justify: "center", align: "center" }, [
-    { type: "text", id: "title", text: "Hello", font: "bold", color: WHITE },
-    {
-      type: "text",
-      id: "ticks",
-      text: String(ticks),
-      font: "small",
-      color: SUBTLE_WHITE,
-    },
-  ]);
+/** A runner card whose every line is recomputed from the time it is drawn at (the minute rollover included). */
+function card(name: string, backdrop: string): Card {
+  return {
+    path: backdrop,
+    pages: (t0) => cardPages(name, t0).map((page, p) => ({
+      ms: page.ms,
+      lines: page.lines.map((line, k) => ({
+        spec: SPECS[line.style],
+        text: (t: LocalTime) => cardPages(name, t)[p]?.lines[k]?.text ?? "",
+      })),
+    })),
+  };
 }
 
-/** Sends one frame to the device. */
-async function draw(ticks: number): Promise<void> {
-  const elements = render(frame(ticks));
-  await device.DisplayDraw({ application_name: APP, priority: 50, elements });
-}
-
-/**
- * Entry point, called at the end of the file: the device runs this script from top to bottom and starts nothing by itself.
- */
 function main(): void {
-  let ticks = 0;
-  let stopped = false;
+  let holiday = false;
+  let fromCard = false;
+  const cards: Record<string, Card> = {
+    clock: card("clock", SHOW.backdrops.clock_bg),
+    count: card("count", SHOW.backdrops.count_bg),
+  };
+  for (const name of DAY_CARD_NAMES) cards[name] = card(name, SHOW.backdrops.day_bg);
 
-  const report = (err: unknown) =>
-    console.error(`${APP}: ${err instanceof Error ? err.message : String(err)}`);
+  const show = createShow({
+    app: manifest.id,
+    device,
+    fonts: FONTS,
+    scenes: SHOW.scenes,
+    cards,
+    steps: (t) => {
+      const steps: Step[] = playlist(SHOW.scenes.length, t, holiday, fromCard);
+      fromCard = false;
+      return steps;
+    },
+  });
+  show.start();
 
-  void draw(ticks).catch(report);
-
-  // Tick errors are reported, not thrown: one failed request must not stop the loop.
-  const timer = setInterval(() => {
-    ticks += 1;
-    void draw(ticks).catch(report);
-  }, TICK_MS);
-
-  // Back leaves the app. Once the timer is cleared and the handler detached, nothing keeps it alive and the device takes the screen back.
   const unbind = listen("input", (event) => {
-    if (stopped || event.key !== "back" || event.action !== "short") return;
-
-    stopped = true;
-    clearInterval(timer);
-
-    // Not detached from inside the handler itself: with nothing else left the unbind stops the app on the spot, while this handler is still running.
-    setTimeout(unbind, 0);
+    const r = show.input(event);
+    if (r === "quit") {
+      setTimeout(unbind, 0); // never unbind inside the handler itself
+      return;
+    }
+    if (r === "ignored" && event.key === "start" && event.action === "short") {
+      holiday = !holiday;
+      fromCard = true; // start the new cycle on a count card, so the change shows at once
+      show.start();
+    }
   });
 }
 
