@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "id": "busybartools.presidents",
+  "name": "Presidents' Day",
+  "version": "1.0.0",
+  "api_version": "27.12.0",
+  "description": "Stars, stripes and landmarks for Presidents' Day: a flag, a cherry tree, monuments at sunset and fireworks",
+  "author": "busybartools contributors"
+}
