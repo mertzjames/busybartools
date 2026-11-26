@@ -193,3 +193,8 @@ contrast traps, captions over a dimmed frame, and fine time-window reviews.
   apps for no visible gain. New Year's Eve keeps its own `party.py`, and a kit test checks that the two copies draw
   identical pixels.
 - A Lunar New Year algorithm. Rejected: it needs a lunar ephemeris, which is too much code for a 12-row table.
+
+**Follow-up (from the first apps built on the runner):**
+- A line that keeps its text and style from one page to the next now stays on screen instead of fading in again.
+  Kwanzaa's `HABARI GANI?` headline and the principle split over two pages showed the problem.
+- `start(from)` restarts the cycle at a given step, so a mode switch can land on a card at once (MLK Day needed it).
