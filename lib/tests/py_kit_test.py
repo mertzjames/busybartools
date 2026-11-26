@@ -62,6 +62,15 @@ def test_build_scenes_deterministic() -> None:
         assert a[0]["frames"] == FPS and a[0]["keyframes"] == [{"s": 0.5, "caption": "half"}]
 
 
+def test_apply_tone_accepts_rgba() -> None:
+    from busybar.showbuild import apply_tone
+    lut = tone_lut(0.8)
+    rgba = new((20, 40, 60))
+    assert rgba.mode == "RGBA"
+    toned = apply_tone(rgba, lut)  # used to fail with "wrong number of lut entries"
+    assert toned.mode == "RGB" and toned.getpixel((0, 0)) == (lut[20], lut[40], lut[60])
+
+
 def test_ts_module_format() -> None:
     src = ts_module([("A", {"x": 1}, None, 2, True), ("B", [1], "number[]", None, False)])
     assert 'export const A = {\n  "x": 1\n} as const;\n\nexport const B: number[] = [1];\n' in src
