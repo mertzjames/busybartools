@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "version": "1.0.0",
-  "description": "A tribute to American workers that opens into the end of summer: raising steel, a parade of trades, the harvest, a cookout, a beach sunset and fireworks",
+  "description": "A tribute to workers that opens into the end of summer: steel, a parade of trades, a cookout and a beach sunset",
   "author": "busybartools contributors",
   "type": "module",
   "scripts": {

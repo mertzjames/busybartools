@@ -1,6 +1,6 @@
 """Scene: harvest time. In the golden hour a farmer drives a red tractor across a field, pulling a baler that picks
 up the windrow and drops round hay bales behind it. A red barn and a silo stand on the horizon, swallows follow the
-tractor, and the sun hangs low (docs/DECISIONS.md D3)."""
+tractor, and the sun hangs low (docs/DECISIONS.md D3, D10)."""
 
 from __future__ import annotations
 

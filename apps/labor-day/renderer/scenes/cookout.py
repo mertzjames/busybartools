@@ -1,6 +1,6 @@
 """Scene: the backyard cookout. Over a white picket fence the afternoon turns to dusk. A cook at a red kettle grill
 flips burgers, smoke curls up, two friends at a gingham-covered picnic table (watermelon, lemonade, corn) raise their
-cups, string lights come on and fireflies blink in the grass (docs/DECISIONS.md D3)."""
+cups, string lights come on and fireflies blink in the grass (docs/DECISIONS.md D3, D10)."""
 
 from __future__ import annotations
 

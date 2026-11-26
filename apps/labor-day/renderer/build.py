@@ -39,7 +39,7 @@ from scenes.text import DAY_TEXT, LAYOUT  # noqa: E402,F401  (DAY_TEXT is re-exp
 
 APP_ID = "busybartools.laborday"
 
-# Display tone curve (docs/DECISIONS.md D4): the value approved on real hardware for Wizarding Thanksgiving (round-1 kit).
+# Display tone curve (docs/DECISIONS.md D9): the value approved on real hardware for Wizarding Thanksgiving (round-1 kit).
 GAMMA = 0.8
 LUT = tone_lut(GAMMA)
 

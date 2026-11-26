@@ -1,6 +1,6 @@
 """Scene: the last swim of summer. The sun sinks into the sea and the sky turns from gold to rose. Waves roll in
 and foam up the sand past a striped umbrella and a sandcastle; a swimmer runs down for one last dip, splashes in
-and waves from the water; a gull glides by and the first star comes out (docs/DECISIONS.md D3)."""
+and waves from the water; a gull glides by and the first star comes out (docs/DECISIONS.md D3, D10)."""
 
 from __future__ import annotations
 

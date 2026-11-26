@@ -44,7 +44,7 @@ def skyline(img) -> None:
         w, h = rng.randint(3, 7), rng.randint(1, 3)
         for xx in range(x, min(W, x + w)):
             for yy in range(H - h, H):
-                put(img, xx, yy, (176, 110, 120))
+                put(img, xx, yy, (134, 84, 116))
         for yy in range(H - h + 1, H, 2):
             for xx in range(x + 1, min(W, x + w) - 1, 2):
                 if rng.random() < 0.3:
