@@ -13,9 +13,9 @@ from __future__ import annotations
 import math
 from types import SimpleNamespace
 
-from busybar.canvas import FPS, add, clamp01, ease_in_out, lerp, mix, phase, put, sec
+from busybar.canvas import FPS, add, clamp01, ease_in_out, lerp, mix, put, sec
 from busybar.fx import Stars
-from hfx import Menorah, glow, warm_room
+from hfx import Menorah, warm_room
 
 SECONDS = 16
 FRAMES = sec(SECONDS)

@@ -10,7 +10,7 @@ import math
 
 from busybar.canvas import FPS, ease_in_out, ease_out, lerp, mix, phase, put, sec, vgradient
 from busybar.party import hash01
-from hfx import BLUE, BLUE_HI, SILVER, WHITE, glow
+from hfx import BLUE, BLUE_HI, SILVER, glow
 
 NAME = "latkes"
 TITLE = "Latkes in the Pan"
