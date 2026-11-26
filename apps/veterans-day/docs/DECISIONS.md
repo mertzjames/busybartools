@@ -65,7 +65,7 @@ federal offices close on a Friday or Monday, so the app never shifts the date.
   so 10:59 and 11:01 are outside it. `playlist(t)` puts the `moment` card first when the cycle starts inside it,
   then the day's usual playlist. The card is 20 s: `11TH HOUR`; `11TH DAY` / `11TH MONTH`; `ARMISTICE` /
   `NOV 11 1918`; `THANK YOU` / `VETERANS`, over a still, dark backdrop with one poppy in each corner.
-- A cycle lasts about 2 min 10 s, so cycles alone would rarely start in that minute. `main.ts` wraps `steps(t)`:
+- A cycle lasts about 2 min 35 s (D11), so cycles alone would rarely start in that minute. `main.ts` wraps `steps(t)`:
   at the start of every cycle it calls `msToMoment(t)`, which returns the time to 11:00:02 when it is Nov 11 and
   11:00 is less than 10 minutes away (otherwise null), and arms one `setTimeout` for it, replacing any earlier one.
   When it fires, `show.start()` begins a new cycle, whose playlist (picked by the bar's clock at about 11:00:02)
@@ -141,3 +141,28 @@ function of the time and mode, and a reviewer sees it again every couple of minu
 - **Finale:** a 13-stripe flag fills the display; the wave shifts whole rows with 3 shade steps, and it dims to 16 %
   so the ivory words read over it (at 28 % the white stripes competed with the letters).
 - **Size:** total `.anim` data is about 0.8 MB (the finale's whole-cloth flag is the largest at about 220 KiB).
+
+## D11 — The Armed Services, after the parade (review)
+*2026-11-26*
+
+**Review:** "Similar to Memorial Day (maybe even copy it over to here) add a set of animations or a single one that
+shows each of the branches of service."
+
+**Decision:** One 17 s scene, `services`, copied app-locally from Memorial Day's scene of the same name (apps can't
+share code; it uses only the shared kit). The six services appear in order of precedence, each for 2.8 s, with its
+name across the top in the big font and a small vignette of its domain below, sliding one into the next: `ARMY` (a
+column marching along a road), `MARINE CORPS` (three figures in dress blues who salute), `NAVY` (a plain grey ship
+at sea), `AIR FORCE` (three jets in echelon trailing smoke), `SPACE FORCE` (a satellite over the curve of the Earth)
+and `COAST GUARD` (a plain orange rescue helicopter over the waves). The art is the same; the names take this app's
+warm ivory-to-gold caption colors. The names live in `SCENE_CAPTIONS["services"]` (`scenes/text.py`), so the parity
+test checks every glyph and width.
+- It plays after the parade: the town's own veterans, then the services they served in, then the salute.
+- Seven scenes give four clock slots and three count slots, so on the day each day card plays exactly once a cycle;
+  the finale is now followed by a clock card. A cycle is about 2 min 35 s (D6's 10-minute timer window still covers
+  it).
+
+**Tone (D2, D3):** only domain, plain silhouettes, generic uniform colors and the names: no emblems, seals, insignia,
+logos, markings (the Coast Guard's diagonal stripe is left out on purpose), medals, faces, weapons or combat.
+
+**Not added:** a closing caption such as `THANK YOU` / `ALL WHO SERVED`; the finale already says `THANK YOU` /
+`VETERANS`, and every new word needs review. The six names are new words on screen.

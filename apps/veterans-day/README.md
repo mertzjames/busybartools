@@ -1,8 +1,8 @@
 # Veterans Day
 
 A tribute for Veterans Day (November 11), which honors everyone who served in the U.S. armed forces, living and dead.
-Six calm scenes play on the 72×16 display: flags along a small-town Main Street, a parade, a salute at sunrise, a
-field of poppies, a child's thank-you and a closing flag. A clock card and a countdown card play between them. On the
+Seven calm scenes play on the 72×16 display: flags along a small-town Main Street, a parade, the six armed services,
+a salute at sunrise, a field of poppies, a child's thank-you and a closing flag. A clock card and a countdown card play between them. On the
 day the countdown becomes a few words of thanks, and at 11:00 on November 11, the 11th hour of the 11th day of the
 11th month, a quiet card marks the armistice of 1918 before the show resumes.
 
@@ -14,12 +14,14 @@ Open [mockup/index.html](mockup/index.html) in a browser for an LED simulator an
 |---|---|---|---|
 | 1 | Flags on Main Street | 14 s | Storefronts brighten at sunrise. The town puts a flag out on each lamppost in turn, then they all wave against the sky while autumn leaves drift down. |
 | 2 | The Parade | 16 s | A flag bearer in a plain dress uniform, three veterans of different ages marching in step, an open car with two older veterans waving, and an older veteran walking behind. Neighbours seen from behind wave small flags at the curb. |
-| 3 | The Salute | 14 s | At sunrise a service member in a plain dress uniform and an older veteran in a red cap salute as the flag goes up the pole. They hold the salute until it flies at the top, then lower their hands. |
-| 4 | A Field of Poppies | 14 s | Red poppies open across a green field under a warm afternoon sky, then sway in a slow breeze. A few petals drift. |
-| 5 | A Thank You | 14 s | An older veteran rests on a bench by a lit café window. A child brings a handmade card, the veteran opens it to a red heart, and the two wave. Then `THANK YOU` appears. |
-| 6 | Thank You, Veterans | 16 s | The flag fills the display, its thirteen stripes rippling, then dims behind `THANK YOU` / `VETERANS`. |
+| 3 | The Armed Services | 17 s | The six services in order of precedence, each for about 2.8 s with its name across the top in warm gold, sliding one into the next: `ARMY` (a column marching along a road), `MARINE CORPS` (three figures in dress blues salute), `NAVY` (a grey ship at sea), `AIR FORCE` (jets in echelon trailing smoke), `SPACE FORCE` (a satellite over the curve of the Earth), `COAST GUARD` (an orange rescue helicopter hovering over the waves). |
+| 4 | The Salute | 14 s | At sunrise a service member in a plain dress uniform and an older veteran in a red cap salute as the flag goes up the pole. They hold the salute until it flies at the top, then lower their hands. |
+| 5 | A Field of Poppies | 14 s | Red poppies open across a green field under a warm afternoon sky, then sway in a slow breeze. A few petals drift. |
+| 6 | A Thank You | 14 s | An older veteran rests on a bench by a lit café window. A child brings a handmade card, the veteran opens it to a red heart, and the two wave. Then `THANK YOU` appears. |
+| 7 | Thank You, Veterans | 16 s | The flag fills the display, its thirteen stripes rippling, then dims behind `THANK YOU` / `VETERANS`. |
 
-No insignia, seals, branch emblems or medals (uniforms are plain colors with no patches), no likenesses of real
+No insignia, seals, branch emblems or medals (uniforms are plain colors with no patches; the services are shown only
+by domain, plain vehicles, generic uniform colors and their names), no likenesses of real
 people, and nothing that depicts combat or weapons. Veterans of different ages, skin tones and genders.
 
 ## Cards
@@ -28,8 +30,8 @@ Live text, drawn by the app from the bar's clock (`/api/time`), in warm ivory an
 
 | Card | When | Pages |
 |---|---|---|
-| Clock | every other step | the time (`09:05`), then the date (`WED 11 NOV`) |
-| Countdown | before and after the day | `350 DAYS` (or `1 DAY`) / `TO VETERANS DAY` |
+| Clock | after scenes 1, 3, 5, 7 | the time (`09:05`), then the date (`WED 11 NOV`) |
+| Countdown | after scenes 2, 4, 6, before and after the day | `350 DAYS` (or `1 DAY`) / `TO VETERANS DAY` |
 | On the day | Nov 11, in the countdown's three slots | `VETERANS DAY`, then `THANK YOU` / `VETERANS`; `VETERANS DAY`, then `HONOR ALL` / `WHO SERVED`; `VETERANS DAY`, then `THANK YOU` / `FOR YOUR SERVICE` |
 | The 11th hour | a cycle that starts from 11:00:00 to 11:00:59 on Nov 11 | `11TH HOUR`; `11TH DAY` / `11TH MONTH`; `ARMISTICE` / `NOV 11 1918`; `THANK YOU` / `VETERANS` (5 s each) |
 

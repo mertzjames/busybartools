@@ -122,8 +122,8 @@
     <h1>Veterans <span>Day</span></h1>
     <div class="horizon" aria-hidden="true"></div>
     <p class="lede">A tribute for Veterans Day, November 11, which honors everyone who served in the U.S. armed
-      forces, living and dead, on a 72 × 16 LED display. Calm scenes of flags along Main Street, a parade, a salute
-      at sunrise, a field of poppies, a child's thank-you and a closing flag. Between them come a clock and a
+      forces, living and dead, on a 72 × 16 LED display. Calm scenes of flags along Main Street, a parade, the six
+      armed services, a salute at sunrise, a field of poppies, a child's thank-you and a closing flag. Between them come a clock and a
       countdown, on the day a few words of thanks, and at 11:00 on November 11 a quiet card for the 11th hour. The
       simulator below plays the same frames the bar plays, with your current time on the cards.</p>
   </header>
@@ -148,9 +148,10 @@
   <section class="section" aria-labelledby="about">
     <h2 id="about">The tribute</h2>
     <div class="prose">
-      <p>Six calm scenes. The town puts a flag out on every lamppost along Main Street at sunrise; veterans come down
+      <p>Seven calm scenes. The town puts a flag out on every lamppost along Main Street at sunrise; veterans come down
         the street in a parade, with a flag bearer, three veterans marching in step and two older veterans waving
-        from an open car, while neighbours wave small flags; a service member and an older veteran salute as the
+        from an open car, while neighbours wave small flags; the six armed services follow one another in order of
+        precedence, each shown by its domain and its name; a service member and an older veteran salute as the
         flag goes up; red poppies open across a field; a child hands an older veteran a handmade card; and the flag
         fills the display behind <strong>THANK YOU VETERANS</strong>.</p>
       <p><strong>The 11th hour.</strong> The armistice that ended the First World War took effect at 11:00 on
@@ -158,7 +159,8 @@
         the app starts a new cycle with a quiet card: <strong>11TH HOUR</strong>, <strong>11TH DAY / 11TH
         MONTH</strong>, <strong>ARMISTICE / NOV 11 1918</strong> and <strong>THANK YOU / VETERANS</strong>. Then the
         show resumes.</p>
-      <p>No insignia, seals, branch emblems or medals: plain uniforms with no patches, flags and poppies. No
+      <p>No insignia, seals, branch emblems or medals: plain uniforms with no patches, flags and poppies;
+        the services shown only by domain, plain vehicles, generic uniform colors and their names. No
         likenesses of real people and nothing that depicts combat or weapons. Veterans of different ages, skin tones
         and genders.</p>
       <p>Between scenes, a <strong>clock card</strong> shows the time, then the date. A <strong>countdown card</strong>
@@ -167,7 +169,7 @@
         second opens every cycle with the 11:00 moment, the third goes back.</p>
     </div>
     <dl class="facts">
-      <div><dt>Scenes</dt><dd id="fScenes">6</dd></div>
+      <div><dt>Scenes</dt><dd id="fScenes">7</dd></div>
       <div><dt>Display</dt><dd>72 × 16</dd></div>
       <div><dt>Frame rate</dt><dd>15 fps</dd></div>
       <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
@@ -202,6 +204,7 @@
       <li><span class="id">D6</span><span><strong>The 11th hour.</strong> At 11:00 on Nov 11 a new cycle opens with the moment card.</span></li>
       <li><span class="id">D7</span><span><strong>Words.</strong> VETERANS DAY, THANK YOU VETERANS, HONOR ALL WHO SERVED, THANK YOU FOR YOUR SERVICE.</span></li>
       <li><span class="id">D9</span><span><strong>START previews.</strong> The day, then the 11:00 moment, then back to the calendar.</span></li>
+      <li><span class="id">D11</span><span><strong>The Armed Services.</strong> Six vignettes in order of precedence, by domain and name only.</span></li>
     </ul>
   </section>
 
@@ -476,7 +479,8 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
   }
   function words() {
-    const list = ["N DAYS / 1 DAY", "TO VETERANS DAY", "THANK YOU"];
+    const list = ["N DAYS / 1 DAY", "TO VETERANS DAY", "THANK YOU", "ARMY", "MARINE CORPS", "NAVY", "AIR FORCE",
+      "SPACE FORCE", "COAST GUARD"];
     for (const card of [...VET.dayCards(), VET.momentPages()]) for (const page of card) {
       const w = page.lines.map(l => l.text).join(" / ");
       if (!list.includes(w)) list.push(w);

@@ -44,4 +44,6 @@ MOMENT_TEXT = [
 SCENE_CAPTIONS = {
     "thank_you": [("THANK YOU", "tiny", 34, 1)],
     "finale": [("THANK YOU", "big", None, 0), ("VETERANS", "big", None, 8)],
+    "services": [(name, "big", None, 0) for name in
+                 ("ARMY", "MARINE CORPS", "NAVY", "AIR FORCE", "SPACE FORCE", "COAST GUARD")],
 }

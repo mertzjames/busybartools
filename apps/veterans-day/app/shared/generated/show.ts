@@ -16,6 +16,12 @@ export const SHOW = {
       "ms": 16000
     },
     {
+      "name": "services",
+      "title": "The Armed Services",
+      "path": "animations/services.anim",
+      "ms": 17000
+    },
+    {
       "name": "salute",
       "title": "The Salute",
       "path": "animations/salute.anim",

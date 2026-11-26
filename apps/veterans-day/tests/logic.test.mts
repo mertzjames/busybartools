@@ -20,10 +20,11 @@ const texts = (pages: { lines: { text: string }[] }[]) => pages.map((p) => p.lin
 const names = (steps: V.PlayStep[]) =>
   steps.map((s) => (s.kind === "scene" ? SHOW.scenes[s.scene].name : s.card));
 
-const BEFORE = ["main_street", "clock", "parade", "count", "salute", "clock", "poppies", "count", "thank_you",
-  "clock", "finale", "count"];
-const DAY = ["main_street", "clock", "parade", "day0", "salute", "clock", "poppies", "day1", "thank_you", "clock",
-  "finale", "day2"];
+// Seven scenes: four clock slots and three count slots, so each day card plays once a cycle (D11).
+const BEFORE = ["main_street", "clock", "parade", "count", "services", "clock", "salute", "count", "poppies", "clock",
+  "thank_you", "count", "finale", "clock"];
+const DAY = ["main_street", "clock", "parade", "day0", "services", "clock", "salute", "day1", "poppies", "clock",
+  "thank_you", "day2", "finale", "clock"];
 
 test("Veterans Day dates: November 11 every year", () => {
   assert.equal(V.daysToVeteransDay(T("2026-11-11T09:00:00-05:00")), 0);

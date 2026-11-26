@@ -32,8 +32,15 @@ bash tests/check.sh                                          # Node logic tests 
   wall clock. `msToMoment()` arms the timer only within 10 minutes; Back must clear it. Tests cover 10:59, 11:00 and
   11:01.
 - **15 fps, full screen, deterministic.** Each scene returns `SECONDS * FPS` RGBA frames; seed every RNG.
-- **Scene registry.** `ALL` in `renderer/scenes/__init__.py` lists every shipped scene in show order; `BACKDROPS`
-  the three card backdrops, each with `ART` boxes that live text must stay clear of.
+- **Scene registry.** `ALL` in `renderer/scenes/__init__.py` lists every shipped scene in show order (main street,
+  parade, services, salute, poppies, thank-you, finale); `BACKDROPS` the three card backdrops, each with `ART` boxes
+  that live text must stay clear of. Seven scenes give four clock slots and three count slots, so each day card plays
+  once a cycle (D11). Adding or removing a scene changes the slot pattern: update `tests/logic.test.mts` and the
+  README tables.
+- **The services (D11).** `renderer/scenes/services.py` is an app-local copy of Memorial Day's scene. Shown only by
+  domain, a plain vehicle silhouette, generic uniform colors and the name, in order of precedence. No emblems, seals,
+  logos, markings (not even the Coast Guard's stripe), medals, weapons or combat. The names are
+  `SCENE_CAPTIONS["services"]` in `scenes/text.py`, which the parity test checks.
 - **Words in two places.** `app/shared/veterans.ts` is the source of truth; `renderer/scenes/text.py` keeps a review
   copy and the scene captions. `tests/text_parity.py` checks they agree, that the pixels match and that text clears
   the edge art; `tests/logic.test.mts` checks every text fits and that the mockup's inlined logic matches the app.
@@ -41,7 +48,7 @@ bash tests/check.sh                                          # Node logic tests 
   name to veterans.ts that repeats a kit name (`DAY_MS`, `pad2`, ...).
 - **Generated files are outputs.** Never hand-edit `.anim`, `show.ts`, the icons or `mockup/index.html`.
 - **One script.** Helpers live in `app/shared/`. The build output must say `scripts: main.js` only.
-- **Size.** About 0.8 MB of `.anim` data; keep it under 3 MB.
+- **Size.** About 1 MB of `.anim` data; keep it under 3 MB.
 
 ## Pixel-art rules
 

@@ -7,10 +7,10 @@ KEYFRAMES [(seconds, caption), ...] for storyboards
 render()  -> list[PIL.Image] (RGBA, 72x16, canvas.FPS)
 """
 
-from . import clock_bg, count_bg, finale, main_street, moment_bg, parade, poppies, salute, thank_you
+from . import clock_bg, count_bg, finale, main_street, moment_bg, parade, poppies, salute, services, thank_you
 
 # Every scene the app ships, in show order (docs/DECISIONS.md D3).
-ALL = [main_street, parade, salute, poppies, thank_you, finale]
+ALL = [main_street, parade, services, salute, poppies, thank_you, finale]
 CLOCK_BG = clock_bg
 COUNT_BG = count_bg
 MOMENT_BG = moment_bg
