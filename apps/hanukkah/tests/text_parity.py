@@ -30,7 +30,7 @@ from scenes import CARDS, SCENES  # noqa: E402
 SAMPLES = [("18:05", "time"), ("00:00", "time"), ("23:59", "time"), ("FRI 4 DEC", "date"), ("WED 30 DEC", "date"),
            ("8 DAYS", "head"), ("376 DAYS", "head"), ("1 DAY", "head"), ("NIGHT 3", "head"), ("TOMORROW", "head"),
            ("TONIGHT", "head"), ("TO HANUKKAH", "sub"), ("HAPPY HANUKKAH", "sub"), ("CHAG SAMEACH", "sub"),
-           ("HANUKKAH BEGINS", "sub")]
+           ("HANUKKAH BEGINS", "sub"), ("CANDLES AT 16:38", "sub")]
 
 TS = """
 import { textBitmap, type Font } from "%(shared)s/kit.ts";

@@ -36,7 +36,7 @@ backdrops come to about 1.6 MB.
 ---
 
 ## D3 — 17:00 is sundown; placed right to left, lit left to right
-*2026-11-26*
+*2026-11-26* · **The 17:00 rule is superseded by D11** (the candle order stands).
 
 **Decision:**
 - The first candle is lit on the evening of `HOLIDAYS.hanukkah` (the day before 25 Kislev). On that date the
@@ -150,3 +150,36 @@ Hebrew-calendar rule). `tests/logic.test.mts` runs it against the app's code on 
 16:59, 17:00 and 23:59.
 
 **Why:** The simulator then picks the same playlist and card texts as the bar, for the viewer's own date and time.
+
+---
+
+## D11 — Candle time from the sun, with a setting (supersedes D3's fixed 17:00)
+*2026-11-26*
+
+**Decision:**
+- Each date's candle time is that date's **sunset**, from the kit's `sunTimes` (`lib/ts/busybar/sun.ts`):
+  - at the `location` setting's coordinates when the bar has them (`readGeolocation`);
+  - otherwise at a location estimated from the bar's UTC offset: `locationFromOffset(offset, usDst(date))`, the
+    zone's meridian at 39° N.
+- A **Candle time** enum setting (`app/src/appmeta/settings.json`, version 1) picks `Sunset` (the default) or a
+  fixed `16:00`, `16:30`, `17:00`, `17:30` or `18:00`. A fixed time overrides the sun. Labels are 24-hour, like the
+  app's clock. The enum can be changed on the bar itself; the location needs the web interface.
+- `main.ts` reads the settings (`loadSettings`, falling back to the defaults) and the bar's UTC offset (one
+  `TimeGet` at start) **once**, before the show starts, and keeps them as a `Sky`. The pure logic in
+  `app/shared/hanukkah.ts` (`sundownFor(t, sky)`, `candles(t, sky)`, `skyFromSettings`) does the rest.
+- Fallbacks: no offset in the timestamp, or no sunset that day (polar night), gives 17:00.
+- The first evening's `TONIGHT` card gets a second page with the time: `TONIGHT` / `CANDLES AT 16:30`.
+
+**Why:** The user asked for sundown to follow the bar's location. Reading the offset once is enough: settings apply
+on the next start anyway, and Hanukkah never falls in US daylight time (it starts Nov 27 at the earliest, after DST
+ends), so the offset doesn't change during the holiday. `CANDLES AT 16:30` is 59 px in `tiny`, so it fits between
+the card's candles, and putting it on its own page keeps `HANUKKAH BEGINS`.
+
+The kit's NOAA approximation gives New York 16:30 on Dec 4, 2026 (the almanac says 16:28). The tests pin the
+computed values: New York 16:29 → 0 candles, 16:30 → 1; the -05:00 estimate 16:37 → 0, 16:38 → 1; each fixed
+option at its boundary; and the settings fallbacks.
+
+**Alternatives:**
+- Refreshing the offset every cycle: one more request per cycle for a value that can't change in December.
+- Showing the candle time on every count card during Hanukkah: it cluttered the greeting.
+- 12-hour labels: the rest of the app is 24-hour.

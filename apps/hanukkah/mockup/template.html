@@ -77,6 +77,9 @@
   button.primary { background: var(--blue); color: #fff; border-color: var(--blue); min-width: 92px; }
   button.holiday[aria-pressed="true"] { background: #f2c14e22; border-color: var(--gold); color: var(--gold); }
   .mode { font-size: 14px; color: var(--muted); margin-left: auto; }
+  .pick { font-size: 14px; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  select { font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 10px; }
   .mode b { color: var(--gold); font-weight: 600; }
 
   .playlist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
@@ -148,6 +151,11 @@
       <button id="play" type="button" class="primary">Pause</button>
       <button id="next" type="button">Next</button>
       <button id="holiday" type="button" class="holiday" aria-pressed="false">START: holiday mode</button>
+      <label class="pick" for="sundown">Candle time
+        <select id="sundown">
+          <option value="sunset">Sunset</option><option value="16:00">16:00</option><option value="16:30">16:30</option>
+          <option value="17:00">17:00</option><option value="17:30">17:30</option><option value="18:00">18:00</option>
+        </select></label>
       <span class="mode" id="mode" aria-live="polite"></span>
     </div>
     <ol class="playlist" id="playlist" aria-label="This cycle's order"></ol>
@@ -158,11 +166,12 @@
     <div class="prose">
       <p>The heart of the show is <strong>tonight's menorah</strong>. Candles are placed from right to left, one more
         each night, and lit from left to right, newest first. The shamash, raised in the middle, is lit first and then
-        lights the others. The bar has no sunset table, so 17:00 stands in for sundown: on the first evening the first
-        candle appears at 17:00, each later evening adds one, and all eight stay lit through the last day. Outside
-        Hanukkah the menorah rests, unlit.</p>
+        lights the others. Each evening's new candle appears at sunset: from the bar's location setting, or estimated
+        from its time zone (this page uses your browser's). The <strong>Candle time</strong> setting can pick a fixed
+        hour instead. All eight stay lit through the last day. Outside Hanukkah the menorah rests, unlit.</p>
       <p>The <strong>count card</strong> says <code>18 DAYS</code> / <code>TO HANUKKAH</code> before,
-        <code>TOMORROW</code> and then <code>TONIGHT</code> / <code>HANUKKAH BEGINS</code>, and during Hanukkah
+        <code>TOMORROW</code> / <code>HANUKKAH BEGINS</code>, then <code>TONIGHT</code> with <code>HANUKKAH BEGINS</code>
+        and <code>CANDLES AT 16:38</code>, and during Hanukkah
         <code>NIGHT 3</code> / <code>HAPPY HANUKKAH</code>, then <code>CHAG SAMEACH</code>. The
         <strong>clock card</strong> shows the time, then the date.</p>
       <p><strong>Holiday mode</strong> previews Hanukkah on any date: each press of START shows the next night, 1 to 8,
@@ -199,7 +208,7 @@
     <h2 id="decisions">Key decisions</h2>
     <ul class="decisions">
       <li><span class="id">D2</span><span><strong>Nine pre-rendered menorahs.</strong> The menorah and the window come in 0 to 8 candles, and the app picks tonight's.</span></li>
-      <li><span class="id">D3</span><span><strong>17:00 is sundown.</strong> A fixed hour stands in for a sunset table the bar doesn't have.</span></li>
+      <li><span class="id">D11</span><span><strong>Candles at sunset.</strong> From the bar's location, or estimated from its time zone; a setting can fix the hour.</span></li>
       <li><span class="id">D3</span><span><strong>Right to left, then left to right.</strong> Candles are placed from the right and lit newest first, by the shamash.</span></li>
       <li><span class="id">D5</span><span><strong>Blue, silver and gold.</strong> Lit flames, no black details, warm and celebratory.</span></li>
       <li><span class="id">D7</span><span><strong>START previews the nights.</strong> Night 1 to 8, then back to today.</span></li>
@@ -243,23 +252,57 @@ const LOGIC = (() => {
     }
     return null;
   }
-  const candles = (t) => {
+  // sun.ts: NOAA sunset, the time-zone estimate and the US daylight-time rule
+  const weekdayOf = (y, m, d) => new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  function usDst(y, m, d) {
+    if (m < 3 || m > 11) return false;
+    if (m > 3 && m < 11) return true;
+    const first = 1 + ((7 - weekdayOf(y, m, 1)) % 7);
+    return m === 3 ? d >= first + 7 : d < first;
+  }
+  const locationFromOffset = (offset, dst) => ({ lat: 39, lon: ((offset - (dst ? 60 : 0)) / 60) * 15 });
+  function sunset(y, m, d, at, offset) {
+    const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    const doy = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / DAY_MS) + 1;
+    const g = ((2 * Math.PI) / (leap ? 366 : 365)) * (doy - 1);
+    const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g)
+      - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g)
+      + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    const RAD = Math.PI / 180, lat = at.lat * RAD;
+    const cosHa = Math.cos(90.833 * RAD) / (Math.cos(lat) * Math.cos(decl)) - Math.tan(lat) * Math.tan(decl);
+    if (cosHa > 1 || cosHa < -1) return null;
+    const ha = Math.acos(cosHa) / RAD;
+    return Math.round(((720 - 4 * (at.lon - ha) - eqtime + offset) % 1440 + 1440) % 1440);
+  }
+  const hhmm = (m) => String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+  function sundownFor(t, sky) {
+    if (sky.sundown !== "sunset") {
+      const [h, m] = sky.sundown.split(":").map(Number);
+      return h * 60 + m;
+    }
+    if (sky.offset === null) return 17 * 60;
+    const at = sky.location ?? locationFromOffset(sky.offset, usDst(t.year, t.month, t.day));
+    const s = sunset(t.year, t.month, t.day, at, sky.offset);
+    return s === null ? 17 * 60 : s;
+  }
+  const candles = (t, sky) => {
     const o = occurrence(t);
     if (!o || o.dayOf === 0) return 0;
-    return Math.min(8, o.dayOf - 1 + (t.hour >= 17 ? 1 : 0));
+    return Math.min(8, o.dayOf - 1 + (t.hour * 60 + t.minute >= sundownFor(t, sky) ? 1 : 0));
   };
-  const night = (t, p) => (p > 0 ? p : candles(t));
+  const night = (t, p, sky) => (p > 0 ? p : candles(t, sky));
   const daysLabel = (n) => n + (n === 1 ? " DAY" : " DAYS");
-  function countPages(t, p) {
-    const n = night(t, p);
+  function countPages(t, p, sky) {
+    const n = night(t, p, sky);
     if (n > 0) return [["NIGHT " + n, "HAPPY HANUKKAH"], ["NIGHT " + n, "CHAG SAMEACH"]];
     const days = occurrence(t).days;
-    if (days === 0) return [["TONIGHT", "HANUKKAH BEGINS"]];
+    if (days === 0) return [["TONIGHT", "HANUKKAH BEGINS"], ["TONIGHT", "CANDLES AT " + hhmm(sundownFor(t, sky))]];
     if (days === 1) return [["TOMORROW", "HANUKKAH BEGINS"]];
     return [[daysLabel(days), "TO HANUKKAH"]];
   }
-  function playlist(t, p) {
-    const n = night(t, p);
+  function playlist(t, p, sky) {
+    const n = night(t, p, sky);
     const scenes = ["menorah_" + n, "dreidel", "latkes", "sufganiyot", "gelt", "window_" + n];
     if (n > 0) scenes.push("finale");
     const out = [{ kind: "card", card: "count" }];
@@ -273,7 +316,7 @@ const LOGIC = (() => {
   const nextPreview = (p) => (p >= 8 ? 0 : p + 1);
   const weekday = (t) => new Date(Date.UTC(t.year, t.month - 1, t.day)).getUTCDay();
   const formatDate = (t) => DAYS[weekday(t)] + " " + t.day + " " + MONTHS[t.month - 1];
-  return { candles, countPages, playlist, nextPreview, formatDate };
+  return { candles, countPages, playlist, nextPreview, formatDate, sundownFor, hhmm };
 })();
 /* </logic> */
 
@@ -358,7 +401,7 @@ const SHOW = /*__SHOW_DATA__*/null;
       return [{ ms: LAY.time_ms, lines: [["time", `${pad(t.hour)}:${pad(t.minute)}`]] },
               { ms: LAY.date_ms, lines: [["date", LOGIC.formatDate(t)]] }];
     }
-    return LOGIC.countPages(t, preview).map(([head, sub]) => ({ ms: LAY.count_ms, lines: [["head", head], ["sub", sub]] }));
+    return LOGIC.countPages(t, preview, sky()).map(([head, sub]) => ({ ms: LAY.count_ms, lines: [["head", head], ["sub", sub]] }));
   }
   function cardFrame(card, pages, ms, t) {
     const bg = cardsData[card];
@@ -385,11 +428,14 @@ const SHOW = /*__SHOW_DATA__*/null;
   };
   let data = [], cardsData = {};
   let preview = 0;
+  // the "Candle time" setting, and the browser's own UTC offset standing in for the bar's (no location: estimated)
+  const sundownSel = document.getElementById("sundown");
+  const sky = () => ({ sundown: sundownSel.value, location: null, offset: -new Date().getTimezoneOffset() });
   let steps = [], step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
 
   function newCycle() {
     const t = local(new Date());
-    steps = LOGIC.playlist(t, preview).map(e => {
+    steps = LOGIC.playlist(t, preview, sky()).map(e => {
       if (e.kind === "scene") return { kind: "scene", i: BYNAME[e.name], ms: SHOW.scenes[BYNAME[e.name]].ms };
       const pages = cardPages(e.card, t);
       return { kind: "card", card: e.card, pages, ms: pages.reduce((s, p) => s + p.ms, 0) };
@@ -397,9 +443,11 @@ const SHOW = /*__SHOW_DATA__*/null;
     chips();
     const loopS = Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000);
     document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
-    const n = LOGIC.candles(t);
+    const n = LOGIC.candles(t, sky());
+    const at = `candles at <b>${LOGIC.hhmm(LOGIC.sundownFor(t, sky()))}</b>`;
     els.mode.innerHTML = preview ? `Holiday mode: <b>night ${preview}</b>` :
-      (n ? `Tonight: <b>night ${n}</b>` : `Today: <b>${LOGIC.countPages(t, 0)[0].join(" ").toLowerCase().replace("hanukkah", "Hanukkah")}</b>`);
+      (n ? `Tonight: <b>night ${n}</b>, ${at}` :
+        `Today: <b>${LOGIC.countPages(t, 0, sky())[0].join(" ").toLowerCase().replace("hanukkah", "Hanukkah")}</b>, ${at}`);
     els.holiday.setAttribute("aria-pressed", String(preview > 0));
     els.holiday.textContent = preview ? (preview < 8 ? `START: night ${preview + 1}` : "START: back to today") : "START: holiday mode";
     go(0, 0);
@@ -525,7 +573,8 @@ const SHOW = /*__SHOW_DATA__*/null;
       ["clock", [["date", LOGIC.formatDate(t)]], "Clock: then the date"],
       ["count", [["head", "18 DAYS"], ["sub", "TO HANUKKAH"]], "Before"],
       ["count", [["head", "TOMORROW"], ["sub", "HANUKKAH BEGINS"]], "The day before"],
-      ["count", [["head", "TONIGHT"], ["sub", "HANUKKAH BEGINS"]], "The first evening, before 17:00"],
+      ["count", [["head", "TONIGHT"], ["sub", "HANUKKAH BEGINS"]], "The first evening, before sunset"],
+      ["count", [["head", "TONIGHT"], ["sub", "CANDLES AT " + LOGIC.hhmm(LOGIC.sundownFor(t, sky()))]], "Its second page: the candle time"],
       ["count", [["head", "NIGHT 3"], ["sub", "HAPPY HANUKKAH"]], "During: the night's greeting"],
       ["count", [["head", "NIGHT 3"], ["sub", "CHAG SAMEACH"]], "During: its second page"],
     ];
@@ -538,6 +587,7 @@ const SHOW = /*__SHOW_DATA__*/null;
 
   els.play.addEventListener("click", () => setPaused(!paused));
   els.holiday.addEventListener("click", () => setPreview(LOGIC.nextPreview(preview)));
+  sundownSel.addEventListener("change", () => newCycle());
   document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
   document.getElementById("next").addEventListener("click", () => (step + 1 >= steps.length ? newCycle() : go(step + 1, 0)));
   document.addEventListener("keydown", e => {

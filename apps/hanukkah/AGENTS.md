@@ -26,12 +26,16 @@ bash tests/check.sh                                         # logic + mockup mir
 
 ## Invariants: don't break these
 
-- **Candle rules (D3).** 17:00 local is sundown. Night n uses the rightmost n cups; the shamash lights them from
-  left to right. The count stays 8 through the ninth calendar day. `tests/logic.test.mts` pins the 2026 boundaries.
+- **Candle rules (D3, D11).** The new candle appears at candle time: sunset at the location setting, or estimated
+  from the bar's UTC offset, unless the Candle time setting fixes an hour (fallback 17:00). Night n uses the
+  rightmost n cups; the shamash lights them from left to right. The count stays 8 through the ninth calendar day.
+  `tests/logic.test.mts` pins the 2026 boundaries.
+- **Settings** live in `app/src/appmeta/settings.json`. Bump its `version` and `SETTINGS_VERSION` in `main.ts`
+  together; keep `SUNDOWN_OPTIONS` in `hanukkah.ts` and the mockup's selector in step with the enum.
 - **Dates come only from the kit** (`HOLIDAYS.hanukkah`, `nextOccurrence(t, …, 9)`, `daysLabel`). Never hard-code
   a year.
 - **Three copies of the date logic agree:** `app/shared/hanukkah.ts`, the `<logic>` block in
-  `mockup/template.html`, and the tests. Change them together.
+  `mockup/template.html` (which also mirrors the kit's `sun.ts`), and the tests. Change them together.
 - **Scene names are an interface.** The app finds scenes by name (`menorah_<n>`, `window_<n>`, `dreidel`, `latkes`,
   `sufganiyot`, `gelt`, `finale`). Renaming one means changing `hanukkah.ts` and the mockup too.
 - **15 fps, full screen, deterministic.** Each `render()` returns exactly `SECONDS * FPS` RGBA 72×16 frames. Seed

@@ -19,20 +19,22 @@ becomes the night's greeting.
 ### Tonight's candles
 
 The first candle is lit on the evening before 25 Kislev (computed from the Hebrew calendar, so no table needs
-updating). The bar has no sunset table, so **17:00 local time stands in for sundown**:
+updating). Each evening's new candle appears at **candle time**: that day's sunset, worked out from the bar's
+location or estimated from its time zone (see [Settings](#settings)). For example, in New York (sunset about
+16:30):
 
 | When (2026) | Candles | Count card |
 |---|---|---|
 | until Dec 2 | resting menorah | `N DAYS` / `TO HANUKKAH` |
 | Dec 3 | resting menorah | `TOMORROW` / `HANUKKAH BEGINS` |
-| Dec 4, before 17:00 | resting menorah | `TONIGHT` / `HANUKKAH BEGINS` |
-| Dec 4, from 17:00 | 1 | `NIGHT 1` / `HAPPY HANUKKAH`, then `NIGHT 1` / `CHAG SAMEACH` |
-| each later day, from 17:00 | one more | `NIGHT n` / … |
-| Dec 11 from 17:00, through Dec 12 | 8 | `NIGHT 8` / … |
+| Dec 4, before candle time | resting menorah | `TONIGHT` / `HANUKKAH BEGINS`, then `TONIGHT` / `CANDLES AT 16:30` |
+| Dec 4, from candle time | 1 | `NIGHT 1` / `HAPPY HANUKKAH`, then `NIGHT 1` / `CHAG SAMEACH` |
+| each later day, from candle time | one more | `NIGHT n` / … |
+| Dec 11 from candle time, through Dec 12 | 8 | `NIGHT 8` / … |
 | from Dec 13 | resting menorah | the count to next year's Hanukkah |
 
 The show picks its playlist again at the start of every cycle (about 2 to 3 minutes), so a new candle appears
-within a few minutes of 17:00. Outside Hanukkah, the menorah and the window rest unlit and the finale is left out.
+within a few minutes of candle time. Outside Hanukkah, the menorah and the window rest unlit and the finale is left out.
 
 A cycle: count card, menorah, clock, dreidel, count, latkes, clock, sufganiyot, count, gelt, clock, window, then
 (during Hanukkah) count, finale, and a last clock. The **clock card** shows the time (`HH:MM`, 24-hour, silver with
@@ -68,6 +70,20 @@ The full guide is in [docs/INSTALLING.md](../../docs/INSTALLING.md).
 
 The candles and the clock follow the bar's local time, so set the time zone in the bar's settings.
 
+## Settings
+
+On the bar (**Apps → Hanukkah → Setup**) or in the bar's web interface:
+
+| Setting | Options | Default |
+|---|---|---|
+| **Candle time** | `Sunset`, or a fixed `16:00`, `16:30`, `17:00`, `17:30`, `18:00` | `Sunset` |
+| **Location** (web interface only) | the bar's location, or a place you pick | the bar's location |
+
+With **Sunset**, the app works out that day's sunset from the location's coordinates. If the bar has none, it
+estimates them from the bar's time zone (the zone's central meridian at a mid-US latitude), which is usually within
+half an hour. Pick a fixed time if you light later, or if the estimate is off where you are. Settings take effect
+the next time the app starts.
+
 ## Develop
 
 From the repo root:
@@ -91,7 +107,8 @@ python3 renderer/review.py scene menorah_3 previews/ 0.2 2 6   # every 0.2 s bet
 | A scene | `renderer/scenes/<name>.py` (registered in `renderer/scenes/__init__.py`) |
 | The menorah, flames, coins, dreidel letters | `renderer/hfx.py` |
 | Card colors, fonts, timing | `LAYOUT` in `renderer/scenes/cards.py` |
-| Sundown hour, card texts, playlist, holiday mode | `app/shared/hanukkah.ts`, mirrored in `mockup/template.html` (the tests check both) |
+| Candle time, card texts, playlist, holiday mode | `app/shared/hanukkah.ts`, mirrored in `mockup/template.html` (the tests check both) |
+| Settings | `app/src/appmeta/settings.json` (bump its `version` and `SETTINGS_VERSION` in `main.ts` together) |
 | Buttons | `app/src/main.ts` |
 
 Design notes and decisions: [docs/DECISIONS.md](docs/DECISIONS.md).
