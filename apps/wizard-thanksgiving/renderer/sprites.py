@@ -56,118 +56,6 @@ ccRcc
 ccccc
 """)
 
-# Boy wizard: round glasses, scarf, robe. Frames: stand, step A, stand, step B, wand up
-# G = glasses frame, e = green eyes (dark pixels are unlit LEDs, which read as holes/extra eyes)
-_WIZ = {
-    "h": "#5A3A22", "S": "#F6C79C", "g": "#202020", "G": "#B4BCCC", "e": "#2FA84F", "R": "#C8102E", "Y": "#F2B515",
-    "M": "#4B4A78", "m": "#33325A", "b": "#6B3E1C", "w": "#9A6A3A", "*": "#FFF6B0",
-}
-WIZARD = Sprite("wizard", _WIZ, """
-..hhhh...
-.hhhhhh..
-.hSSSSS..
-.GeGGeG..
-.SSSSSS..
-..SSSS...
-.RYRYRY..
-.MMMMMM..
-MMMMMMMS.
-mMMMMMM..
-.MMMMMM..
-.mMMMMm..
-..b..b...
-..bb.bb..
-""", """
-..hhhh...
-.hhhhhh..
-.hSSSSS..
-.GeGGeG..
-.SSSSSS..
-..SSSS...
-.RYRYRY..
-.MMMMMM..
-MMMMMMMS.
-mMMMMMM..
-.MMMMMM..
-.mMMMMm..
-.b....b..
-bb....bb.
-""", """
-..hhhh...
-.hhhhhh..
-.hSSSSS..
-.GeGGeG..
-.SSSSSS..
-..SSSS...
-.RYRYRY..
-.MMMMMM..
-MMMMMMMS.
-mMMMMMM..
-.MMMMMM..
-.mMMMMm..
-..b..b...
-..bb.bb..
-""", """
-..hhhh...
-.hhhhhh..
-.hSSSSS..
-.GeGGeG..
-.SSSSSS..
-..SSSS...
-.RYRYRY..
-.MMMMMM..
-MMMMMMMS.
-mMMMMMM..
-.MMMMMM..
-.mMMMMm..
-...bb....
-...bbb...
-""", """
-..hhhh..*
-.hhhhhh.w
-.hSSSSS.w
-.GeGGeGS.
-.SSSSSSM.
-..SSSSM..
-.RYRYRY..
-.MMMMMM..
-MMMMMMM..
-mMMMMMM..
-.MMMMMM..
-.mMMMMm..
-..b..b...
-..bb.bb..
-""")
-
-# Wizard riding a broom (side view, robe flapping: 2 frames)
-BROOM_RIDER = Sprite("broom_rider", {
-    **_WIZ, "B": "#8A5A2B", "s": "#D9B25C", "t": "#A9822F",
-}, """
-.....hhh.....
-....hhhhh....
-....hSSSS....
-....GeGeG....
-.....SSS.....
-....RYRYRSS..
-...MMMMMM....
-..mMMMMMM....
-s.MMMMMbb....
-ssBBBBBBBBBBB
-st..m.m......
-""", """
-.....hhh.....
-....hhhhh....
-....hSSSS....
-....GeGeG....
-.....SSS.....
-....RYRYRSS..
-..MMMMMMM....
-.mMMMMMMM....
-s..MMMMbb....
-ssBBBBBBBBBBB
-tsm..........
-""")
-
 # Winged golden pumpkin pie ("the golden pie"), wings up/down
 GOLDEN_PIE = Sprite("golden_pie", {
     "W": "#F0F4FF", "w": "#B8C2E0", "Y": "#FFD84A", "y": "#E39A1C", "c": "#FFF3B0",
@@ -374,39 +262,6 @@ gKKKKKKKKKKg
 ..kk....kk..
 """)
 
-# Young witch in school robes: bushy brown hair, house scarf, wand. Frames: idle, wand flick (toss)
-# Same chibi proportions and robe colors as WIZARD so the two read as classmates.
-WITCH = Sprite("witch", {
-    "h": "#7A4A26", "H": "#A8703C", "S": "#F6C79C", "e": "#202020", "R": "#C8102E", "Y": "#F2B515",
-    "M": "#4B4A78", "m": "#33325A", "w": "#9A6A3A", "*": "#FFF6B0",
-}, """
-..hhHh...
-.hHhhhhh.
-hhhSSSShh
-hhSSSeSh.
-hhSSSSSh.
-hhhSSSShh
-h.RYRYR.h
-..MMMMMS.
-.MMMMMMM.
-.mMMMMMm.
-.MMMMMMM.
-mMMMMMMMm
-""", """
-..hhHh...
-.hHhhhhh.
-hhhSSSShh
-hhSSSeSh.
-hhSSSSSh.
-hhhSSSShh
-h.RYRYRSw
-..MMMMM.*
-.MMMMMMM.
-.mMMMMMm.
-.MMMMMMM.
-mMMMMMMMm
-""")
-
 APPLE = Sprite("apple", {"R": "#E0202E", "r": "#9A1020", "G": "#3E8E2E"}, """
 .G.
 RRR
@@ -482,23 +337,7 @@ YWY
 .Y.
 """)
 
-# House scarves: every student who appears wears a different house's colors (docs/DECISIONS.md D19).
-# Scarf stripes use palette keys R (main) and Y (accent). Black is an unlit LED, so "black" is a lit dark grey.
-SCARLET_GOLD = {"R": "#C8102E", "Y": "#F2B515"}
-GREEN_SILVER = {"R": "#1E8C46", "Y": "#C4CAD6"}
-BLUE_BRONZE = {"R": "#2D50D2", "Y": "#C07A38"}
-YELLOW_BLACK = {"R": "#F2C21A", "Y": "#5A5A5A"}
-
-BROOM_RIDER_SG = BROOM_RIDER.recolor("broom_rider_scarlet_gold", **SCARLET_GOLD)   # scene 3 Broom Chase
-WITCH_BB = WITCH.recolor("witch_blue_bronze", **BLUE_BRONZE)                       # scene 4 Cauldron Bake-Off
-WIZARD_YB = WIZARD.recolor("wizard_yellow_black", **YELLOW_BLACK)                  # scene 5 Great Hall Feast
-WIZARD_GS = WIZARD.recolor("wizard_green_silver", **GREEN_SILVER)                  # scene 8 Pumpkin Patronus
-
-# Patronus turkey: same silhouette as TURKEY, recolored at runtime (see canvas.tint)
-ALL = [OWL, LETTER, WIZARD, WIZARD_YB, WIZARD_GS, BROOM_RIDER_SG, WITCH_BB, BROOM_RIDER, GOLDEN_PIE, TURKEY, ROAST, RAW_TURKEY, HAT, CANDLE, LOCO, CAR,
-       GRAVY_BOAT, PUMPKIN, CAULDRON, WITCH, APPLE, DRAGON_HEAD, DRAGON_WING, SPIT, SPARK]
-
-# Plain pumpkin pie (cauldron scene)
+# Plain pumpkin pie (cauldron and feast scenes)
 PIE = Sprite("pie", {"o": "#E8B062", "O": "#F07B1A", "b": "#A8702E", "c": "#FFF3D6"}, """
 ...c...
 .ooooo.
@@ -506,4 +345,36 @@ oOOOOOo
 .bbbbb.
 """)
 
-ALL.append(PIE)
+# Feast dishes (scene "The Feast Appears"): a pumpkin pie on a silver cake stand (so it stands out from the wooden
+# table), mashed potatoes with a butter pat, and a gold goblet of cider
+PIE_STAND = Sprite("pie_stand", {"o": "#E8B062", "O": "#F07B1A", "b": "#A8702E", "c": "#FFF3D6", "P": "#D4D8E4",
+                                 "p": "#9AA0B4"}, """
+...c...
+.ooooo.
+oOOOOOo
+.bbbbb.
+PPPPPPP
+...p...
+..ppp..
+""")
+POTATOES = Sprite("potatoes", {"W": "#F6EED8", "w": "#D8CCAA", "Y": "#FFD84A", "B": "#7F94C8", "b": "#56689A"}, """
+..Y...
+.WWWW.
+WWwWWW
+BBBBBB
+.bbbb.
+""")
+GOBLET = Sprite("goblet", {"Y": "#F2B515", "y": "#B07A10", "c": "#E07A2A"}, """
+YcY
+YYY
+.y.
+YYY
+""")
+
+# The four students (2 wizards + 2 witches) live in cast.py (docs/DECISIONS.md D28).
+from cast import CAST_SPRITES  # noqa: E402
+
+# Patronus turkey: same silhouette as TURKEY, recolored at runtime (see canvas.tint)
+ALL = [OWL, LETTER, *CAST_SPRITES, GOLDEN_PIE, TURKEY, ROAST, RAW_TURKEY, HAT, CANDLE, LOCO, CAR, GRAVY_BOAT, PUMPKIN,
+       CAULDRON, APPLE, DRAGON_HEAD, DRAGON_WING, SPIT, SPARK, PIE, PIE_STAND, POTATOES, GOBLET]
+
