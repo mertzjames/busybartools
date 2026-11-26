@@ -1,8 +1,8 @@
 """Review helpers for this app: LED-style keyframe strips, tone-mapped like the bar.
 
-    python3 renderer/review.py scene flag previews/ [every_seconds [start end]]
+    python3 renderer/review.py scene parade previews/ [every_seconds [start end]]
     python3 renderer/review.py all previews/        (every scene and both cards, at their keyframes)
-    python3 renderer/review.py cards previews/      (every card page over its backdrop, before and on the day)
+    python3 renderer/review.py cards previews/      (every card page over its backdrop: before, on the day, after dusk)
 
 Card strips draw the live text exactly as the app does (build.draw_live), over the tone-mapped backdrop.
 """
@@ -40,19 +40,14 @@ def review(module_name: str, out_dir: Path, every: float | None = None, start: f
 
 
 def cards(out_dir: Path) -> Path:
-    """Every card page: the clock, the countdown, and the three on-the-day cards."""
+    """Every kind of card page (build.SAMPLE_PAGES): the clock, the countdown, the Fourth before and after dusk."""
     import build
     from scenes import CLOCK_BG, COUNT_BG
     clock = [build.tone(f.convert("RGB")) for f in CLOCK_BG.render()]
     count = [build.tone(f.convert("RGB")) for f in COUNT_BG.render()]
-    pages = [(clock, [("18:05", "time")]), (clock, [("WED 28 SEP", "date")]),
-             (count, [("81 DAYS", "head"), ("TO PRESIDENTS' DAY", "sub")]),
-             (count, [("364 DAYS", "head"), ("TO PRESIDENTS' DAY", "sub")])]
-    for card in build.DAY_TEXT:
-        for page in card:
-            pages.append((count, page))
     frames = []
-    for i, (bg, lines) in enumerate(pages):
+    for i, (_, lines) in enumerate(build.SAMPLE_PAGES):
+        bg = clock if lines[0][1] in ("time", "date") else count
         img = bg[(i * 13) % len(bg)].convert("RGBA")
         for text, style in lines:
             build.draw_live(img, text, style)
