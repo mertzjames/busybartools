@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "id": "wizard.thanksgiving",
+  "name": "Wizard Thanksgiving",
+  "version": "1.0.0",
+  "api_version": "27.12.0",
+  "description": "Wizard-themed Thanksgiving scenes with a 24-hour clock and date card",
+  "author": "busybartools"
+}

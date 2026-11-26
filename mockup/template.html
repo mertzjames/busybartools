@@ -1,0 +1,505 @@
+<title>Wizarding Thanksgiving</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one centered column. The simulated bar is the hero, storyboards below as a grid of scene cards.
+     Single deliberate night-feast look (dark only): candle-gold accent on plum ink. */
+  :root {
+    --ink: #130e1d;
+    --panel: #1c1529;
+    --panel-2: #241b33;
+    --line: #362a4a;
+    --fg: #efe6d6;
+    --muted: #a99cba;
+    --gold: #e9b44c;
+    --ember: #e0703a;
+    --bezel: #0a080e;
+    --led-off: #19151f;
+    --display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  body { background: var(--ink); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+  .wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+    display: grid; gap: 48px;
+  }
+  header { display: grid; gap: 10px; }
+  .eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 6vw, 56px); line-height: 1.05; color: var(--gold); text-wrap: balance; }
+  h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; color: var(--fg); text-wrap: balance; }
+  .lede { margin: 0; max-width: 64ch; color: var(--muted); }
+
+  /* --- the bar --- */
+  .stage { display: grid; gap: 14px; }
+  .bezel {
+    background: linear-gradient(180deg, #1a1621, var(--bezel) 40%);
+    border: 1px solid #2a2433; border-radius: 18px;
+    padding: clamp(10px, 2.2vw, 22px);
+    box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
+  }
+  #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; max-width: 100%; border-radius: 6px; background: #07060a; image-rendering: auto; }
+  .now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+  .now .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .now strong { font-family: var(--display); font-weight: 400; font-size: 26px; color: var(--fg); margin-left: 10px; }
+  .now .t { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--gold); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--gold); }
+  button:focus-visible, .chip:focus-visible, .thumb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--gold); color: #1b1206; border-color: var(--gold); min-width: 92px; }
+  .toggle { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; margin-left: auto; cursor: pointer; }
+  .toggle input { accent-color: var(--gold); width: 16px; height: 16px; }
+
+  .playlist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer;
+  }
+  .chip .n { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .chip.clock { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #e9b44c1c; }
+
+  /* --- storyboards --- */
+  .section { display: grid; gap: 18px; }
+  .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
+  .boards { display: grid; gap: 18px; }
+  .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+  .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--gold); letter-spacing: .06em; }
+  .board-head h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 22px; }
+  .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+  .thumb { display: grid; gap: 6px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; border-radius: 6px; }
+  .thumb canvas { width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 4px; background: #07060a; display: block; max-width: 100%; }
+  .thumb span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .thumb b { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--gold); margin-right: 6px; }
+
+  .prose { display: grid; gap: 12px; max-width: 68ch; }
+  .prose p { margin: 0; color: var(--muted); }
+  .prose p strong { color: var(--fg); font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; margin: 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .facts div { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--display); font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; counter-reset: step; }
+  .flow li { counter-increment: step; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+  .flow li::before { content: "Step " counter(step); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
+  .flow h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .flow p { margin: 0; color: var(--muted); font-size: 14px; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--fg); }
+
+  .decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .dgroup { display: grid; gap: 10px; align-content: start; }
+  .dgroup h3 { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .dgroup ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .dgroup li { display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: baseline; }
+  .dgroup .id { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+  .dgroup li span:last-child { color: var(--muted); font-size: 14px; }
+  .dgroup li strong { color: var(--fg); font-weight: 600; }
+
+  .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 760px; }
+  .timeline li { display: grid; grid-template-columns: 22px 1fr; gap: 14px; padding-bottom: 18px; position: relative; }
+  .timeline li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); margin: 6px 0 0 6px; }
+  .timeline li:not(:last-child)::after { content: ""; position: absolute; left: 10px; top: 20px; bottom: 0; width: 2px; background: var(--line); }
+  .timeline h3 { margin: 0 0 2px; font-size: 16px; font-weight: 600; }
+  .timeline p { margin: 0; color: var(--muted); font-size: 14px; }
+  .timeline .tag { font-family: var(--mono); font-size: 11px; color: var(--ember); letter-spacing: .04em; margin-left: 6px; }
+
+  .lessons { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 70ch; color: var(--muted); }
+  .lessons strong { color: var(--fg); font-weight: 600; }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) {
+    .toggle { margin-left: 0; }
+    .now strong { display: block; margin: 2px 0 0; }
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">A BUSY Bar party screen · built with Claude Code</p>
+    <h1>Wizarding Thanksgiving</h1>
+    <p class="lede">A wizard-themed Thanksgiving show for a 72 × 16 LED display. Eight animated scenes loop all
+      evening, with a 24-hour clock and the date between them. The simulator below plays the exact frames that are
+      running on the bar right now, at the same 15 frames per second.</p>
+  </header>
+
+  <section class="stage" aria-label="Simulated BUSY Bar">
+    <div class="bezel"><canvas id="led" width="864" height="192" role="img" aria-label="LED display simulation"></canvas></div>
+    <div class="now">
+      <div><span class="label" id="stepLabel">Scene 1 of 8</span><strong id="title">Owl Post</strong></div>
+      <span class="t" id="time">0.0 s / 18.0 s</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="controls">
+      <button id="prev" type="button">Previous</button>
+      <button id="play" type="button" class="primary">Pause</button>
+      <button id="next" type="button">Next</button>
+      <label class="toggle" for="loopOne"><input type="checkbox" id="loopOne"> Repeat this step</label>
+    </div>
+    <ol class="playlist" id="playlist" aria-label="Show order"></ol>
+  </section>
+
+  <section class="section" aria-labelledby="about">
+    <h2 id="about">The project</h2>
+    <div class="prose">
+      <p>The <strong>BUSY Bar</strong> is a small desk and wall display with a 72 × 16 RGB LED front panel, an HTTP API
+        and a JavaScript runtime for apps that run on the device itself. The goal was a screen to hang over a doorway
+        for a Harry Potter–themed Thanksgiving: something festive that changes every few seconds, shows characters
+        walking, flying and interacting, and tells guests the time.</p>
+      <p>The whole thing was built in one session with <strong>Claude Code</strong>. It covered researching the
+        device's undocumented animation format, drawing the pixel art, writing the scenes, building the on-device app,
+        getting through the home network to install it, and tuning everything after seeing it on the wall. Every
+        character is original pixel art that nods to the wizarding world; nothing is copied from official artwork.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Scenes</dt><dd>8</dd></div>
+      <div><dt>Display</dt><dd>72 × 16</dd></div>
+      <div><dt>Frame rate</dt><dd>15 fps</dd></div>
+      <div><dt>Full loop</dt><dd>3 m 14 s</dd></div>
+      <div><dt>Animation data</dt><dd>1.1 MB</dd></div>
+      <div><dt>Logged decisions</dt><dd>23</dd></div>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="how">
+    <h2 id="how">How it works</h2>
+    <ol class="flow">
+      <li><h3>Draw sprites as text</h3><p>Every character is a small grid of letters, one per pixel, in Python. That makes art changes quick to make and easy to review.</p></li>
+      <li><h3>Render each scene</h3><p>A Python renderer choreographs every frame: flight paths, particles, fire, smoke and text. Builds are deterministic and take about 2 seconds.</p></li>
+      <li><h3>Bake into <code>.anim</code></h3><p>Frames are packed into the bar's own animation format. The firmware plays them smoothly with no network traffic.</p></li>
+      <li><h3>Run the show on the bar</h3><p>A small TypeScript app loops the scenes and draws a live clock from the bar's own time, in a custom gold pixel font.</p></li>
+    </ol>
+    <div class="prose">
+      <p>This page uses the same rendered frames and the same font tables as the bar. Before deploying, a test checks
+        that the bar app, this preview and the renderer draw the clock identically, pixel for pixel.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Scene by scene</h2>
+    <p>Key moments from each scene. Click any frame to jump the simulator to that moment.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="section" aria-labelledby="decisions">
+    <h2 id="decisions">Key decisions</h2>
+    <p>Each decision is recorded in the project's decision log with its reasoning and the alternatives considered.
+      These are the highlights.</p>
+    <div class="decisions">
+      <div class="dgroup">
+        <h3>Architecture</h3>
+        <ul>
+          <li><span class="id">D1</span><span><strong>Runs on the bar itself.</strong> An on-device app, not a laptop sending frames, so nothing breaks if a computer sleeps mid-party.</span></li>
+          <li><span class="id">D2</span><span><strong>Every scene is a pre-rendered animation.</strong> Firmware playback is smooth. Redrawing over the network tops out around 3 fps.</span></li>
+          <li><span class="id">D3</span><span><strong>One renderer feeds everything.</strong> The bar, this page and the storyboards all come from the same frames.</span></li>
+          <li><span class="id">D4</span><span><strong>A small animation writer instead of firmware tooling.</strong> Adapted from an MIT-licensed community tool, with a decoder that verifies every file.</span></li>
+          <li><span class="id">D14</span><span><strong>Bundle quirks handled.</strong> Generated data lives where the BUSY build packs it into a single script the firmware can run.</span></li>
+        </ul>
+      </div>
+      <div class="dgroup">
+        <h3>Look and feel</h3>
+        <ul>
+          <li><span class="id">D5</span><span><strong>Original art only.</strong> Nods to the theme without copying official characters or logos.</span></li>
+          <li><span class="id">D18</span><span><strong>No black facial details.</strong> On LEDs, black is an unlit pixel, so dark glasses read as a third eye. Faces use lit colors.</span></li>
+          <li><span class="id">D19</span><span><strong>Every student wears a different house's colors.</strong> All four houses appear once per loop.</span></li>
+          <li><span class="id">D21</span><span><strong>A tone curve brightens the scenes.</strong> It lifts dark skies and dim stars while unlit pixels stay off, and the bar keeps its automatic brightness.</span></li>
+          <li><span class="id">D22</span><span><strong>A winged serpent dragon.</strong> Its body follows the head's flight path like a snake, and it torches the turkey with a sustained flame.</span></li>
+        </ul>
+      </div>
+      <div class="dgroup">
+        <h3>Time and date</h3>
+        <ul>
+          <li><span class="id">D7</span><span><strong>24-hour clock after every scene.</strong> 4.5 seconds of time, then 3.5 seconds of date, so guests always know when to look.</span></li>
+          <li><span class="id">D10</span><span><strong>Custom gold pixel font.</strong> Drawn as bitmaps with a gradient and shadow, which the built-in fonts can't do.</span></li>
+          <li><span class="id">D15</span><span><strong>Local time comes straight from the bar.</strong> No timezone math, and the minute updates in place.</span></li>
+        </ul>
+      </div>
+      <div class="dgroup">
+        <h3>Shipping it</h3>
+        <ul>
+          <li><span class="id">D9</span><span><strong>No secrets in the repo.</strong> The device password, if one is set, lives in a git-ignored file.</span></li>
+          <li><span class="id">D16</span><span><strong>One-command deploy.</strong> Render, build, install and launch, with a fallback to the raw API.</span></li>
+          <li><span class="id">D20</span><span><strong>Verified on the hardware.</strong> Screen captures from the bar's own framebuffer confirm each scene and the live clock.</span></li>
+          <li><span class="id">D23</span><span><strong>Quit before reinstalling.</strong> Installing over a running app fails and silently uninstalls it.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="plan">
+    <h2 id="plan">The plan, and how it went</h2>
+    <ol class="timeline">
+      <li><div><h3>Research the device</h3><p>Read the BUSY Bar API and app docs, found the community notes on its animation format, and chose an on-device app with pre-rendered scenes.</p></div></li>
+      <li><div><h3>Plan with mockups as checkpoints</h3><p>The plan put a reviewable mockup ahead of any device work, so the direction could be steered early. Three extra scenes joined the original five.</p></div></li>
+      <li><div><h3>Build the renderer and eight scenes</h3><p>Sprites, effects, fonts and an animation writer. Each scene was checked at LED scale before the first mockup went out.</p></div></li>
+      <li><div><h3>Feedback rounds on the mockup <span class="tag">4 rounds</span></h3><p>The witch became a schoolgirl in robes instead of a Halloween witch. The wizard's "three eyes" became green eyes behind silver glasses. Every student got a different house scarf.</p></div></li>
+      <li><div><h3>Build the on-device app</h3><p>A TypeScript app built with the BUSY toolchain, plus a parity test so the bar's clock matches the preview exactly.</p></div></li>
+      <li><div><h3>Reach the bar <span class="tag">network</span></h3><p>The bar sat on a separate network. Diagnosing it showed traffic stopping at the router. A firewall rule and enabling the bar's Wi-Fi API opened the path.</p></div></li>
+      <li><div><h3>Tune it on the wall</h3><p>Brightened the scenes after seeing them in person, then rebuilt the dragon as a menacing winged serpent. Both changes were verified with screen captures from the bar.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons from the hardware</h2>
+    <ul class="lessons">
+      <li><strong>Black is a hole.</strong> On an LED panel, a black pixel is an unlit LED. Details drawn in near-black disappear or read as gaps.</li>
+      <li><strong>Let the firmware animate.</strong> Pre-rendered animations play smoothly with zero requests. Pushing frames over HTTP manages about 3 per second.</li>
+      <li><strong>Test against real output.</strong> The clock parity test caught a one-step color difference: Python and JavaScript round halves differently.</li>
+      <li><strong>Read the device, not just the docs.</strong> Its live API reference, framebuffer captures and remote button presses made testing on the wall fast.</li>
+    </ul>
+  </section>
+
+  <footer id="built"></footer>
+</main>
+
+<script>
+const SHOW = /*__SHOW_DATA__*/null;
+(() => {
+  const W = SHOW.w, H = SHOW.h, FPS = SHOW.fps;
+  const CLOCK_MS = SHOW.clock.time_ms + SHOW.clock.date_ms;
+  const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- frame data ----------
+  function decode(b64) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = img.width; c.height = img.height;
+        const x = c.getContext("2d");
+        x.drawImage(img, 0, 0);
+        resolve(x.getImageData(0, 0, img.width, img.height).data);
+      };
+      img.onerror = reject;
+      img.src = "data:image/png;base64," + b64;
+    });
+  }
+  const frameAt = (data, i) => data.subarray(i * W * H * 4, (i + 1) * W * H * 4);
+
+  // ---------- LED renderer ----------
+  function drawLED(ctx, px, cell) {
+    ctx.fillStyle = "#07060a";
+    ctx.fillRect(0, 0, W * cell, H * cell);
+    const r = cell * 0.4, rg = cell * 0.72;
+    // soft bloom pass for lit LEDs
+    ctx.globalAlpha = 0.22;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      if (Math.max(R, G, B) < 60) continue;
+      ctx.fillStyle = `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, rg, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4, R = px[i], G = px[i + 1], B = px[i + 2];
+      ctx.fillStyle = Math.max(R, G, B) < 14 ? "#19151f" : `rgb(${R},${G},${B})`;
+      ctx.beginPath(); ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // ---------- clock card (same layout the bar app uses) ----------
+  const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+  function textWidth(text, font) {
+    const ws = [...text].map(c => font.glyphs[c]).filter(Boolean).map(g => g[0].length);
+    return ws.reduce((s, w) => s + w, 0) + font.gap * Math.max(0, ws.length - 1);
+  }
+  function blend(buf, x, y, c, a) {
+    if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+    const i = (y * W + x) * 4;
+    for (let k = 0; k < 3; k++) buf[i + k] = Math.round(buf[i + k] + (c[k] - buf[i + k]) * a);
+  }
+  function drawText(buf, text, spec, alpha) {
+    const font = SHOW.fonts[spec.font];
+    let cx = Math.floor((W - textWidth(text, font)) / 2);
+    for (const ch of text) {
+      const g = font.glyphs[ch];
+      if (!g) continue;
+      g.forEach((row, gy) => {
+        const c = mix(spec.top, spec.bottom, gy / Math.max(1, font.height - 1));
+        [...row].forEach((bit, gx) => {
+          if (bit !== "#") return;
+          blend(buf, cx + gx + 1, spec.y + gy + 1, spec.shadow, alpha);
+          blend(buf, cx + gx, spec.y + gy, c, alpha);
+        });
+      });
+      cx += g[0].length + font.gap;
+    }
+  }
+  const pad = n => String(n).padStart(2, "0");
+  const timeText = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const dateText = d => `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  // The app fades text in with three opacity steps, 150 ms apart.
+  const fadeStep = ms => Math.min(1, (Math.floor(ms / 150) + 1) / 3);
+  function clockFrame(bg, ms, now) {
+    const buf = new Uint8ClampedArray(frameAt(bg, Math.floor(ms * FPS / 1000) % SHOW.clock.frames));
+    if (ms < SHOW.clock.time_ms) drawText(buf, timeText(now), SHOW.clock.time, fadeStep(ms));
+    else drawText(buf, dateText(now), SHOW.clock.date, fadeStep(ms - SHOW.clock.time_ms));
+    return buf;
+  }
+
+  // ---------- show sequence ----------
+  const steps = [];
+  SHOW.scenes.forEach((s, i) => { steps.push({ kind: "scene", i, ms: s.ms }); steps.push({ kind: "clock", ms: CLOCK_MS, after: i }); });
+
+  const led = document.getElementById("led").getContext("2d");
+  const els = {
+    title: document.getElementById("title"), label: document.getElementById("stepLabel"),
+    time: document.getElementById("time"), bar: document.getElementById("bar"),
+    play: document.getElementById("play"), loop: document.getElementById("loopOne"),
+    playlist: document.getElementById("playlist"),
+  };
+  let data = [], clockBg = null;
+  let step = 0, startedAt = performance.now(), paused = reduce, pausedMs = 0, lastKey = "";
+
+  function chips() {
+    steps.forEach((s, k) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      if (s.kind === "scene") {
+        b.className = "chip";
+        b.innerHTML = `<span class="n">${s.i + 1}</span>${SHOW.scenes[s.i].title}`;
+      } else {
+        b.className = "chip clock";
+        b.textContent = "clock";
+        b.setAttribute("aria-label", `Clock card after scene ${s.after + 1}`);
+      }
+      b.addEventListener("click", () => go(k, 0));
+      li.appendChild(b);
+      els.playlist.appendChild(li);
+    });
+  }
+  function elapsed() { return paused ? pausedMs : performance.now() - startedAt; }
+  function go(k, ms) {
+    step = (k + steps.length) % steps.length;
+    startedAt = performance.now() - ms;
+    pausedMs = ms;
+    lastKey = "";
+    [...els.playlist.querySelectorAll(".chip")].forEach((c, j) => c.setAttribute("aria-current", String(j === step)));
+  }
+  function setPaused(p) {
+    if (p === paused) return;
+    if (p) pausedMs = elapsed(); else startedAt = performance.now() - pausedMs;
+    paused = p;
+    els.play.textContent = p ? "Play" : "Pause";
+  }
+
+  function tick() {
+    let ms = elapsed();
+    const s = steps[step];
+    if (ms >= s.ms) {
+      if (els.loop.checked) go(step, 0); else go(step + 1, 0);
+      ms = 0;
+    }
+    const cur = steps[step];
+    const now = new Date();
+    if (cur.kind === "scene") {
+      const sc = SHOW.scenes[cur.i];
+      const f = Math.min(sc.frames - 1, Math.floor(ms * FPS / 1000));
+      const key = `s${cur.i}:${f}`;
+      if (key !== lastKey) { drawLED(led, frameAt(data[cur.i], f), 12); lastKey = key; }
+      els.title.textContent = sc.title;
+      els.label.textContent = `Scene ${cur.i + 1} of ${SHOW.scenes.length}`;
+    } else {
+      const f = Math.floor(ms * FPS / 1000);
+      const key = `c:${f}:${timeText(now)}`;
+      if (key !== lastKey) { drawLED(led, clockFrame(clockBg, ms, now), 12); lastKey = key; }
+      els.title.textContent = ms < SHOW.clock.time_ms ? "Clock" : "Date";
+      els.label.textContent = `Clock card after scene ${cur.after + 1}`;
+    }
+    els.time.textContent = `${(ms / 1000).toFixed(1)} s / ${(cur.ms / 1000).toFixed(1)} s`;
+    els.bar.style.width = `${Math.min(100, (ms / cur.ms) * 100)}%`;
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- storyboards ----------
+  function boards() {
+    const host = document.getElementById("boards");
+    SHOW.scenes.forEach((sc, i) => {
+      const card = document.createElement("article");
+      card.className = "board";
+      card.innerHTML = `<div class="board-head"><span class="num">SCENE ${i + 1}</span><h3>${sc.title}</h3>
+        <span class="dur">${(sc.ms / 1000).toFixed(0)} s · ${sc.frames} frames</span>
+        <button type="button">Play scene</button></div><div class="thumbs"></div>`;
+      card.querySelector("button").addEventListener("click", () => { go(i * 2, 0); setPaused(false); scrollStage(); });
+      const thumbs = card.querySelector(".thumbs");
+      sc.keyframes.forEach(k => {
+        const f = Math.min(sc.frames - 1, Math.round(k.s * FPS));
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "thumb";
+        const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+        drawLED(c.getContext("2d"), frameAt(data[i], f), 5);
+        const cap = document.createElement("span");
+        cap.innerHTML = `<b>${k.s.toFixed(1)}s</b>`;
+        cap.append(k.caption);
+        b.append(c, cap);
+        b.addEventListener("click", () => { go(i * 2, k.s * 1000); setPaused(true); scrollStage(); });
+        thumbs.appendChild(b);
+      });
+      host.appendChild(card);
+    });
+    // clock card board
+    const card = document.createElement("article");
+    card.className = "board";
+    card.innerHTML = `<div class="board-head"><span class="num">BETWEEN SCENES</span><h3>Clock and date card</h3>
+      <span class="dur">${CLOCK_MS / 1000} s · live time</span><button type="button">Play clock</button></div><div class="thumbs"></div>`;
+    card.querySelector("button").addEventListener("click", () => { go(1, 0); setPaused(false); scrollStage(); });
+    const now = new Date();
+    [["Time, 24-hour", 1000], ["Date", SHOW.clock.time_ms + 1000]].forEach(([label, ms]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "thumb";
+      const c = document.createElement("canvas"); c.width = 72 * 5; c.height = 16 * 5;
+      drawLED(c.getContext("2d"), clockFrame(clockBg, ms, now), 5);
+      const cap = document.createElement("span");
+      cap.innerHTML = `<b>${(ms / 1000).toFixed(1)}s</b>`;
+      cap.append(label);
+      b.append(c, cap);
+      b.addEventListener("click", () => { go(1, ms); setPaused(true); scrollStage(); });
+      card.querySelector(".thumbs").appendChild(b);
+    });
+    host.appendChild(card);
+  }
+  function scrollStage() {
+    document.querySelector(".stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+
+  els.play.addEventListener("click", () => setPaused(!paused));
+  document.getElementById("prev").addEventListener("click", () => go(step - 1, 0));
+  document.getElementById("next").addEventListener("click", () => go(step + 1, 0));
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("button, input")) return;
+    if (e.key === " ") { e.preventDefault(); setPaused(!paused); }
+    if (e.key === "ArrowRight") go(step + 1, 0);
+    if (e.key === "ArrowLeft") go(step - 1, 0);
+  });
+  document.getElementById("built").textContent =
+    `Frames built ${SHOW.built} · ${SHOW.scenes.length} scenes · full show ≈ ${Math.round(steps.reduce((a, s) => a + s.ms, 0) / 1000)} s per loop · built with Claude Code`;
+
+  Promise.all([...SHOW.scenes.map(s => decode(s.sheet)), decode(SHOW.clock.sheet)]).then(all => {
+    clockBg = all.pop();
+    data = all;
+    chips();
+    boards();
+    go(0, 0);
+    els.play.textContent = paused ? "Play" : "Pause";
+    requestAnimationFrame(tick);
+  });
+})();
+</script>
