@@ -154,3 +154,17 @@ the hill, tree and house on their own layer over the sky, so the bolts sit behin
 **Size:** the eight flash levels are built once each, and two levels repeat on consecutive frames, so the strikes add
 about 48 KiB to `haunted.anim` (57 KiB to 105 KiB); all ten files total about
 719 KiB, well under the 3 MB budget.
+
+## D12 — Four lightning strikes
+*2026-11-26*
+
+**Review:** "I really like the lightning. Add it a few more times while also doing the other parts of the
+animation. I'm thinking 2 more times."
+
+**Decision:** two more strikes, so The Haunted House has four: 0.8 s (between the moon and the house), 4.6 s (far left,
+while the windows light), 7.9 s (between the moon and the house, as the figure passes the green window) and 15.1 s
+(behind the tree). The new two reuse the hand-drawn bolts mirrored, so no two strikes look the same, and they play
+over the scene's other action: the windows keep lighting and the figure keeps moving during the flash. Each strike
+keeps D11's shape (two brightness peaks, a pale-violet lift, no strobing), and the strikes are at least 3 s apart.
+
+**Size:** `haunted.anim` is now about 154 KiB (was about 105 KiB with two strikes); the app's total is about 0.77 MB.

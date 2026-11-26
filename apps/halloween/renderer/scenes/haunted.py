@@ -1,5 +1,5 @@
-"""Scene: The Haunted House. A crooked old house stands on a hill under a full moon. Lightning flickers behind it,
-and its windows light up one by one (candle yellow, one spooky green, one purple), a shadowy figure glides past the
+"""Scene: The Haunted House. A crooked old house stands on a hill under a full moon. Lightning flickers behind it
+again and again while its windows light up one by one (candle yellow, one spooky green, one purple), a shadowy figure glides past the
 green window, and the front door creaks open in fits and starts, spilling orange light. Three bats flutter out and
 across the moon, and a second, distant strike flickers behind the bare tree."""
 
@@ -15,8 +15,10 @@ NAME = "haunted"
 TITLE = "The Haunted House"
 SECONDS = 16
 KEYFRAMES = [(0.4, "A dark house on the hill"), (0.8, "Lightning behind the house"), (3.4, "The windows light up"),
-             (5.8, "...one by one"), (7.6, "Someone passes the green window"), (10.4, "The door creaks open"),
-             (12.6, "Bats flutter out"), (14.6, "Across the moon"), (15.2, "A distant flash behind the tree")]
+             (4.6, "Lightning while the windows light"), (5.8, "...one by one"),
+             (7.6, "Someone passes the green window"), (7.9, "Another flash as the figure passes"),
+             (10.4, "The door creaks open"), (12.6, "Bats flutter out"), (14.6, "Across the moon"),
+             (15.2, "A distant flash behind the tree")]
 
 MOON = (13.0, 5.0, 4.6)
 # window id -> (light-up second, color)
@@ -34,8 +36,7 @@ PASS = (6.8, 9.0)  # the figure crosses window 3
 DOOR = [(9.4, 0.0), (9.8, 0.34), (10.4, 0.34), (10.7, 0.67), (11.4, 0.67), (11.7, 1.0)]
 BATS_AT = 12.0
 
-# Lightning behind the house: two brief strikes in quiet moments (before the windows light, and after the bats are
-# out). Each is a flash, a softer second flicker, then a fade, over about half a second: two brightness peaks, no
+# Lightning behind the house: four brief strikes (D12), two of them during the windows and the passing figure. Each is a flash, a softer second flicker, then a fade, over about half a second: two brightness peaks, no
 # strobing. The sky lifts toward a pale violet (never white), most around the bolt, in a few quantized levels.
 BOLT = (244, 236, 255)
 BOLT_BRANCH = (196, 176, 255)
@@ -73,8 +74,19 @@ BOLT_RIGHT = """
 .....#..
 .....#..
 """
-# (start second, bolt, left column): one between the moon and the house, one behind the tree
-STRIKES = [(0.8, BOLT_LEFT, 21), (15.1, BOLT_RIGHT, 64)]
+
+
+def mirrored(grid: str) -> str:
+    """A bolt drawn facing the other way, so repeat strikes don't look identical."""
+    rows = grid.strip("\n").splitlines()
+    w = max(len(r) for r in rows)
+    return "\n" + "\n".join(r.ljust(w, ".")[::-1] for r in rows) + "\n"
+
+
+# (start second, bolt, left column): between the moon and the house before the windows light; far left while the
+# windows light up; between the moon and the house as the figure passes the green window; behind the tree at the end
+STRIKES = [(0.8, BOLT_LEFT, 21), (4.6, mirrored(BOLT_LEFT), 1), (7.9, mirrored(BOLT_RIGHT), 21),
+           (15.1, BOLT_RIGHT, 64)]
 
 
 def door_open(t: float) -> float:
