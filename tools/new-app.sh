@@ -8,6 +8,7 @@
 #   app/              official BUSY JS app scaffold (@busy-app/create-app), dependencies installed
 #   README.md         app page stub
 #   docs/DECISIONS.md decision log stub
+#   AGENTS.md         app-specific notes for AI coding agents (CLAUDE.md imports it)
 set -euo pipefail
 . "$(dirname "$0")/lib.sh"
 
@@ -34,7 +35,7 @@ mkdir -p "$dest/docs"
 echo "==> Scaffolding $id into apps/$folder/app (Node 24)"
 (cd "$dest" && npx -y -p node@24 -p @busy-app/create-app@0.5.0 -c "busy-create-app app --id '$id' --name '$name' \
    --description '$desc' --author '$author' --api-version 27.12.0 --no-git --no-install" </dev/null)
-rm -f "$dest/app/.gitignore" "$dest/app/AGENTS.md"   # the repo-level .gitignore and docs/DEVELOPMENT.md cover these
+rm -f "$dest/app/.gitignore" "$dest/app/AGENTS.md"   # the repo-level .gitignore and AGENTS.md cover these
 rm -rf "$dest/app/.github"                           # CI/release workflows live at the repo level, not per app
 (cd "$dest/app" && node24 "npm install --no-fund --no-audit")
 
@@ -45,14 +46,15 @@ $desc
 
 ## Install
 
-Upload \`releases/$id-<version>.tgz\` to your bar. See [Installing apps](../../docs/INSTALLING.md).
+Download \`$id-<version>.tgz\` from this app's GitHub Release and upload it to your bar.
+See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop
 
 \`\`\`bash
 tools/check.sh $folder     # build + typecheck (+ tests/check.sh if present)
 tools/deploy.sh $folder    # install and launch on the bar in .env
-tools/release.sh $folder   # publish releases/$id-<version>.tgz
+tools/release.sh $folder   # (maintainers, on main) tag a release; CI publishes it
 \`\`\`
 
 Design notes and decisions: [docs/DECISIONS.md](docs/DECISIONS.md).
@@ -71,5 +73,18 @@ What was decided, why, and what else was considered. Newest at the bottom.
 
 **Why:**
 EOF
+cat > "$dest/AGENTS.md" <<AGENTS_EOF
+# AGENTS.md — $name
+
+App-specific rules for AI coding agents. The repo-wide rules in [/AGENTS.md](../../AGENTS.md) still apply.
+
+- **What it does:** $desc
+- **Entry point:** \`app/src/main.ts\`. Put helpers and generated data in \`app/shared/\`, never in \`app/src/\`.
+- **Build and test:** \`tools/check.sh $folder\` from the repo root.
+- **Invariants:** <list what must stay true: frame rate, which files are generated, timings, ...>
+- **Decisions:** read [docs/DECISIONS.md](docs/DECISIONS.md) before changing deliberate choices.
+AGENTS_EOF
+printf '# CLAUDE.md — %s\n\nApp-specific instructions for Claude Code (the repo-root CLAUDE.md and AGENTS.md also apply):\n\n@AGENTS.md\n' \
+  "$name" > "$dest/CLAUDE.md"
 echo "==> Created apps/$folder. Next: edit app/src/main.ts, then tools/deploy.sh $folder"
-echo "    Add a row for it to the catalog in README.md and releases/README.md when you release it."
+echo "    Add a row for it to the Apps table in README.md."

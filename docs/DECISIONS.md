@@ -92,3 +92,26 @@ every change before it lands. Details are in [CONTRIBUTING.md](../CONTRIBUTING.m
 
 **Why:** Generators, TypeScript and packaging are all tested on every change. The difference report flags forgotten
 asset commits without failing builds over cross-platform pixel noise.
+
+---
+
+## R7 — AGENTS.md is the single source for AI agents; CLAUDE.md imports it
+*2026-11-25*
+
+**Decision:**
+- A vendor-neutral `AGENTS.md` at the root holds the instructions for AI coding agents: commands, repo map, workflow
+  rules, definition of done, privacy, platform pitfalls and code style.
+- `CLAUDE.md` imports it (`@AGENTS.md`) and adds only Claude Code specifics: plan first, look at LED previews, treat
+  the device as a shared physical screen, and git and commit-message rules.
+- Apps can have their own pair. Wizarding Thanksgiving's covers renderer invariants, clock parity and pixel-art rules.
+  `tools/new-app.sh` generates stubs for new apps.
+
+**Why:**
+- One source means the two instruction sets can't drift apart. `AGENTS.md` is read by most coding agents, and
+  Claude Code loads `CLAUDE.md`, which pulls it in.
+- The rules come from this project's real failures: `src/*.ts` entry points, installing over a running app, black as
+  unlit, and the wrong `npx busy-cli` package. They also draw on the BUSY scaffold's own guidance about conserving
+  device resources.
+- One rule was added after a near-miss while writing these guides: generate files with real file tools or
+  uniquely named heredoc delimiters, never a nested `<<EOF` inside another `<<EOF`. That mistake made a shell run
+  documentation text as commands. Nothing was harmed, but backticks in prose became command substitutions.

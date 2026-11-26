@@ -81,6 +81,13 @@ tag: bump the version instead.
 For an urgent fix to released code, branch from `main` (`alice/hotfix-…`), bump the patch version, and open a PR into
 `main`. After it merges and is released, merge `main` back into `dev` so the fix isn't lost.
 
+## Working with AI coding agents
+
+AI-assisted contributions are welcome and go through the same branches, checks and review as any other change.
+Most agents read [AGENTS.md](AGENTS.md) at the repo root, plus an app's own `AGENTS.md` when there is one. Claude Code
+reads [CLAUDE.md](CLAUDE.md), which imports `AGENTS.md`. You're responsible for what your agent commits: review the
+diff, make sure `tools/check.sh` passes, and check that nothing personal ended up in files or commit messages.
+
 ## Commit messages
 
 - Write an imperative summary of 72 characters or fewer ("Fix clock rollover at midnight"), then a blank line and the
