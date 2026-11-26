@@ -1,65 +1,70 @@
+// Lunar New Year: festival scenes and the zodiac animal of the year, with a clock card and a countdown card
+// between them. Playback is the shared show runner (lib/ts/busybar/showrunner.ts); this file is configuration.
+//
+// What plays depends on the bar's date (app/shared/lny.ts): before the new year, the countdown playlist and
+// "N DAYS / TO LUNAR NEW YEAR"; from New Year's Day through the Lantern Festival (day 15), the festival playlist
+// and "YEAR OF THE / GOAT", "HAPPY / NEW YEAR", "GONG XI / FA CAI". The zodiac scene is the current or upcoming
+// year's animal. Outside the kit's date table, a generic "HAPPY / NEW YEAR" and no countdown.
+//
+// Buttons: OK = next step, encoder = next/previous step, Back = quit. START = holiday mode: the festival
+// playlist and cards on any date; each further press steps to the next zodiac animal, and after all twelve it
+// returns to the real date (docs/DECISIONS.md D10).
+
 import { device } from "@shared/device";
-import { column, render, type Node } from "@busy-app/busy-lib";
+import { createShow, type Card, type Line, type Page } from "@shared/kit";
+import {
+  clockDate, clockTime, countPages, effectiveSeason, playlist, pressStart, season, type Preview, type TextLine,
+} from "@shared/lny";
+import { FONTS, SHOW } from "@shared/generated/show";
 import manifest from "./appmeta/manifest.json";
 
-/** The name the app draws under; the device clears elements by this id. */
-const APP = manifest.id;
+const report = (err: unknown) => console.error(`${manifest.id}: ${err instanceof Error ? err.message : String(err)}`);
 
-/** How often the screen is redrawn. */
-const TICK_MS = 1000;
-
-const WHITE = "#FFFFFFFF";
-const SUBTLE_WHITE = "#FFFFFF80";
-
-/**
- * The frame drawn on every tick. The screen is 72×16, so two short lines are about all that fits.
- */
-function frame(ticks: number): Node {
-  return column({ justify: "center", align: "center" }, [
-    { type: "text", id: "title", text: "Hello", font: "bold", color: WHITE },
-    {
-      type: "text",
-      id: "ticks",
-      text: String(ticks),
-      font: "small",
-      color: SUBTLE_WHITE,
-    },
-  ]);
+function line(l: TextLine): Line {
+  return { spec: SHOW.styles[l.style], text: () => l.text };
 }
 
-/** Sends one frame to the device. */
-async function draw(ticks: number): Promise<void> {
-  const elements = render(frame(ticks));
-  await device.DisplayDraw({ application_name: APP, priority: 50, elements });
-}
-
-/**
- * Entry point, called at the end of the file: the device runs this script from top to bottom and starts nothing by itself.
- */
 function main(): void {
-  let ticks = 0;
-  let stopped = false;
+  let preview: Preview | null = null;
+  let currentAnimal = ""; // the real season's animal, from the last playlist pick
 
-  const report = (err: unknown) =>
-    console.error(`${APP}: ${err instanceof Error ? err.message : String(err)}`);
+  const clock: Card = {
+    path: SHOW.card.path,
+    pages: (): Page[] => [
+      { ms: SHOW.timing.time, lines: [{ spec: SHOW.styles.time, text: clockTime }] },
+      { ms: SHOW.timing.date, lines: [{ spec: SHOW.styles.date, text: clockDate }] },
+    ],
+  };
+  const count: Card = {
+    path: SHOW.card.path,
+    pages: (t) => countPages(effectiveSeason(t, preview)).map((p) => ({ ms: p.ms, lines: p.lines.map(line) })),
+  };
 
-  void draw(ticks).catch(report);
+  const show = createShow({
+    app: manifest.id,
+    device,
+    fonts: FONTS,
+    scenes: SHOW.scenes,
+    cards: { clock, count },
+    steps: (t) => {
+      currentAnimal = season(t).animal;
+      return playlist(effectiveSeason(t, preview));
+    },
+    report,
+  });
+  show.start();
 
-  // Tick errors are reported, not thrown: one failed request must not stop the loop.
-  const timer = setInterval(() => {
-    ticks += 1;
-    void draw(ticks).catch(report);
-  }, TICK_MS);
-
-  // Back leaves the app. Once the timer is cleared and the handler detached, nothing keeps it alive and the device takes the screen back.
   const unbind = listen("input", (event) => {
-    if (stopped || event.key !== "back" || event.action !== "short") return;
-
-    stopped = true;
-    clearInterval(timer);
-
-    // Not detached from inside the handler itself: with nothing else left the unbind stops the app on the spot, while this handler is still running.
-    setTimeout(unbind, 0);
+    const result = show.input(event);
+    if (result === "quit") {
+      // The listener is the last handle: unbind after this callback returns.
+      setTimeout(unbind, 0);
+      return;
+    }
+    if (result === "ignored" && event.key === "start" && event.action === "short") {
+      preview = pressStart(preview, currentAnimal);
+      show.start(); // re-picks the playlist from the top, so the change shows at once
+    }
   });
 }
 
