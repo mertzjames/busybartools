@@ -49,7 +49,7 @@ def hop_x(t: float, hops, start: float) -> tuple[float, float]:
 
 
 def bird_state(t: float, which: str):
-    """(x, y_offset_above_perch or None while flying, sprite frame, flying y) for one bird."""
+    """(x, hop height above the wire or None while flying, sprite frame, y while flying) for one bird."""
     if which == "rose":
         land, start, frm = 2.4, 14, -10
         hops = ROSE_HOPS
@@ -61,7 +61,8 @@ def bird_state(t: float, which: str):
         p = max(0.0, (t - t_in) / 2.2)
         e = ease_out(p)
         x = lerp(frm, start, e)
-        return x, None, 1 if (int(t * FPS) // 3) % 2 == 0 else 0, lerp(-1, 0, e) + 4 * (1 - e) * 0 + lerp(1, 6.5, e)
+        perch = wire_y(start + 3, [start + 3]) - 4  # glide down onto the wire where it lands
+        return x, None, 1 if (int(t * FPS) // 3) % 2 == 0 else 0, lerp(-2, perch, e)
     x, lift = hop_x(t, hops, start)
     frame = 2 if t >= MEET else (1 if lift > 1.2 else 0)
     return x, lift, frame, None
@@ -114,7 +115,7 @@ def render():
                     twinkle(img, x, y, f, GOLD_LIGHT, 0.8, period=24, ph=i / 4)
         for x, lift, frame, fly_y, spr, flip in birds:
             if fly_y is not None:
-                y = fly_y - 1 + 0.6 * math.sin(f * 0.8)
+                y = fly_y + 0.6 * math.sin(f * 0.8) * min(1.0, abs(x - (14 if spr is ROSE_BIRD else 52)) / 6)
             else:
                 y = wire_y(x + 3, dips) - 4 - lift
             blit(img, spr.img(frame, flip=flip), x, y)

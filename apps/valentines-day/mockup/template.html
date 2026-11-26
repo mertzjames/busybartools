@@ -1,23 +1,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MLK Day</title>
+<title>Valentine's Day</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  /* One centered column: the simulated bar first, then the cards and the storyboards. A single calm look (dark
-     only): deep pre-dawn blue with dawn-gold accents, no rainbow. */
+  /* One centered column: the simulated bar first, then the cards and the storyboards. Dark only, like the bar:
+     deep plum with rose and gold accents. */
   :root {
-    --ink: #070b1e;
-    --panel: #0e1430;
-    --panel-2: #141c40;
-    --line: #232d5c;
-    --fg: #f1ede4;
-    --muted: #a3abc8;
-    --gold: #f2bd5c;
-    --dawn: #e8875a;
-    --bezel: #04060f;
+    --ink: #14060f;
+    --panel: #220b1b;
+    --panel-2: #2c0f23;
+    --line: #4a1c3a;
+    --fg: #fbeef0;
+    --muted: #c9a3b4;
+    --gold: #f6c45e;
+    --rose: #ff6f98;
+    --bezel: #0b0308;
     --display: "Fraunces", "Iowan Old Style", Georgia, serif;
     --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -26,7 +26,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6;
-    background: radial-gradient(1100px 420px at 50% -140px, #3a2a40 0%, #141a3a 45%, transparent 75%), var(--ink);
+    background: radial-gradient(1100px 420px at 50% -140px, #5a1638 0%, #2a0a20 45%, transparent 75%), var(--ink);
   }
   .wrap {
     max-width: 1040px; margin: 0 auto;
@@ -41,12 +41,12 @@
   h1 span { color: var(--gold); }
   h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; }
   .lede { margin: 0; max-width: 64ch; color: var(--muted); }
-  .horizon { height: 3px; max-width: 360px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--dawn), var(--gold), transparent); }
+  .horizon { height: 3px; max-width: 360px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--rose), var(--gold), transparent); }
 
   .stage { display: grid; gap: 14px; }
   .bezel {
-    background: linear-gradient(180deg, #10152c, var(--bezel) 40%);
-    border: 1px solid #1d2550; border-radius: 18px; padding: clamp(10px, 2.2vw, 22px);
+    background: linear-gradient(180deg, #2a0c20, var(--bezel) 40%);
+    border: 1px solid #4a1c3a; border-radius: 18px; padding: clamp(10px, 2.2vw, 22px);
     box-shadow: 0 30px 60px -30px #000, inset 0 1px 0 #ffffff10;
   }
   #led { display: block; width: 100%; height: auto; aspect-ratio: 72 / 16; border-radius: 6px; background: #05060c; }
@@ -56,7 +56,7 @@
   .now .t { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 2px 8px; margin-left: 10px; vertical-align: 3px; }
   .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
-  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--dawn), var(--gold)); }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--rose), var(--gold)); }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   button {
     font: 500 14px/1 var(--body); color: var(--fg); background: var(--panel-2);
@@ -76,14 +76,14 @@
   }
   .chip .n { font-family: var(--mono); font-size: 11px; }
   .chip.card { padding: 6px 8px; font-family: var(--mono); font-size: 11px; }
-  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f2bd5c1c; }
+  .chip[aria-current="true"] { border-color: var(--gold); color: var(--fg); background: #f6c45e1c; }
 
   .section { display: grid; gap: 18px; }
   .section > p { margin: 0; max-width: 64ch; color: var(--muted); }
   .boards { display: grid; gap: 18px; }
   .board { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
   .board-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
-  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--dawn); letter-spacing: .06em; }
+  .board-head .num { font-family: var(--mono); font-size: 12px; color: var(--rose); letter-spacing: .06em; }
   .board-head h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 22px; }
   .board-head .dur { font-family: var(--mono); font-size: 12px; color: var(--muted); }
   .board-head button { margin-left: auto; padding: 7px 12px; font-size: 13px; }
@@ -119,12 +119,12 @@
 <main class="wrap">
   <header>
     <p class="eyebrow">A BUSY Bar app · busybartools</p>
-    <h1>MLK <span>Day</span></h1>
+    <h1>Valentine's <span>Day</span></h1>
     <div class="horizon" aria-hidden="true"></div>
-    <p class="lede">A quiet tribute for Martin Luther King Jr. Day on a 72 × 16 LED display. Slow scenes of dawn, a
-      march of people of every age, a dove over the city, joined hands, ringing bells and a day of service. Between
-      them come a clock and a countdown, and on the day itself a few words. The simulator below plays the same frames
-      the bar plays, with your current time on the cards.</p>
+    <p class="lede">A sweet Valentine's show for a 72 × 16 LED display: rising hearts, a little cherub with a bow, a
+      winged love letter, two lovebirds on a wire, a box of chocolates, a rose in bloom and a candy-heart finale with
+      heart fireworks. Between them come a clock and a countdown, and on the day itself a greeting and candy-heart
+      phrases. The simulator below plays the same frames the bar plays, with your current time on the cards.</p>
   </header>
 
   <section class="stage" aria-label="Simulated BUSY Bar">
@@ -145,31 +145,30 @@
   </section>
 
   <section class="section" aria-labelledby="about">
-    <h2 id="about">The tribute</h2>
+    <h2 id="about">The show</h2>
     <div class="prose">
-      <p>Six slow scenes move from night into morning. A long line of people walks toward the sunrise, families hand in
-        hand, a child on a parent's shoulders and an elder with a cane. A dove crosses a waking city. Neighbors raise
-        joined hands, bells ring at first light, and a day of service plants a tree, fills a crate and paints a mural.
-        The last scene is dawn on a mountaintop.</p>
-      <p>There are no likenesses of real people and no quotations: figures are small and faceless, and each scene ends
-        with a single word. Colors stay calm: deep blues and dawn golds.</p>
+      <p>Seven scenes, sweet and family-friendly. Hearts rise until a big one beats in the middle. A cherub draws its
+        bow, and the arrow bursts into a heart. A letter with little wings flutters in, opens, and says FOR YOU. Two
+        birds hop along a wire until their beaks meet under a heart. A box of chocolates is opened and emptied one
+        piece at a time. A rose grows and blooms. Candy hearts stack up for BE MINE, XOXO and heart fireworks.</p>
+      <p>The colors are reds, pinks and warm whites with gold accents, over deep plum so the pinks stay bright.</p>
       <p>Between scenes, a <strong>clock card</strong> shows the time, then the date. A <strong>countdown card</strong>
-        shows the days to MLK Day (the third Monday of January). On the day it becomes <strong>MLK DAY</strong> and a
-        word. Press <strong>START</strong> (on the bar, or above) to preview the day on any date.</p>
+        shows the days to Valentine's Day (February 14). On the day it becomes <strong>HAPPY VALENTINE'S DAY</strong>
+        and candy-heart phrases. Press <strong>START</strong> (on the bar, or above) to preview the day on any date.</p>
     </div>
     <dl class="facts">
-      <div><dt>Scenes</dt><dd id="fScenes">6</dd></div>
+      <div><dt>Scenes</dt><dd id="fScenes">7</dd></div>
       <div><dt>Display</dt><dd>72 × 16</dd></div>
       <div><dt>Frame rate</dt><dd>15 fps</dd></div>
       <div><dt>Full loop</dt><dd id="fLoop">–</dd></div>
       <div><dt>Animation data</dt><dd id="fBytes">–</dd></div>
-      <div><dt>Next MLK Day</dt><dd id="fNext">–</dd></div>
+      <div><dt>Next Feb 14</dt><dd id="fNext">–</dd></div>
     </dl>
   </section>
 
   <section class="section" aria-labelledby="wordsH">
     <h2 id="wordsH">Every word on screen</h2>
-    <p>Single words and the MLK Day of Service motto only.</p>
+    <p>Short, generic and sweet: the greeting, the countdown and candy-heart phrases.</p>
     <ul class="words" id="words"></ul>
   </section>
 
@@ -188,11 +187,11 @@
   <section class="section" aria-labelledby="decisions">
     <h2 id="decisions">Key decisions</h2>
     <ul class="decisions">
-      <li><span class="id">D2</span><span><strong>A tribute, not a party.</strong> Slow pacing, calm color, no confetti or jokes, no likenesses, no quotations.</span></li>
-      <li><span class="id">D3</span><span><strong>Night into morning.</strong> The march at sunrise opens; dawn on the mountaintop closes.</span></li>
-      <li><span class="id">D5</span><span><strong>People of every skin tone and age.</strong> Small, faceless figures; every tone stays lit on the panel.</span></li>
-      <li><span class="id">D6</span><span><strong>One word per scene.</strong> TOGETHER, PEACE, UNITY, FREEDOM, SERVICE, DREAM.</span></li>
-      <li><span class="id">D7</span><span><strong>Calm cards.</strong> Warm white into dawn gold over a deep-blue shadow.</span></li>
+      <li><span class="id">D2</span><span><strong>Sweet, not romantic-explicit.</strong> Hearts, a cherub, birds, chocolates, a rose: family-friendly.</span></li>
+      <li><span class="id">D3</span><span><strong>Seven scenes.</strong> Hearts Afloat opens; the candy-heart finale with heart fireworks closes.</span></li>
+      <li><span class="id">D5</span><span><strong>Original art.</strong> A generic winged cherub; lit colors for eyes and small features.</span></li>
+      <li><span class="id">D7</span><span><strong>Candy-heart cards.</strong> Two candy hearts frame the countdown and the phrases; the small line is gold.</span></li>
+      <li><span class="id">D8</span><span><strong>One source of truth.</strong> The app, mockup and tests share app/shared/valentine.ts.</span></li>
       <li><span class="id">D9</span><span><strong>START previews the day.</strong> The cycle restarts on a card, so the change shows at once.</span></li>
     </ul>
   </section>
@@ -433,8 +432,8 @@ const SHOW = /*__SHOW_DATA__*/null;
     const now = localNow();
     const groups = [
       ["Clock and date", "Every other step, all year", ["clock"]],
-      ["Countdown", "Before and after MLK Day", ["count"]],
-      ["On the day", "MLK Day, or any day in holiday mode", VAL.DAY_CARD_NAMES],
+      ["Countdown", "Before and after Valentine's Day", ["count"]],
+      ["On the day", "February 14, or any day in holiday mode", VAL.DAY_CARD_NAMES],
     ];
     for (const [title, sub, names] of groups) {
       const card = document.createElement("article");
@@ -459,7 +458,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     }
   }
   function words() {
-    const list = ["TOGETHER", "PEACE", "UNITY", "FREEDOM", "SERVICE", "DREAM", "N DAYS / 1 DAY", "TO MLK DAY", "MLK DAY"];
+    const list = ["FOR YOU", "BE MINE", "XOXO", "N DAYS / 1 DAY", VAL.COUNT_SUB];
     for (const card of VAL.DAY_CARDS) for (const page of card) {
       const w = page.lines.map(l => l.text).join(" / ");
       if (!list.includes(w)) list.push(w);
@@ -492,7 +491,7 @@ const SHOW = /*__SHOW_DATA__*/null;
     document.getElementById("fLoop").textContent = `${Math.floor(loopS / 60)} m ${loopS % 60} s`;
     document.getElementById("fBytes").textContent = `${(SHOW.anim_bytes / 1048576).toFixed(2)} MB`;
     document.getElementById("fNext").textContent = d === 0 ? "Today" : VAL.daysLabel(d).toLowerCase();
-    document.getElementById("built").textContent = `${N} scenes · full show ≈ ${loopS} s per loop · busybartools · MLK Day`;
+    document.getElementById("built").textContent = `${N} scenes · full show ≈ ${loopS} s per loop · busybartools · Valentine's Day`;
     words();
     cardBoards();
     boards();

@@ -6,7 +6,7 @@ tiny line (rows 10-15) runs underneath."""
 import math
 
 from busybar.canvas import add, put, sec
-from vfx import BERRY, CANDY, CRIMSON, INK, PINK, PLUM, ROSE, Drift, gradient, heart, heart_glow
+from vfx import BERRY, CANDY, CRIMSON, INK, PLUM, RED, ROSE, Drift, gradient, heart, heart_glow
 
 NAME = "count_bg"
 TITLE = "Countdown backdrop"
@@ -33,7 +33,7 @@ def text_mask(x: float, y: float) -> float:
 
 def render():
     bg = gradient([(0, (20, 2, 20)), (8, PLUM), (15, BERRY)])
-    drift = Drift(seed=41, n=12, period=LOOP, sizes=(3, 3, 5), colors=(ROSE, PINK, CRIMSON), alpha=(0.4, 0.7),
+    drift = Drift(seed=41, n=12, period=LOOP, sizes=(3, 3, 5), colors=(ROSE, RED, CRIMSON), alpha=(0.5, 0.8),
                   x_range=(10, 62))
     # steady glows behind the candies (glows that change every frame make the file much larger)
     for cx in (LEFT[0] + 4, RIGHT[0] + 4):

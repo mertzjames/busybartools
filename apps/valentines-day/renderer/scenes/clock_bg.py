@@ -2,7 +2,7 @@
 middle where the time and date are drawn, and a few gold twinkles at the edges (docs/DECISIONS.md D7)."""
 
 from busybar.canvas import W, sec
-from vfx import BERRY, BLUSH, CRIMSON, PINK, PLUM, ROSE, Drift, gradient, twinkle
+from vfx import BERRY, CRIMSON, PLUM, RED, ROSE, Drift, gradient, twinkle
 
 NAME = "clock_bg"
 TITLE = "Clock backdrop"
@@ -16,13 +16,13 @@ TWINKLES = [(3, 2, 0.0), (68, 4, 0.35), (5, 12, 0.6), (66, 13, 0.15), (1, 7, 0.8
 def text_mask(x: float, y: float) -> float:
     """Hearts fade out behind the text (columns 8..63)."""
     if 6 <= x <= 63:
-        return 0.28
+        return 0.4
     return 1.0
 
 
 def render():
     bg = gradient([(0, (20, 2, 20)), (8, PLUM), (15, BERRY)])
-    drift = Drift(seed=14, n=16, period=LOOP, sizes=(3, 3, 5, 5, 7), colors=(ROSE, PINK, CRIMSON, BLUSH),
+    drift = Drift(seed=14, n=16, period=LOOP, sizes=(3, 3, 5, 5, 7), colors=(ROSE, RED, CRIMSON, ROSE),
                   alpha=(0.45, 0.8))
     frames = []
     for f in range(LOOP):

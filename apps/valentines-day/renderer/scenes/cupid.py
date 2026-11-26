@@ -127,7 +127,7 @@ def render():
                 p = (t - RELEASE) / FLIGHT
                 tail = lerp(hx - 2, HIT_X - 8, p)
                 draw_arrow(img, tail, lerp(hy, HIT_Y, p), 4, trail=min(8, p * 20))
-        else:  # it tucks the bow under its arm and goes
+        else:  # it carries the bow away
             draw_bow(img, hx, hy + 1, 0, False)
         frames.append(img)
     return frames

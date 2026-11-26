@@ -6,7 +6,7 @@ Small features use lit colors (black is an unlit LED): eyes are a deep lit rose,
 from busybar.sprite import Sprite
 
 # --- the cherub: a generic winged baby with gold curls, a pink sash and a bow (drawn separately) ---------------
-# 13x10, two wing frames. The front hand (row 6, column 11) holds the bow.
+# 17x12, two wing frames (up, down). The front hand reaches out on row 7; the bow is held just past it.
 
 CHERUB_PAL = {
     "S": "#FFC8A4", "s": "#E8A084", "H": "#FFE68C", "h": "#F0B840", "E": "#4A50B4", "C": "#FF7890",
