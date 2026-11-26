@@ -5,7 +5,7 @@ __pycache__/
 
 # Node / BUSY app build output
 node_modules/
-app/dist/
+**/app/dist/
 
 # Secrets (BusyBar HTTP API password lives here or in BUSYBAR_TOKEN)
 .env
@@ -16,8 +16,8 @@ scratch/
 screens/
 .DS_Store
 
-# Generated previews (regenerate with: python3 renderer/build.py) — see docs/DECISIONS.md D11
-previews/*.gif
+# Generated previews (regenerate with the app's build) — see apps/wizard-thanksgiving/docs/DECISIONS.md D11
+**/previews/
 
 # ...but do share the template
 !.env.example

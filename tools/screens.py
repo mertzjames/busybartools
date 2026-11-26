@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Capture what the BUSY Bar front display is showing, as LED-style PNGs.
 
-    python3 scripts/screens.py --count 20 --every 2 --out screens/
+    python3 tools/screens.py --count 20 --every 2 --out screens/
 
 GET /api/screen?display=0 returns the 72x16 front frame (base64 of BGR bytes, or raw bytes).
 Writes one strip image of all captures plus the individual frames. Config: BUSYBAR_ADDR / BUSYBAR_TOKEN
-(env or .env), same as scripts/deploy.sh. Keep --every >= 1 s: every capture is a request the bar's web
+(env or the repo-root .env), same as tools/deploy.sh. Keep --every >= 1 s: every capture is a request the bar's web
 server has to handle.
 """
 
@@ -21,11 +21,11 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "renderer"))
+sys.path.insert(0, str(ROOT / "lib" / "python"))
 
 from PIL import Image  # noqa: E402
 
-from preview import led, strip  # noqa: E402
+from busybar.preview import led, strip  # noqa: E402
 
 W, H = 72, 16
 
