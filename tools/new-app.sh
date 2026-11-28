@@ -2,7 +2,7 @@
 # Scaffold a new app in the collection layout (see docs/DEVELOPMENT.md#adding-a-new-app).
 #
 #   tools/new-app.sh <folder> --id <app.id> --name "<Display Name>" --description "<one line>" [--author "<name>"]
-#   tools/new-app.sh fireplace --id busybartools.fireplace --name "Fireplace" --description "Crackling fire loop"
+#   tools/new-app.sh fireplace --id io.github.mertzjames.fireplace --name "Fireplace" --description "Crackling fire loop"
 #
 # Creates apps/<folder>/ with:
 #   app/              official BUSY JS app scaffold (@busy-app/create-app), dependencies installed
@@ -27,7 +27,9 @@ if [ -z "$folder" ] || [ -z "$id" ] || [ -z "$name" ] || [ -z "$desc" ]; then
   sed -n 2,10p "$0"; exit 2
 fi
 [[ "$folder" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "folder: lowercase letters, digits and dashes" >&2; exit 2; }
-[[ "$id" =~ ^[A-Za-z0-9_.-]{1,32}$ ]] || { echo "id: up to 32 chars of A-Z a-z 0-9 _ . -" >&2; exit 2; }
+# The BUSY Apps Catalog's rule (lowercase, at least two dots) and busy-cli's 32-character cap (docs/DECISIONS.md R12).
+[[ "$id" =~ ^[a-z0-9_-]+(\.[a-z0-9_-]+){2,}$ && ${#id} -le 32 ]] || {
+  echo "id: lowercase a-z 0-9 _ - parts joined by at least two dots, up to 32 chars (io.github.<user>.<app>)" >&2; exit 2; }
 dest="$REPO_ROOT/apps/$folder"
 [ -e "$dest" ] && { echo "$dest already exists" >&2; exit 1; }
 mkdir -p "$dest/docs"
@@ -39,8 +41,9 @@ echo "==> Scaffolding $id into apps/$folder/app (Node 24)"
 rm -f "$dest/app/.gitignore" "$dest/app/AGENTS.md"   # the repo-level .gitignore and AGENTS.md cover these
 rm -rf "$dest/app/.github"                           # CI/release workflows live at the repo level, not per app
 rm -f "$dest/app/README.md"                          # the app README lives at apps/<folder>/README.md
-rm -f "$dest/app/shared/datetime.ts"                 # uses JS Date local time; use lib/ts/busybar/walltime.ts instead
+rm -f "$dest/app/shared/datetime.ts"                 # uses JS Date local time; use @shared/vendor/busybar/walltime.ts instead
 (cd "$dest/app" && node24 "npm install --no-fund --no-audit")
+"$REPO_ROOT/tools/vendor-kit.sh" "$folder"            # lib/ts/busybar -> app/shared/vendor/busybar
 
 cat > "$dest/README.md" <<EOF
 # $name

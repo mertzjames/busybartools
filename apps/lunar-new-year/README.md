@@ -90,7 +90,7 @@ Design notes and decisions are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Install
 
-Download `busybartools.lunarnewyear-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.lunarny-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

@@ -1,8 +1,8 @@
 {
   "format_version": 1,
-  "id": "busybartools.hanukkah",
+  "id": "io.github.mertzjames.hanukkah",
   "name": "Hanukkah",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "api_version": "27.12.0",
   "description": "A menorah that follows tonight's candle count, with dreidels, latkes, gelt and a countdown to Hanukkah",
   "author": "busybartools contributors"

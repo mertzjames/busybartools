@@ -5,8 +5,8 @@
 // busybar.font.draw_text pixel for pixel (tests/live_parity.py checks the composed bitmaps against the renderer).
 // Like nye.ts, this file is inlined into the mockup: single-line imports only, no enums.
 
-import { textBitmap, textWidth, type Bitmap, type Font, type TextSpec } from "../../../../lib/ts/busybar/xpmtext.ts";
-import { secondsToMidnight, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { textBitmap, textWidth, type Bitmap, type Font, type TextSpec } from "./vendor/busybar/xpmtext.ts";
+import { secondsToMidnight, type LocalTime } from "./vendor/busybar/walltime.ts";
 import { cardText, celebrateState, finalText, finalBarPixels, newYear, phaseAt, secondsSinceMidnight, type StepKind } from "./nye.ts";
 
 export const SCREEN_H = 16;

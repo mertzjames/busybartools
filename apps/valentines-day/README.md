@@ -67,7 +67,7 @@ python3 renderer/review_zoom.py cupid previews/z.png 0 36 4.6  # a big view of c
 
 ## Install
 
-Download `busybartools.valentines-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.valentines-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

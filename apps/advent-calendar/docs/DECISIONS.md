@@ -134,3 +134,18 @@ card appears (for an accurate countdown). Midnight needs no special handling: th
 
 **Why:** Two requests per ~16 s pass is light on the bar's web server, and the card is never more than a few
 seconds stale.
+
+---
+
+## D13 — First catalog screenshots show the pre-Advent loop
+*2026-11-27*
+
+**Decision:** Version 1.1.0, the first one in the BUSY Apps Catalog, ships with two screenshots captured on a bar
+before December 1: the Winter Night cabin (the cover) and the "4 DAYS / TO ADVENT" card. After December 1, capture
+several real doors on the bar and publish 1.1.1 with them, since catalog screenshots only change with a new version.
+
+**Why:** The catalog asks for screenshots captured on a bar or in the official emulator, and before Advent the app
+shows only this loop. Submitting now lets review start before the first door opens.
+
+**Alternatives:** Setting the bar's clock to December, or adding a preview mode that opens any door on any date.
+Both would have delayed submission past December 1.

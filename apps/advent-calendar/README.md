@@ -69,7 +69,7 @@ hours and minutes to midnight (`06:42` / `TO GO`). On Christmas Day the finale p
 
 ## Install
 
-Download `busybartools.advent-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.advent-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md). The calendar follows the bar's own date and time, so set the bar's
 clock and time zone first.
 

@@ -25,7 +25,7 @@ LED simulator with storyboards.
 
 ## Install
 
-1. Download `busybartools.christmas-<version>.tgz` from the
+1. Download `io.github.mertzjames.christmas-<version>.tgz` from the
    [latest Christmas Day release](https://github.com/mertzjames/busybartools/releases?q=christmas-day).
 2. In your bar's web page (**http://10.0.4.20** over USB, or `http://<bar-ip>`), go to **Apps → + Add app**, choose the
    file, and click **Install app**.
@@ -35,7 +35,7 @@ The full guide, with Wi-Fi API setup and troubleshooting, is in [docs/INSTALLING
 
 | | |
 |---|---|
-| App id | `busybartools.christmas` |
+| App id | `io.github.mertzjames.christmas` |
 | Needs | BUSY Bar HTTP API 27.12.0+ |
 
 ## Controls

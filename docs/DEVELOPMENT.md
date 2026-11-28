@@ -41,7 +41,7 @@ lib/python/busybar/         shared render kit (Python); see "Shared render kit"
   sprite.py                 Sprite: text-grid pixel art with palettes, flip, recolor
   showbuild.py              scene build pipeline: tone curve, encode+verify, mockup data, generated TS, icons
   preview.py                LED-style renders of frames: led(), strip()
-lib/ts/busybar/             shared TypeScript, imported by relative path from an app's app/shared/
+lib/ts/busybar/             shared TypeScript; tools/vendor-kit.sh copies it into each app's app/shared/vendor/
   xpmtext.ts                pixel-font text -> xpmbitmap (gradient + shadow)
   walltime.ts               the bar's local time: parse, format, days/seconds until a date or midnight
   drawqueue.ts              one-request-in-flight draw queue with per-slot replacement
@@ -55,11 +55,14 @@ tools/
   deploy.sh                 build one app and install/launch it on the bar from .env
   release.sh                tag a release of one app from main (CI publishes it)
   new-app.sh                scaffold a new app in this layout
-  screens.py                capture what the bar is showing, as LED-style PNGs
+  screens.py                capture what the bar is showing, as LED-style PNGs (--raw: native 72x16 too)
+  vendor-kit.sh             copy lib/ts/busybar into each app's app/shared/vendor/ (--check: verify)
+  catalog.py                check an app against the BUSY Apps Catalog's rules; print its catalog manifest
   lib.sh                    shared shell helpers (app resolution, Node 24, API auth)
 docs/
   INSTALLING.md             end-user install guide
   DEVELOPMENT.md            this file
+  CATALOG.md                publishing apps to the BUSY Apps Catalog
   DECISIONS.md              repo-level decisions (apps keep their own logs)
 .github/workflows/          ci.yml (PR checks), release.yml (tag → GitHub Release)
 ```
@@ -114,7 +117,7 @@ writes the `.anim` files, generates `app/shared/generated/show.ts`, and builds a
 ## Adding a new app
 
 ```bash
-tools/new-app.sh fireplace --id busybartools.fireplace --name "Fireplace" --description "A crackling fire loop"
+tools/new-app.sh fireplace --id io.github.mertzjames.fireplace --name "Fireplace" --description "A crackling fire loop"
 ```
 
 This runs the official scaffolder into `apps/fireplace/app` with no prompts and installs dependencies. It also
@@ -174,12 +177,16 @@ from busybar.showbuild import build_scenes, tone_lut, tone_rgb, ts_module, FONT_
 **TypeScript** (from `app/shared/*.ts`; files outside `app/src/` are bundled into `main.js`):
 
 ```ts
-import { textBitmap, type Font, type TextSpec } from "../../../../lib/ts/busybar/xpmtext.ts";
-import { parseLocal, formatDate, daysUntil, secondsToMidnight, secondsUntilDate, addSeconds } from "../../../../lib/ts/busybar/walltime.ts";
-import { createDrawQueue } from "../../../../lib/ts/busybar/drawqueue.ts";
-import { HOLIDAYS, nextOccurrence, daysLabel, zodiac } from "../../../../lib/ts/busybar/holidays.ts";
-import { createShow, type Card, type Step } from "../../../../lib/ts/busybar/showrunner.ts";
+import { textBitmap, type Font, type TextSpec } from "./vendor/busybar/xpmtext.ts";
+import { parseLocal, formatDate, daysUntil, secondsToMidnight, secondsUntilDate, addSeconds } from "./vendor/busybar/walltime.ts";
+import { createDrawQueue } from "./vendor/busybar/drawqueue.ts";
+import { HOLIDAYS, nextOccurrence, daysLabel, zodiac } from "./vendor/busybar/holidays.ts";
+import { createShow, type Card, type Step } from "./vendor/busybar/showrunner.ts";
 ```
+
+The kit's source is `lib/ts/busybar/`. Each app imports a copy in `app/shared/vendor/busybar/`, because the BUSY
+Apps Catalog builds `app/` on its own (docs/DECISIONS.md R12). After changing `lib/ts`, run `tools/vendor-kit.sh` to
+refresh every copy. `tools/check.sh` fails while a copy is stale.
 
 - **Show runner:** `createShow({ app, device, fonts, scenes, cards, steps? })` plays scenes and live-text cards
   with one request in flight, and handles OK, the encoder and Back. A **card** is a looping backdrop `.anim` plus

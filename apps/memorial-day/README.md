@@ -51,7 +51,7 @@ Memorial Day is the last Monday of May (May 31, 2027; May 29, 2028), from the ki
 
 ## Install
 
-Download `busybartools.memorialday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.memorialday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

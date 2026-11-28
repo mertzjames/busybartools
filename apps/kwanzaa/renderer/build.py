@@ -38,7 +38,7 @@ from scenes import CARD_BG, KINARA, KINARA_CENTER, PLAYLIST  # noqa: E402
 from scenes.kinara import variant_names  # noqa: E402
 from scenes.text import GREETING, PRINCIPLES, STYLES, TEXT_FONTS, TIMING  # noqa: E402
 
-APP_ID = "busybartools.kwanzaa"
+APP_ID = "io.github.mertzjames.kwanzaa"
 
 # Display tone curve (docs/DECISIONS.md D10): the value approved on real hardware for Wizarding Thanksgiving.
 # Applied to every output frame and to the text colors, so the bar, the mockup and the storyboards all match.

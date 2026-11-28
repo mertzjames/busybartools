@@ -4,8 +4,8 @@
 // walltime.ts and holidays.ts) and the tests (tests/logic.test.mts), so all three show the same words at the same
 // times. Card text is returned as styles + strings; main.ts maps each style to a TextSpec from the generated LAYOUT.
 
-import { HOLIDAYS, daysLabel, nextOccurrence } from "../../../../lib/ts/busybar/holidays.ts";
-import { addSeconds, formatDate, pad2, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { HOLIDAYS, daysLabel, nextOccurrence } from "./vendor/busybar/holidays.ts";
+import { addSeconds, formatDate, pad2, type LocalTime } from "./vendor/busybar/walltime.ts";
 
 /** Text styles, matching LAYOUT in renderer/scenes/text.py. */
 export type Style = "time" | "date" | "head" | "sub" | "lead" | "num";

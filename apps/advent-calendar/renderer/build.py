@@ -32,7 +32,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
 from scenes import CARD, DAYS, DOOR, WINTER  # noqa: E402
 from scenes.text import CARD_MS, STYLES, TEXT_FONTS  # noqa: E402
 
-APP_ID = "busybartools.advent"
+APP_ID = "io.github.mertzjames.advent"
 
 # Display tone curve, the value approved on real hardware for the collection (docs/DECISIONS.md D9).
 # Applied to every output frame and to every live-text color, so the bar and the mockup match.
