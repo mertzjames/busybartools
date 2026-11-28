@@ -33,7 +33,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
 from scenes import CARD_BG, PLAYLIST, PLAYLISTS, ZODIAC_SCENES  # noqa: E402
 import textstyle  # noqa: E402
 
-APP_ID = "io.github.mertzjames.lunar"
+APP_ID = "io.github.mertzjames.lunarny"
 
 # Display tone curve (docs/DECISIONS.md D8): the value approved on real hardware for Wizarding Thanksgiving.
 # Applied to every output frame and to the live-text colors, so the bar, the mockup and the storyboards all match.

@@ -235,7 +235,7 @@ the default, so a show never fails to start because of settings.
   [CATALOG.md](CATALOG.md).
 - **New app IDs.** `busybartools.<app>` has one dot, and the catalog requires at least two. The holiday apps become
   `io.github.mertzjames.<app>` (same suffix as before), the form the catalog suggests for GitHub-hosted apps.
-  busy-cli 0.6.0 caps an ID at 32 characters, so Lunar New Year becomes `io.github.mertzjames.lunar`. An ID is
+  busy-cli 0.6.0 caps an ID at 32 characters, so Lunar New Year becomes `io.github.mertzjames.lunarny`. An ID is
   permanent once published, and it belongs to this repo. Apps that already had a GitHub Release with the old ID
   (Advent Calendar, Christmas Day, Hanukkah, New Year's Eve) go to 1.1.0. The rest were never released and stay 1.0.0.
 - **The TypeScript kit is vendored.** The catalog builds the `subdir` alone, offline, in a container, so
