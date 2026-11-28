@@ -32,7 +32,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
                                tone_lut, tone_rgb, ts_module)
 from scenes import CLOCK_BG, PLAYLIST  # noqa: E402
 
-APP_ID = "busybartools.christmas"
+APP_ID = "io.github.mertzjames.christmas"
 
 # Display tone curve (docs/DECISIONS.md D4): the value approved on real hardware for Wizarding Thanksgiving.
 # Applied to every output frame and to the clock colors, so the bar, the mockup and the storyboards all match.

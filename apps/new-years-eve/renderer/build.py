@@ -37,7 +37,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
 import live  # noqa: E402  (registers the "huge" font)
 from scenes import BACKDROPS, PLAYLIST  # noqa: E402
 
-APP_ID = "busybartools.newyear"
+APP_ID = "io.github.mertzjames.newyear"
 
 # Display tone curve, the same one approved on the bar for Wizarding Thanksgiving (docs/DECISIONS.md D12). Applied to
 # every frame and to every live-text color, so the bar, the mockup and the storyboards match.

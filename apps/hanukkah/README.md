@@ -46,7 +46,7 @@ LED simulator with storyboards, the eight nights and a holiday-mode button.
 
 ## Install
 
-1. Download `busybartools.hanukkah-<version>.tgz` from the
+1. Download `io.github.mertzjames.hanukkah-<version>.tgz` from the
    [latest Hanukkah release](https://github.com/mertzjames/busybartools/releases?q=hanukkah).
 2. In your bar's web page (**http://10.0.4.20** over USB, or `http://<bar-ip>`), go to **Apps → + Add app**, choose the
    file, and click **Install app**.
@@ -56,7 +56,7 @@ The full guide is in [docs/INSTALLING.md](../../docs/INSTALLING.md).
 
 | | |
 |---|---|
-| App id | `busybartools.hanukkah` |
+| App id | `io.github.mertzjames.hanukkah` |
 | Needs | BUSY Bar HTTP API 27.12.0+ |
 
 ## Controls

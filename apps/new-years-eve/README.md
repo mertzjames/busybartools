@@ -34,7 +34,7 @@ All art is original pixel art of generic party imagery: no real landmarks, logos
 
 ## Install
 
-Download `busybartools.newyear-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.newyear-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md). Make sure the bar's clock and time zone are right: the countdown
 uses the bar's local time.
 

@@ -223,3 +223,47 @@ contrast traps, captions over a dimmed frame, and fine time-window reviews.
 
 **Safety:** `loadSettings` never throws. A failed request, an older settings version or a mistyped value falls back to
 the default, so a show never fails to start because of settings.
+
+---
+
+## R12 — Publishing to the BUSY Apps Catalog: new app IDs, a vendored kit, catalog files in app/
+*2026-11-27*
+
+**Decision:**
+- Apps are published to the official [BUSY Apps Catalog](https://github.com/busy-app/busy-apps-catalog) from this
+  repo. Each catalog entry pins a commit on `main` and points `subdir` at `apps/<app>/app`. The process is in
+  [CATALOG.md](CATALOG.md).
+- **New app IDs.** `busybartools.<app>` has one dot, and the catalog requires at least two. The holiday apps become
+  `io.github.mertzjames.<app>` (same suffix as before), the form the catalog suggests for GitHub-hosted apps.
+  busy-cli 0.6.0 caps an ID at 32 characters, so Lunar New Year becomes `io.github.mertzjames.lunar`. An ID is
+  permanent once published, and it belongs to this repo. Apps that already had a GitHub Release with the old ID
+  (Advent Calendar, Christmas Day, Hanukkah, New Year's Eve) go to 1.1.0. The rest were never released and stay 1.0.0.
+- **The TypeScript kit is vendored.** The catalog builds the `subdir` alone, offline, in a container, so
+  `../../../../lib/ts` doesn't exist there. `tools/vendor-kit.sh` copies `lib/ts/busybar` into every app as
+  `app/shared/vendor/busybar/`, and app code imports it from there. `lib/ts` stays the only place to edit.
+  `tools/check.sh` fails if a copy differs or if any import in `app/` leaves the folder.
+- **Catalog files live in `app/`:** `CATALOG.md` (description), `CHANGELOG.md` (a section per version) and
+  `screenshots/` (72×16 PNGs captured from a bar with `tools/screens.py --raw`). The catalog only reads files
+  inside `subdir`. `tools/catalog.py` checks an app at a commit against the catalog's rules, can build `app/` alone
+  the way the catalog does, and prints the catalog manifest.
+- **Wizarding Thanksgiving stays out of the catalog** and keeps its `wizard.thanksgiving` ID. Its scenes lean on a
+  well-known book series (a sorting hat, "Expecto", house colors, a quoted speech), and the catalog's terms reject
+  apps that infringe third-party rights. It stays available from GitHub Releases.
+
+**Why:**
+- The catalog's rules come from its CI source (`tools/lib_fetch.py`, `tools/lib_build.py`, `tools/lib_app_id.py`),
+  not only its guide. The build mounts only `subdir`. The catalog's own check allows 63-character IDs, but the busy-cli build it runs
+  stops at 32, so 32 is the real limit.
+- Pinning commits on `main` matters: the catalog needs every published commit to stay reachable, and only `main` is
+  never rewritten.
+- Screenshots come from the device because the catalog's PR checklist asks that they were captured on a bar or in
+  the official emulator.
+
+**Alternatives:**
+- Move the kit into each app outright and delete `lib/ts`. Rejected: a fix would then have to be copied into 20 apps
+  by hand.
+- A separate repo per app, or a generated flat `catalog/` tree. Rejected: either duplicates every app and splits its
+  history.
+- Pointing `subdir` at `apps/<app>` so the README could be the description. Rejected: the build needs
+  `package.json` at the `subdir` root, and the READMEs are written for developers (with tables and code, which the
+  catalog's Markdown subset rejects).

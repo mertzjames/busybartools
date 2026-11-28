@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "id": "busybartools.presidents",
+  "id": "io.github.mertzjames.presidents",
   "name": "Presidents' Day",
   "version": "1.0.0",
   "api_version": "27.12.0",

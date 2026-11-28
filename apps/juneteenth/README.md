@@ -43,7 +43,7 @@ Between the scenes, alternating:
 
 ## Install
 
-Download `busybartools.juneteenth-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.juneteenth-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

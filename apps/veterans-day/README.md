@@ -72,7 +72,7 @@ bash tests/check.sh                                    # Node logic tests + live
 
 ## Install
 
-Download `busybartools.veteransday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.veteransday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

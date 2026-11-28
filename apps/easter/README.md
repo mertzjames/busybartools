@@ -61,7 +61,7 @@ python3 renderer/review.py scene hatching previews/ 0.2 1.4 3.2 # every 0.2 s be
 
 ## Install
 
-Download `busybartools.easter-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.easter-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

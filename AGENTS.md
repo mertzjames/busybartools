@@ -33,9 +33,10 @@ tools/new-app.sh <folder> --id <id> --name "<Name>" --description "<one line>"  
 apps/<folder>/            one self-contained app (see "App convention")
 lib/python/busybar/       shared render kit (Python): canvas, fx, party, font, sprite, showbuild, anim, preview
 lib/ts/busybar/           shared TypeScript: xpmtext, walltime, drawqueue, holidays, showrunner, settings, sun
+                          (edit here; tools/vendor-kit.sh copies it into each app's app/shared/vendor/busybar/)
 lib/tests/                kit tests; tools/check.sh runs them first
-tools/                    shared scripts: check, deploy, release, new-app, screens, lib.sh
-docs/                     INSTALLING.md (users), DEVELOPMENT.md (devs), DECISIONS.md (repo-level R1…)
+tools/                    shared scripts: check, deploy, release, new-app, screens, vendor-kit, catalog, lib.sh
+docs/                     INSTALLING.md (users), DEVELOPMENT.md (devs), CATALOG.md (publishing), DECISIONS.md (R1…)
 .github/workflows/        ci.yml (PR checks, job "check"), release.yml (tag -> GitHub Release)
 ```
 
@@ -45,8 +46,10 @@ docs/                     INSTALLING.md (users), DEVELOPMENT.md (devs), DECISION
 apps/<folder>/
   app/                    REQUIRED  BUSY JS app (TypeScript). src/main.ts entry; src/appmeta/manifest.json
   app/shared/             modules + generated data, imported as @shared/*  (NOT in app/src/; see below)
+  app/shared/vendor/busybar/  copy of lib/ts/busybar (tools/vendor-kit.sh; never edit the copy)
   app/src/animations/     .anim files packaged with the app
   app/src/appmeta/settings.json  optional  user settings shown on the bar (read with lib/ts/busybar/settings.ts)
+  app/CATALOG.md, app/CHANGELOG.md, app/screenshots/  for the BUSY Apps Catalog (docs/CATALOG.md)
   prebuild.sh             optional  generates assets before the JS build
   tests/check.sh          optional  app tests, run by tools/check.sh
   README.md               REQUIRED  what it does, controls, how to change it
@@ -106,6 +109,10 @@ Never write any of these into files, docs, test fixtures, commit messages or PR 
 **Every `.ts` file under `app/src/` becomes its own script entry.** `main.js` then begins with an ES `import` and the
 firmware can't run it. Put helpers and generated data in `app/shared/` and import them as `@shared/...`. After
 `npm run build`, the build output must show `scripts: main.js` only.
+
+**Nothing in `app/` may import from outside `app/`.** The BUSY Apps Catalog builds `app/` alone, offline. Import the
+kit from `@shared/vendor/busybar/` (or `./vendor/busybar/` inside `app/shared/`). After editing `lib/ts/busybar`, run
+`tools/vendor-kit.sh`; `tools/check.sh` fails on a stale copy.
 
 **Smooth motion means `.anim` files.**
 - Timer-driven redraws manage about 3 fps. The firmware plays `.anim` at the file's fps with no requests.

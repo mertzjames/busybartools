@@ -8,7 +8,7 @@
 //   christmas  Dec 25           door + finale + "MERRY / CHRISTMAS"
 //   post       Dec 26 - Dec 31  finale + "SEE YOU / NEXT YEAR!"
 
-import { daysUntil, pad2, secondsToMidnight, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { daysUntil, pad2, secondsToMidnight, type LocalTime } from "./vendor/busybar/walltime.ts";
 
 export type Season = "pre" | "advent" | "eve" | "christmas" | "post";
 export type Style = "date" | "head" | "sub" | "top" | "bot";

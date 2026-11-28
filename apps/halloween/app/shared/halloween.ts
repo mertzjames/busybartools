@@ -7,8 +7,8 @@
 // Names here share one scope with walltime.ts and holidays.ts in the mockup, so app-level constants carry an HW_
 // prefix (a repeated top-level name would be a SyntaxError there).
 
-import { HOLIDAYS, nextOccurrence } from "../../../../lib/ts/busybar/holidays.ts";
-import { formatDate, pad2, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { HOLIDAYS, nextOccurrence } from "./vendor/busybar/holidays.ts";
+import { formatDate, pad2, type LocalTime } from "./vendor/busybar/walltime.ts";
 
 /** Text styles, matching LAYOUT in renderer/scenes/text.py. */
 export type Style = "time" | "date" | "head" | "sub" | "hi" | "lo" | "boo";

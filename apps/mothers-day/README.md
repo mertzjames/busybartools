@@ -42,7 +42,7 @@ draw it in the small one under a big first line (D7).
 
 ## Install
 
-Download `busybartools.mothersday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.mothersday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

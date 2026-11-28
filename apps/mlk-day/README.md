@@ -61,7 +61,7 @@ python3 renderer/review.py scene march previews/ 0.2 9 11  # every 0.2 s between
 
 ## Install
 
-Download `busybartools.mlkday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.mlkday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop
