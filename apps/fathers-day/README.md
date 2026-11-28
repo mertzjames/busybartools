@@ -42,7 +42,7 @@ lines; under the countdown it goes in the small font (D7).
 
 ## Install
 
-Download `busybartools.fathersday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.fathersday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

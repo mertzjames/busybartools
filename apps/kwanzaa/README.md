@@ -47,7 +47,7 @@ self-contained LED simulator with storyboards and a holiday-mode control.
 
 ## Install
 
-1. Download `busybartools.kwanzaa-<version>.tgz` from the
+1. Download `io.github.mertzjames.kwanzaa-<version>.tgz` from the
    [latest Kwanzaa release](https://github.com/mertzjames/busybartools/releases?q=kwanzaa).
 2. In your bar's web page (**http://10.0.4.20** over USB, or `http://<bar-ip>`), go to **Apps → + Add app**, choose the
    file, and click **Install app**.
@@ -57,7 +57,7 @@ The full guide, with Wi-Fi API setup and troubleshooting, is in [docs/INSTALLING
 
 | | |
 |---|---|
-| App id | `busybartools.kwanzaa` |
+| App id | `io.github.mertzjames.kwanzaa` |
 | Needs | BUSY Bar HTTP API 27.12.0+ |
 
 ## Controls

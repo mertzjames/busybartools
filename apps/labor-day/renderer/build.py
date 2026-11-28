@@ -37,7 +37,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
 from scenes import CLOCK_BG, COUNT_BG, PLAYLIST  # noqa: E402
 from scenes.text import DAY_TEXT, LAYOUT  # noqa: E402,F401  (DAY_TEXT is re-exported for review.py)
 
-APP_ID = "busybartools.laborday"
+APP_ID = "io.github.mertzjames.laborday"
 
 # Display tone curve (docs/DECISIONS.md D9): the value approved on real hardware for Wizarding Thanksgiving (round-1 kit).
 GAMMA = 0.8

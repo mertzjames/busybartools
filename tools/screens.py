@@ -2,9 +2,11 @@
 """Capture what the BUSY Bar front display is showing, as LED-style PNGs.
 
     python3 tools/screens.py --count 20 --every 2 --out screens/
+    python3 tools/screens.py --count 30 --every 3 --raw   # also save native 72x16 frames (raw_NNN.png)
 
 GET /api/screen?display=0 returns the 72x16 front frame (base64 of BGR bytes, or raw bytes).
-Writes one strip image of all captures plus the individual frames. Config: BUSYBAR_ADDR / BUSYBAR_TOKEN
+Writes one strip image of all captures plus the individual frames. With --raw it also writes each frame at the
+display's native 72x16, which is the size the BUSY Apps Catalog wants for screenshots (tools/catalog.py). Config: BUSYBAR_ADDR / BUSYBAR_TOKEN
 (env or the repo-root .env), same as tools/deploy.sh. Keep --every >= 1 s: every capture is a request the bar's web
 server has to handle.
 """
@@ -62,6 +64,7 @@ def main() -> None:
     ap.add_argument("--count", type=int, default=10)
     ap.add_argument("--every", type=float, default=2.0)
     ap.add_argument("--out", default=str(ROOT / "screens"))
+    ap.add_argument("--raw", action="store_true", help="also save native 72x16 frames as raw_NNN.png")
     args = ap.parse_args()
     addr = os.environ.get("BUSYBAR_ADDR", "10.0.4.20")
     token = os.environ.get("BUSYBAR_TOKEN", "")
@@ -75,6 +78,8 @@ def main() -> None:
         img = grab(addr, token)
         frames.append(img)
         led(img, cell=10).save(out / f"screen_{i:03d}.png")
+        if args.raw:
+            img.save(out / f"raw_{i:03d}.png", optimize=True)
         print(f"{time.time() - t0:6.1f}s  captured screen_{i:03d}.png", flush=True)
     strip(frames, list(range(len(frames))), out / "strip.png")
     print(f"wrote {out / 'strip.png'}")

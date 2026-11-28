@@ -69,7 +69,7 @@ python3 renderer/review_zoom.py cat previews/z.png 30 72 6.2     # a big view of
 
 ## Install
 
-Download `busybartools.halloween-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.halloween-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

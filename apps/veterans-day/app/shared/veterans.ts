@@ -6,8 +6,8 @@
 // dates. Card text is returned as styles + strings; main.ts maps each style to a TextSpec from LAYOUT.
 // Top-level names are prefixed or app-specific: the mockup pastes the kit files and this one into one scope.
 
-import { HOLIDAYS, daysLabel, nextOccurrence } from "../../../../lib/ts/busybar/holidays.ts";
-import { formatDate, pad2, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { HOLIDAYS, daysLabel, nextOccurrence } from "./vendor/busybar/holidays.ts";
+import { formatDate, pad2, type LocalTime } from "./vendor/busybar/walltime.ts";
 
 /** Text styles, matching LAYOUT in renderer/scenes/text.py. */
 export type Style = "time" | "date" | "head" | "sub" | "word" | "upper" | "lower";

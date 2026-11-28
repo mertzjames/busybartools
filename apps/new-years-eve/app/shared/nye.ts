@@ -7,7 +7,7 @@
 // Keep this file free of `import` lines other than single-line imports from the shared kit, and free of enums or
 // namespaces: the mockup build strips the types and inlines it.
 
-import { addSeconds, daysUntil, pad2, secondsToMidnight, secondsUntilDate, type LocalTime } from "../../../../lib/ts/busybar/walltime.ts";
+import { addSeconds, daysUntil, pad2, secondsToMidnight, secondsUntilDate, type LocalTime } from "./vendor/busybar/walltime.ts";
 
 /** The final-minute screen takes over at T-60 s. */
 export const FINAL_S = 60;

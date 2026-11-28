@@ -41,7 +41,7 @@ exactly (D7).
 
 ## Install
 
-Download `busybartools.laborday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.laborday-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

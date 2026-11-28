@@ -37,7 +37,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
 from scenes import CLOCK_BG, COUNT_BG, PLAYLIST  # noqa: E402
 from scenes.text import LAYOUT, SAMPLE_PAGES  # noqa: E402,F401  (SAMPLE_PAGES is re-exported for review.py)
 
-APP_ID = "busybartools.july4"
+APP_ID = "io.github.mertzjames.july4"
 
 # Display tone curve (docs/DECISIONS.md D4): the value approved on real hardware for Wizarding Thanksgiving.
 GAMMA = 0.8

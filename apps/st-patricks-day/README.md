@@ -64,7 +64,7 @@ python3 renderer/review.py scene jig previews/ 0.2 9 11  # every 0.2 s between 9
 
 ## Install
 
-Download `busybartools.stpatricks-<version>.tgz` from this app's GitHub Release and upload it to your bar.
+Download `io.github.mertzjames.stpatricks-<version>.tgz` from this app's GitHub Release and upload it to your bar.
 See [Installing apps](../../docs/INSTALLING.md).
 
 ## Develop

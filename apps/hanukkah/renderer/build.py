@@ -32,7 +32,7 @@ from busybar.showbuild import (FONT_TS_TYPE, apply_tone, build_scenes, fill_temp
                                tone_lut, tone_rgb, ts_module)
 from scenes import CARDS, LAYOUT, SCENES  # noqa: E402
 
-APP_ID = "busybartools.hanukkah"
+APP_ID = "io.github.mertzjames.hanukkah"
 
 # Display tone curve: the value approved on real hardware for Wizarding Thanksgiving (repo apps share it).
 # Applied to every output frame and to the live-text colors, so the bar, the mockup and the storyboards all match.
